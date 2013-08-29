@@ -24,4 +24,4 @@ At different phases of this code, the ray tracer was tested on a scene, and each
 Credit
 ------
 
-[Cems Yuksel](http://www.cemyuksel.com/) for a bulk of the materials to handle the inner workings of the ray tracer.
+[Cem Yuksel](http://www.cemyuksel.com/) for a bulk of the materials to handle the inner workings of the ray tracer.
