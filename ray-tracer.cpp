@@ -1,4 +1,4 @@
-// Copyright 2013 Sean McKenna
+// h 2013 Sean McKenna
 //
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -20,4 +20,19 @@
 
 int main(){
   printf("Hello, world!\n");
+}
+
+// output a 256-bit array as an image in PPM format
+bool outputImage(const char *file, int w, int h, unsigned char *img){
+  FILE *f = fopen(file, "wb");
+  
+  // error writing to file
+  if(!f)
+    return false;
+  
+  // otherwise, output the image
+  fprintf(f,"P6\n%d %d\n255\n\n", w, h);
+  fwrite(img, 3, w * h, f);
+  fclose(f);
+  return true;
 }
