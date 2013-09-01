@@ -17,7 +17,6 @@
 
 
 // libraries, namespace
-#include <iostream>
 #include <fstream>
 using namespace std;
 
@@ -49,14 +48,12 @@ bool outputImage(const char *file, int w, int h, int img[][3]){
 
 // ray tracer
 int main(){
+  
+  // initialize image variables
   int w = 400;
   int h = 200;
   int img[h * w][3];
-  for(int i = 0; i < (h * w); i++){
-    int val = ((float) i / (w * h)) * 256.0;
-    for(int k = 0; k < 3; k++){
-      img[i][k] = val;
-    }
-  }
-  outputImage("image.ppm", w, h, img);
+  
+  // output ray-traced image
+  //outputImage("image.ppm", w, h, img);
 }
