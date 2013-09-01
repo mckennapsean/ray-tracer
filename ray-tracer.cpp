@@ -1,4 +1,4 @@
-// h 2013 Sean McKenna
+// Copyright 2013 Sean McKenna
 //
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -13,26 +13,50 @@
 //    limitations under the License.
 //
 
-// typical Hello, World program
+// a ray tracer in C++
 
-#include <stdio.h>
-#include <stdlib.h>
 
-int main(){
-  printf("Hello, world!\n");
-}
+// libraries, namespace
+#include <iostream>
+#include <fstream>
+using namespace std;
 
-// output a 256-bit array as an image in PPM format
-bool outputImage(const char *file, int w, int h, unsigned char *img){
-  FILE *f = fopen(file, "wb");
+
+// output an 8-bit array (256 colors) as an RGB image in ASCII PPM format
+bool outputImage(const char *file, int w, int h, int img[][3]){
+  ofstream f;
+  f.open(file);
   
-  // error writing to file
+  // if error writing to file
   if(!f)
     return false;
   
   // otherwise, output the image
-  fprintf(f,"P6\n%d %d\n255\n\n", w, h);
-  fwrite(img, 3, w * h, f);
-  fclose(f);
+  f << "P3\n" << w << " " << h << "\n255\n";
+  for(int i = 0; i < h; i++){
+    for(int j = 0; j < w; j++){
+      for(int k = 0; k < 3; k++){
+        int pt = i * w + j;
+        f << img[pt][k] << " ";
+      }
+    }
+    f << "\n";
+  }
+  f.close();
   return true;
+}
+
+
+// ray tracer
+int main(){
+  int w = 400;
+  int h = 200;
+  int img[h * w][3];
+  for(int i = 0; i < (h * w); i++){
+    int val = ((float) i / (w * h)) * 256.0;
+    for(int k = 0; k < 3; k++){
+      img[i][k] = val;
+    }
+  }
+  outputImage("image.ppm", w, h, img);
 }
