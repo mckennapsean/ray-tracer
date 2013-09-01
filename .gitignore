@@ -16,3 +16,7 @@ ray-tracer
 # Sublime Text Workspace
 *.sublime-project
 *.sublime-workspace
+
+# Sample Ray Tracing Output
+image.jpg
+image.ppm
