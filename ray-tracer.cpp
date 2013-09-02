@@ -27,6 +27,8 @@ using namespace std;
 int w;
 int h;
 int size;
+Color24 white = {237, 237, 237};
+Color24 black = {27, 27, 27};
 Color24* img;
 
 
@@ -40,7 +42,7 @@ Point3 cameraRay(int pX, int pY);
 
 
 // trace a ray against all objects
-void objectIntersection(Node &n, Ray r);
+void objectIntersection(Node &n, Ray r, int pixel);
 
 
 // ray tracer
@@ -52,9 +54,7 @@ int main(){
   // variables for ray tracing
   w = renderImage.GetWidth();
   h = renderImage.GetHeight();
-  size = w * h;
-  Color24 white = {237, 237, 237};
-  Color24 black = {27, 27, 27};
+  size = w * h; 
   img = renderImage.GetPixels();
   
   // variables for generating camera rays
@@ -80,11 +80,11 @@ int main(){
     // traverse through scene DOM
     // transform rays into model space
     // detect ray intersections ---> update pixel
-    objectIntersection(rootNode, *curr);
+    objectIntersection(rootNode, *curr, i);
   }
   
   // output ray-traced image & z-buffer
-  //renderImage.SaveImage("images/image.ppm");
+  renderImage.SaveImage("images/image.ppm");
   //renderImage.SaveZImage("images/z-image.ppm");
 }
 
@@ -114,24 +114,32 @@ Point3 cameraRay(int pX, int pY){
 
 
 // recursive object intersection through all scene objects
-void objectIntersection(Node &n, Ray r){
+void objectIntersection(Node &n, Ray r, int pixel){
   
   // loop on child nodes
-  int i = 0;
+  int j = 0;
   int numChild = n.GetNumChild();
-  while(i < numChild){
+  while(j < numChild){
     
     // grab child node
-    Node *child = n.GetChild(i);
+    Node *child = n.GetChild(j);
+    Object *obj = child->GetObject();
     
     // transform rays into model space (or local space)
-    
+    Ray r2 = child->ToNodeCoords(r);
     
     // compute ray intersections
+    HitInfo h = HitInfo();
+    bool hit = obj->IntersectRay(r2, h);
     
+    // check the ray computation, update pixels
+    if(hit)
+      img[pixel] = white;
+    else
+      img[pixel] = black;
     
     // recursively check this child's children
-    objectIntersection(*child, r);
-    i++;
+    objectIntersection(*child, r2, pixel);
+    j++;
   }
 }
