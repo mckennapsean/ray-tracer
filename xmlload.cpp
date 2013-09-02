@@ -11,7 +11,7 @@
 //-------------------------------------------------------------------------------
  
 #include "scene.h"
-#include "object/sphere.h"
+#include "object/sphere.cpp"
 #include "library/tinyxml2/tinyxml2.h"
 #include "library/tinyxml2/tinyxml2.cpp"
 #include <string.h>
