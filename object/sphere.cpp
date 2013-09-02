@@ -16,9 +16,6 @@
 // sphere object in ray tracer
 
 
-#include "../scene.h"
-
-
 using namespace scene;
 
 

@@ -10,7 +10,7 @@
 ///
 //-------------------------------------------------------------------------------
  
-#include "scene.h"
+#include "scene.cpp"
 #include "object/sphere.cpp"
 #include "library/tinyxml2/tinyxml2.h"
 #include "library/tinyxml2/tinyxml2.cpp"

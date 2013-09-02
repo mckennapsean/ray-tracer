@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------
 ///
-/// \file       scene.h 
+/// \file       scene.cpp
 /// \author     Cem Yuksel (www.cemyuksel.com)
 /// \version    1.0
 /// \date       August 26, 2013
@@ -9,8 +9,8 @@
 ///
 //-------------------------------------------------------------------------------
 
-#ifndef _SCENE_H_INCLUDED_
-#define _SCENE_H_INCLUDED_
+#ifndef _SCENE_CPP_INCLUDED_
+#define _SCENE_CPP_INCLUDED_
 
 //-------------------------------------------------------------------------------
 
