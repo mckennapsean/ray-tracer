@@ -18,6 +18,7 @@
 
 using namespace scene;
 
+namespace scene{
 
 class Sphere: public Object{
   
@@ -27,14 +28,16 @@ class Sphere: public Object{
     }
     
     // intsersect a ray against the unit sphere
-    // must be transformed into model space, first
-    bool intersectRay(const Ray& ray, HitInfo& hit, const int& face) const{
+    // ray must be transformed into model space, first
+    bool IntersectRay( const Ray &ray, HitInfo &hit, int face=HIT_FRONT ) const{
       
       // to be implemented
       return false;
     }
-  
+    
   private:
     Point3 center;
     static const float radius = 1.0;
 };
+
+}

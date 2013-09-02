@@ -171,9 +171,11 @@ private:
 class Object
 {
 public:
-    virtual bool IntersectRay( const Ray &ray, HitInfo &hInfo, int hitSide=HIT_FRONT ) const=0;
-    virtual void ViewportDisplay() const {} // used for OpenGL display
+  virtual ~Object()=0;
+  virtual bool IntersectRay( const Ray &ray, HitInfo &hit, int face=HIT_FRONT ) const=0;
+  //void ViewportDisplay() const {} // used for OpenGL display
 };
+Object::~Object(){}
 
 typedef ItemFileList<Object> ObjFileList;
 

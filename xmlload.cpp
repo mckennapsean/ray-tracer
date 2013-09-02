@@ -116,7 +116,8 @@ void LoadNode(Node *node, tinyxml2::XMLElement *element, int level)
             const char* type = child->Attribute("type");
             if ( type ) {
                 if ( COMPARE(type,"sphere") ) {
-                    //childNode->SetObject( &theSphere );
+                    Object *aSphere = new Sphere();
+                    childNode->SetObject( &*aSphere );
                     printf(" - Sphere");
                 }
             }
