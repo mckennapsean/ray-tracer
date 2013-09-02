@@ -34,6 +34,7 @@ int main(){
   int h = renderImage.GetHeight();
   int size = w * h;
   Color24 white = {237, 237, 237};
+  Color24 black = {27, 27, 27};
   Color24* img = renderImage.GetPixels();
   float fov = camera.fov;
   float aspectRatio = (float) w / (float) h;
@@ -45,11 +46,23 @@ int main(){
   Point3 *imageTopLeftV = new Point3(-imageTipX, imageTipY, -imageDistance);
   Point3 *dXV = new Point3(dX, 0.0, 0.0);
   Point3 *dYV = new Point3(0.0, -dY, 0.0);
+  Point3 firstPixel = *imageTopLeftV + (*dXV * 0.5) + (*dYV * 0.5);
   
   // generate camera rays for every pixel
   for(int i = 0; i < size; i++){
+    
+    // generate current ray in camera space
     int pX = i % w;
     int pY = i / w;
+    Point3 curr = firstPixel + (*dXV * pX) + (*dYV * pY);
+    curr.Normalize();
+    
+    // transform ray into world space
+    
+    
+    // traverse through scene DOM
+    // transform rays into model space
+    // detect ray intersections ---> update pixel
     
   }
   
