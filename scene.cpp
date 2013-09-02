@@ -318,7 +318,7 @@ public:
         }
     }
 
-    bool SaveImage(const char *filename) const { return SavePPM(filename,&img[0].r,3); }
+    bool SaveImage(const char *filename) const { return SavePPM(filename,&img[0].g,3); }
     bool SaveZImage(const char *filename) const { return SavePPM(filename,zbuffer8,1); }
 
 private:

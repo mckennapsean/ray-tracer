@@ -26,10 +26,34 @@ using namespace std;
 // ray tracer
 int main(){
   
-  // load scene
+  // load scene: root node, camera, image
   LoadScene("scenes/prj0.xml");
   
+  // variables for generating camera rays
+  int w = renderImage.GetWidth();
+  int h = renderImage.GetHeight();
+  int size = w * h;
+  Color24 white = {237, 237, 237};
+  Color24* img = renderImage.GetPixels();
+  float fov = camera.fov;
+  float aspectRatio = (float) w / (float) h;
+  float imageDistance = 1;
+  float imageTipY = imageDistance * tan(fov / 2.0 * M_PI / 180.0);
+  float imageTipX = imageTipY * aspectRatio;
+  float dX = (2.0 * imageTipX) / w;
+  float dY = (2.0 * imageTipY) / h;
+  Point3 *imageTopLeftV = new Point3(-imageTipX, imageTipY, -imageDistance);
+  Point3 *dXV = new Point3(dX, 0.0, 0.0);
+  Point3 *dYV = new Point3(0.0, -dY, 0.0);
+  
+  // generate camera rays for every pixel
+  for(int i = 0; i < size; i++){
+    int pX = i % w;
+    int pY = i / w;
+    
+  }
+  
   // output ray-traced image & z-buffer
-  //SaveImage("images/image.ppm");
-  //SaveZImage("images/z-image.ppm");
+  //renderImage.SaveImage("images/image.ppm");
+  //renderImage.SaveZImage("images/z-image.ppm");
 }

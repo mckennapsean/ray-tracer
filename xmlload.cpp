@@ -40,25 +40,25 @@ int LoadScene(const char *filename)
     tinyxml2::XMLDocument doc(filename);
     if ( doc.LoadFile(filename) ) {
         printf("Failed to load the file \"%s\"\n", filename);
-        return 0;
+        exit(EXIT_FAILURE);
     }
  
     tinyxml2::XMLElement *xml = doc.FirstChildElement("xml");
     if ( ! xml ) {
         printf("No \"xml\" tag found.\n");
-        return 0;
+        exit(EXIT_FAILURE);
     }
  
     tinyxml2::XMLElement *scene = xml->FirstChildElement("scene");
     if ( ! scene ) {
         printf("No \"scene\" tag found.\n");
-        return 0;
+        exit(EXIT_FAILURE);
     }
  
     tinyxml2::XMLElement *cam = xml->FirstChildElement("camera");
     if ( ! cam ) {
         printf("No \"camera\" tag found.\n");
-        return 0;
+        exit(EXIT_FAILURE);
     }
  
     rootNode.Init();
@@ -83,7 +83,7 @@ int LoadScene(const char *filename)
     camera.up = (x ^ camera.dir).GetNormalized();
  
     renderImage.Init( camera.imgWidth, camera.imgHeight );
- 
+    
     return 1;
 }
  
