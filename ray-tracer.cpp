@@ -18,32 +18,9 @@
 
 // libraries, namespace
 #include <fstream>
+#include "xmlload.cpp"
+#include "scene.h"
 using namespace std;
-
-
-// output an 8-bit array (256 colors) as an RGB image in ASCII PPM format
-bool outputImage(const char *file, int w, int h, int img[][3]){
-  ofstream f;
-  f.open(file);
-  
-  // if error writing to file
-  if(!f)
-    return false;
-  
-  // otherwise, output the image
-  f << "P3\n" << w << " " << h << "\n255\n";
-  for(int i = 0; i < h; i++){
-    for(int j = 0; j < w; j++){
-      for(int k = 0; k < 3; k++){
-        int pt = i * w + j;
-        f << img[pt][k] << " ";
-      }
-    }
-    f << "\n";
-  }
-  f.close();
-  return true;
-}
 
 
 // ray tracer
@@ -52,8 +29,11 @@ int main(){
   // initialize image variables
   int w = 400;
   int h = 200;
-  int img[h * w][3];
   
-  // output ray-traced image
-  //outputImage("image.ppm", w, h, img);
+  // load scene
+  LoadScene("scenes/prj0.xml");
+  
+  // output ray-traced image & z-buffer
+  //SaveImage("images/image.ppm");
+  //SaveZImage("images/z-image.ppm");
 }
