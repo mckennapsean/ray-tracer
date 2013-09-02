@@ -14,8 +14,6 @@
 #include "object/sphere.cpp"
 #include "library/tinyxml2/tinyxml2.h"
 #include "library/tinyxml2/tinyxml2.cpp"
-#include <string.h>
-#include <stdio.h>
 
 using namespace scene;
 
