@@ -12,15 +12,18 @@
  
 #include "scene.h"
 #include "object/sphere.h"
-#include "library/tinyxml/tinyxml.h"
+#include "library/tinyxml2/tinyxml2.h"
+#include "library/tinyxml2/tinyxml2.cpp"
 #include <string.h>
 #include <stdio.h>
 
+using namespace scene;
+
 //-------------------------------------------------------------------------------
  
-extern Node rootNode;
-extern Camera camera;
-extern RenderImage renderImage;
+Node rootNode;
+Camera camera;
+RenderImage renderImage;
  
 //-------------------------------------------------------------------------------
  
@@ -28,33 +31,33 @@ extern RenderImage renderImage;
  
 //-------------------------------------------------------------------------------
  
-void LoadNode(Node *node, TiXmlElement *element, int level=0);
-void ReadVector(TiXmlElement *element, Point3 &v);
-void ReadFloat (TiXmlElement *element, float &f);
+void LoadNode(Node *node, tinyxml2::XMLElement *element, int level=0);
+void ReadVector(tinyxml2::XMLElement *element, Point3 &v);
+void ReadFloat (tinyxml2::XMLElement *element, float &f);
  
 //-------------------------------------------------------------------------------
  
 int LoadScene(const char *filename)
 {
-    TiXmlDocument doc(filename);
-    if ( ! doc.LoadFile() ) {
+    tinyxml2::XMLDocument doc(filename);
+    if ( doc.LoadFile(filename) ) {
         printf("Failed to load the file \"%s\"\n", filename);
         return 0;
     }
  
-    TiXmlElement *xml = doc.FirstChildElement("xml");
+    tinyxml2::XMLElement *xml = doc.FirstChildElement("xml");
     if ( ! xml ) {
         printf("No \"xml\" tag found.\n");
         return 0;
     }
  
-    TiXmlElement *scene = xml->FirstChildElement("scene");
+    tinyxml2::XMLElement *scene = xml->FirstChildElement("scene");
     if ( ! scene ) {
         printf("No \"scene\" tag found.\n");
         return 0;
     }
  
-    TiXmlElement *cam = xml->FirstChildElement("camera");
+    tinyxml2::XMLElement *cam = xml->FirstChildElement("camera");
     if ( ! cam ) {
         printf("No \"camera\" tag found.\n");
         return 0;
@@ -66,7 +69,7 @@ int LoadScene(const char *filename)
     // Load Camera
     camera.Init();
     camera.dir += camera.pos;
-    TiXmlElement *camChild = cam->FirstChildElement();
+    tinyxml2::XMLElement *camChild = cam->FirstChildElement();
     while ( camChild ) {
         if      ( COMPARE( camChild->Value(), "position"  ) ) ReadVector(camChild,camera.pos);
         else if ( COMPARE( camChild->Value(), "target"    ) ) ReadVector(camChild,camera.dir);
@@ -92,9 +95,9 @@ void PrintIndent(int level) { for ( int i=0; i<level; i++) printf("   "); }
  
 //-------------------------------------------------------------------------------
  
-void LoadNode(Node *node, TiXmlElement *element, int level)
+void LoadNode(Node *node, tinyxml2::XMLElement *element, int level)
 {
-    TiXmlElement *child = element->FirstChildElement();
+    tinyxml2::XMLElement *child = element->FirstChildElement();
  
     while ( child ) {
  
@@ -115,7 +118,7 @@ void LoadNode(Node *node, TiXmlElement *element, int level)
             const char* type = child->Attribute("type");
             if ( type ) {
                 if ( COMPARE(type,"sphere") ) {
-                    childNode->SetObject( &theSphere );
+                    //childNode->SetObject( &theSphere );
                     printf(" - Sphere");
                 }
             }
@@ -151,7 +154,7 @@ void LoadNode(Node *node, TiXmlElement *element, int level)
  
 //-------------------------------------------------------------------------------
  
-void ReadVector(TiXmlElement *element, Point3 &v)
+void ReadVector(tinyxml2::XMLElement *element, Point3 &v)
 {
     double x = (double) v.x;
     double y = (double) v.y;
@@ -166,7 +169,7 @@ void ReadVector(TiXmlElement *element, Point3 &v)
  
 //-------------------------------------------------------------------------------
  
-void ReadFloat (TiXmlElement *element, float &f)
+void ReadFloat (tinyxml2::XMLElement *element, float &f)
 {
     double d = (double) f;
     element->QueryDoubleAttribute( "value", &d );

@@ -38,6 +38,8 @@ typedef cyMatrix3f Matrix3;
 
 #define BIGFLOAT 1.0e30f
 
+namespace scene{
+
 //-------------------------------------------------------------------------------
 
 class Ray
@@ -318,8 +320,8 @@ public:
         }
     }
 
-    bool SaveImage(const char *filename) const { SavePPM(filename,&img[0].r,3); }
-    bool SaveZImage(const char *filename) const { SavePPM(filename,zbuffer8,1); }
+    bool SaveImage(const char *filename) const { return SavePPM(filename,&img[0].r,3); }
+    bool SaveZImage(const char *filename) const { return SavePPM(filename,zbuffer8,1); }
 
 private:
     bool SavePPM(const char *filename, uchar *data, int compCount) const
@@ -344,5 +346,7 @@ private:
 };
 
 //-------------------------------------------------------------------------------
+
+}
 
 #endif

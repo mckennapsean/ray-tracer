@@ -26,10 +26,6 @@ using namespace std;
 // ray tracer
 int main(){
   
-  // initialize image variables
-  int w = 400;
-  int h = 200;
-  
   // load scene
   LoadScene("scenes/prj0.xml");
   
