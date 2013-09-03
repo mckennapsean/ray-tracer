@@ -18,5 +18,7 @@ ray-tracer
 *.sublime-workspace
 
 # Sample Ray Tracing Output
-image.jpg
 image.ppm
+z-image.ppm
+image.jpg
+z-image.jpg
