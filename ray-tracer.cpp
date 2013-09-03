@@ -27,8 +27,8 @@ using namespace std;
 int w;
 int h;
 int size;
-Color24 white = {237, 237, 237};
-Color24 black = {27, 27, 27};
+Color24 white = {233, 233, 233};
+Color24 black = {33, 33, 33};
 Color24* img;
 
 
@@ -53,6 +53,9 @@ int main(){
   
   // load scene: root node, camera, image
   LoadScene("scenes/prj0.xml");
+  
+  // set up background image color
+  renderImage.setBackground(black);
   
   // variables for ray tracing
   w = renderImage.GetWidth();

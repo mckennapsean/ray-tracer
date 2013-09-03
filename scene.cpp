@@ -283,6 +283,10 @@ public:
         zbuffer8 = NULL;
         ResetNumRenderedPixels();
     }
+    void setBackground(Color24 c){
+      for(int i = 0; i < width * height; i++)
+        img[i] = c;
+    }
     int         GetWidth() const    { return width; }
     int         GetHeight() const   { return height; }
     Color24*    GetPixels()         { return img; }
