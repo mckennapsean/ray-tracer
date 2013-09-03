@@ -20,3 +20,12 @@ Z-Buffer
 ![](images/prj1/z-buffer.jpg)
 
 - - -
+
+Details
+-------
+
+[*Specs*](specs.html)
+
+*Render time:* **0.227** s
+
+- - -
