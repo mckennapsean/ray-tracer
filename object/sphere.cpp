@@ -31,8 +31,21 @@ class Sphere: public Object{
     // ray must be transformed into model space, first
     bool IntersectRay( const Ray &ray, HitInfo &hit, int face=HIT_FRONT ) const{
       
-      // to be implemented
-      return false;
+      // pre-compute values for quadratic solution
+      Point3 pos = ray.p - center;
+      float A = ray.dir % ray.dir;
+      float B = 2.0 * pos % ray.dir;
+      float C = pos % pos - radius * radius;
+      float det = (B * B) - (4 * A * C);
+      
+      // if the ray intersects, compute the z-buffer value
+      if(det > 0){
+        float z = (-B - det) / (2.0 * A);
+        return true;
+      
+      // otherwise, return false
+      }else
+        return false;
     }
     
   private:
