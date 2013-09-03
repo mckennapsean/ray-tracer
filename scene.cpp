@@ -297,6 +297,7 @@ public:
 
     void    ResetNumRenderedPixels()        { numRenderedPixels=0; }
     int     GetNumRenderedPixels() const    { return numRenderedPixels; }
+    void    IncrementNumRenderPixel()       { numRenderedPixels++; }
     void    IncrementNumRenderPixel(int n)  { numRenderedPixels+=n; }   // not thread-safe
     bool    IsRenderDone() const            { return numRenderedPixels >= width*height; }
 

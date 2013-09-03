@@ -36,6 +36,7 @@ float* zImg;
 
 // variables for threading
 static const int numThreads = 10;
+void rayTracing(int i);
 
 
 // variables for camera ray generation
@@ -73,15 +74,35 @@ int main(){
   // variables for generating camera rays
   cameraRayVars();
   
-  // ray-tracing loop, per pixel
-  thread t[10];
-  for(int i = 0; i < size; i++){
-    
-    
+  // ray tracing loop (in parallel with threads)
+  std::thread t[numThreads];
+  for(int i = 0; i < numThreads; i++)
+    t[i] = std::thread(rayTracing, i);
+  
+  // join threads back to main
+  for(int i = 0; i < numThreads; i++)
+    t[i].join();
+  
+  // output ray-traced image & z-buffer
+  renderImage.SaveImage("images/image.ppm");
+  renderImage.ComputeZBufferImage();
+  renderImage.SaveZImage("images/z-image.ppm");
+}
+
+
+// ray tracing loop (for an individual pixel)
+void rayTracing(int i){
+  
+  // initial starting pixel
+  int pixel = i;
+  renderImage.IncrementNumRenderPixel();
+  
+  // thread continuation condition
+  while(!renderImage.IsRenderDone()){
     
     // establish pixel location
-    int pX = i % w;
-    int pY = i / w;
+    int pX = pixel % w;
+    int pY = pixel / w;
     
     // transform ray into world space
     Point3 rayDir = cameraRay(pX, pY);
@@ -92,13 +113,14 @@ int main(){
     // traverse through scene DOM
     // transform rays into model space
     // detect ray intersections & update pixel
-    objectIntersection(rootNode, *ray, i);
+    objectIntersection(rootNode, *ray, pixel);
+    
+    // re-assign next pixel, if necessary
+    if(!renderImage.IsRenderDone()){
+      pixel = renderImage.GetNumRenderedPixels();
+      renderImage.IncrementNumRenderPixel();
+    }
   }
-  
-  // output ray-traced image & z-buffer
-  renderImage.SaveImage("images/image.ppm");
-  renderImage.ComputeZBufferImage();
-  renderImage.SaveZImage("images/z-image.ppm");
 }
 
 
