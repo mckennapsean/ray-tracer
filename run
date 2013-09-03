@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# compile C++ v. 11 (Mac)
+clang++ -stdlib=libc++ -o ray-tracer ray-tracer.cpp
+
+# run and time ray tracer
+echo "Ray tracer run time:"
+time ./ray-tracer
+
+# convert and open images
+rm -f images/image.jpg
+rm -f images/z-image.jpg
+convert images/image.ppm images/image.jpg
+convert images/z-image.ppm images/z-image.jpg
+open -a /Applications/Preview.app/ images/image.jpg
+open -a /Applications/Preview.app/ images/z-image.jpg
+
+# cleanup
+rm -f images/image.ppm
+rm -f images/z-image.ppm
+rm -f a.out
+rm -f ray-tracer
