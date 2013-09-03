@@ -59,7 +59,7 @@ void objectIntersection(Node &n, Ray r, int pixel);
 int main(){
   
   // load scene: root node, camera, image
-  LoadScene("scenes/prj0.xml");
+  LoadScene("scenes/prj1.xml");
   
   // set up background image color
   renderImage.setBackground(black);
