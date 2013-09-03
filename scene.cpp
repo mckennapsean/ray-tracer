@@ -279,6 +279,8 @@ public:
         img = new Color24[width*height];
         if (zbuffer) delete [] zbuffer;
         zbuffer = new float[width*height];
+        for(int i = 0; i < width * height; i++)
+          zbuffer[i] = BIGFLOAT;
         if (zbuffer8) delete [] zbuffer8;
         zbuffer8 = NULL;
         ResetNumRenderedPixels();
@@ -311,13 +313,13 @@ public:
             if ( zmax < zbuffer[i] ) zmax = zbuffer[i];
         }
         for ( int i=0; i<size; i++ ) {
-            if ( zbuffer[i] == BIGFLOAT ) zbuffer8[i] = 0;
+            if ( zbuffer[i] == BIGFLOAT ) zbuffer8[i] = 33;
             else {
                 float f = (zmax-zbuffer[i])/(zmax-zmin);
-                int c = int(f * 255);
+                int c = int(f * 200);
                 if ( c < 0 ) f = 0;
-                if ( c > 255 ) f = 255;
-                zbuffer8[i] = c;
+                if ( c > 200 ) f = 200;
+                zbuffer8[i] = c + 47;
             }
         }
     }

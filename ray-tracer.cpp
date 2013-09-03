@@ -30,6 +30,7 @@ int size;
 Color24 white = {233, 233, 233};
 Color24 black = {33, 33, 33};
 Color24* img;
+float* zImg;
 
 
 // variables for camera ray generation
@@ -62,6 +63,7 @@ int main(){
   h = renderImage.GetHeight();
   size = w * h; 
   img = renderImage.GetPixels();
+  zImg = renderImage.GetZBuffer();
   
   // variables for generating camera rays
   cameraRayVars();
@@ -87,7 +89,8 @@ int main(){
   
   // output ray-traced image & z-buffer
   renderImage.SaveImage("images/image.ppm");
-  //renderImage.SaveZImage("images/z-image.ppm");
+  renderImage.ComputeZBufferImage();
+  renderImage.SaveZImage("images/z-image.ppm");
 }
 
 
@@ -146,9 +149,12 @@ void objectIntersection(Node &n, Ray r, int pixel){
     HitInfo h = HitInfo();
     bool hit = obj->IntersectRay(r2, h);
     
-    // check the ray computation, update pixels
-    if(hit)
+    // check the ray computation, update pixel & z-buffer
+    if(hit){
       img[pixel] = white;
+      if(h.z < zImg[pixel])
+        zImg[pixel] = h.z;
+    }
         
     // recursively check this child's children
     objectIntersection(*child, r2, pixel);

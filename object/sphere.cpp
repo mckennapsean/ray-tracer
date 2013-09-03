@@ -40,7 +40,8 @@ class Sphere: public Object{
       
       // if the ray intersects, compute the z-buffer value
       if(det >= 0){
-        float z = (-B - det) / (2.0 * A);
+        float z = (-B - sqrt(det)) / (2.0 * A);
+        hit.z = z;
         return true;
       
       // otherwise, return false
