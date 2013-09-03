@@ -17,6 +17,7 @@
 
 
 // libraries, namespace
+#include <thread>
 #include <fstream>
 #include "xmlload.cpp"
 #include "scene.cpp"
@@ -31,6 +32,10 @@ Color24 white = {233, 233, 233};
 Color24 black = {33, 33, 33};
 Color24* img;
 float* zImg;
+
+
+// variables for threading
+static const int numThreads = 10;
 
 
 // variables for camera ray generation
@@ -69,7 +74,10 @@ int main(){
   cameraRayVars();
   
   // ray-tracing loop, per pixel
+  thread t[10];
   for(int i = 0; i < size; i++){
+    
+    
     
     // establish pixel location
     int pX = i % w;
