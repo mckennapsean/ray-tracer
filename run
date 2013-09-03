@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # compile C++ v. 11 (Mac)
-clang++ -stdlib=libc++ -o ray-tracer ray-tracer.cpp
+clang++ -std=c++11 -stdlib=libc++ -o ray-tracer ray-tracer.cpp
 
 # run and time ray tracer
 echo "Ray tracer run time:"
