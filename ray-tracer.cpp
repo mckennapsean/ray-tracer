@@ -38,6 +38,9 @@ Point3 *imageTopLeftV;
 Point3 *dXV;
 Point3 *dYV;
 Point3 firstPixel;
+Point3 cameraPos;
+Point3 cameraDir;
+Transformation* c;
 Point3 cameraRay(int pX, int pY);
 
 
@@ -67,24 +70,16 @@ int main(){
     int pX = i % w;
     int pY = i / w;
     
-    // compute current ray (in camera space)
-    Point3 rayPos = camera.pos;
-    Point3 rayDir = cameraRay(pX, pY);
-    
     // transform ray into world space
-    Transformation* world = new Transformation();
-    //world->Translate(rayPos);
-    Ray *curr = new Ray();
-    curr->p = world->TransformTo(rayPos);
-    curr->dir = world->TransformTo(rayPos + rayDir) - curr->p;
-    //curr->Normalize();
-    //rayDir=world->VectorTransformFrom(rayDir);
-    //Ray *curr = new Ray(rayPos, rayDir);
+    Point3 rayDir = cameraRay(pX, pY);
+    Ray *ray = new Ray();
+    ray->p = cameraPos;
+    ray->dir = c->TransformFrom(rayDir);
     
     // traverse through scene DOM
     // transform rays into model space
-    // detect ray intersections ---> update pixel
-    objectIntersection(rootNode, *curr, i);
+    // detect ray intersections & update pixel
+    objectIntersection(rootNode, *ray, i);
   }
   
   // output ray-traced image & z-buffer
@@ -95,17 +90,29 @@ int main(){
 
 // create variables for camera ray generation
 void cameraRayVars(){
-  float fov = camera.fov;
+  float fov = camera.fov * M_PI / 180.0;
   float aspectRatio = (float) w / (float) h;
-  float imageDistance = 1;
-  float imageTipY = imageDistance * tan(fov / 2.0 * M_PI / 180.0);
+  float imageDistance = 1.0;
+  float imageTipY = imageDistance * tan(fov / 2.0);
   float imageTipX = imageTipY * aspectRatio;
-  float dX = (2.0 * imageTipX) / w;
-  float dY = (2.0 * imageTipY) / h;
-  imageTopLeftV = new Point3(-imageTipX, imageTipY, imageDistance);
+  float dX = (2.0 * imageTipX) / (float) w;
+  float dY = (2.0 * imageTipY) / (float) h;
+  imageTopLeftV = new Point3(-imageTipX, imageTipY, -imageDistance);
   dXV = new Point3(dX, 0.0, 0.0);
   dYV = new Point3(0.0, -dY, 0.0);
   firstPixel = *imageTopLeftV + (*dXV * 0.5) + (*dYV * 0.5);
+  
+  // set up camera transformation (translation + rotation)
+  Point3 cameraPos = camera.pos;
+  c = new Transformation();
+  c->Translate(cameraPos);
+  Point3 rot = camera.dir ^ camera.up;
+  rot.Normalize();
+  Point3 *x = new Point3(1.0, 0.0, 0.0);
+  Point3 *y = new Point3(0.0, 1.0, 0.0);
+  Point3 *z = new Point3(0.0, 0.0, 1.0);
+  float deg = ((rot % *x) + (rot % *y) + (rot % *z)) * 90.0;
+  c->Rotate(rot, deg);
 }
 
 
@@ -139,9 +146,7 @@ void objectIntersection(Node &n, Ray r, int pixel){
     // check the ray computation, update pixels
     if(hit)
       img[pixel] = white;
-    
-    // need to update background pixels?
-    
+        
     // recursively check this child's children
     objectIntersection(*child, r2, pixel);
     j++;
