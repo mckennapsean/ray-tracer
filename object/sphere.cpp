@@ -25,6 +25,7 @@ class Sphere: public Object{
   public:
     Sphere(){
       center.Set(0, 0, 0);
+      radius = 1.0;
     }
     
     // intsersect a ray against the unit sphere
@@ -51,7 +52,7 @@ class Sphere: public Object{
     
   private:
     Point3 center;
-    static const float radius = 1.0;
+    float radius;
 };
 
 }
