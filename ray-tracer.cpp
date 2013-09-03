@@ -73,9 +73,13 @@ int main(){
     
     // transform ray into world space
     Transformation* world = new Transformation();
-    world->Translate(rayPos);
-    rayDir=world->VectorTransformFrom(rayDir);
-    Ray *curr = new Ray(rayPos, rayDir);
+    //world->Translate(rayPos);
+    Ray *curr = new Ray();
+    curr->p = world->TransformTo(rayPos);
+    curr->dir = world->TransformTo(rayPos + rayDir) - curr->p;
+    //curr->Normalize();
+    //rayDir=world->VectorTransformFrom(rayDir);
+    //Ray *curr = new Ray(rayPos, rayDir);
     
     // traverse through scene DOM
     // transform rays into model space
@@ -98,7 +102,7 @@ void cameraRayVars(){
   float imageTipX = imageTipY * aspectRatio;
   float dX = (2.0 * imageTipX) / w;
   float dY = (2.0 * imageTipY) / h;
-  imageTopLeftV = new Point3(-imageTipX, imageTipY, -imageDistance);
+  imageTopLeftV = new Point3(-imageTipX, imageTipY, imageDistance);
   dXV = new Point3(dX, 0.0, 0.0);
   dYV = new Point3(0.0, -dY, 0.0);
   firstPixel = *imageTopLeftV + (*dXV * 0.5) + (*dYV * 0.5);
@@ -107,9 +111,9 @@ void cameraRayVars(){
 
 // compute camera rays
 Point3 cameraRay(int pX, int pY){
- Point3 ray = firstPixel + (*dXV * pX) + (*dYV * pY);
- ray.Normalize();
- return ray;
+  Point3 ray = firstPixel + (*dXV * pX) + (*dYV * pY);
+  ray.Normalize();
+  return ray;
 }
 
 
@@ -135,8 +139,8 @@ void objectIntersection(Node &n, Ray r, int pixel){
     // check the ray computation, update pixels
     if(hit)
       img[pixel] = white;
-    else
-      img[pixel] = black;
+    
+    // need to update background pixels?
     
     // recursively check this child's children
     objectIntersection(*child, r2, pixel);
