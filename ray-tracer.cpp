@@ -35,7 +35,7 @@ float* zImg;
 
 
 // variables for threading
-static const int numThreads = 10;
+static const int numThreads = 16;
 void rayTracing(int i);
 
 
@@ -95,10 +95,9 @@ void rayTracing(int i){
   
   // initial starting pixel
   int pixel = i;
-  renderImage.IncrementNumRenderPixel();
-  
+   
   // thread continuation condition
-  while(!renderImage.IsRenderDone()){
+  while(pixel < size){
     
     // establish pixel location
     int pX = pixel % w;
@@ -115,11 +114,8 @@ void rayTracing(int i){
     // detect ray intersections & update pixel
     objectIntersection(rootNode, *ray, pixel);
     
-    // re-assign next pixel, if necessary
-    if(!renderImage.IsRenderDone()){
-      pixel = renderImage.GetNumRenderedPixels();
-      renderImage.IncrementNumRenderPixel();
-    }
+    // re-assign next pixel
+    pixel += numThreads;
   }
 }
 
