@@ -325,7 +325,7 @@ public:
         }
     }
 
-    bool SaveImage(const char *filename) const { return SavePPM(filename,&img[0].g,3); }
+    bool SaveImage(const char *filename) const { return SavePPM(filename,&img[0].r,3); }
     bool SaveZImage(const char *filename) const { return SavePPM(filename,zbuffer8,1); }
 
 private:
@@ -333,7 +333,7 @@ private:
     {
         FILE *fp = fopen(filename,"wb");
         if ( !fp ) return false;
-        fprintf(fp,"P6\n%d %d\n255\n\n", width, height);
+        fprintf(fp,"P6\n%d %d\n255\n", width, height);
         switch( compCount ) {
         case 1:
             for ( int i=0; i<width*height; i++ ) {
