@@ -24,7 +24,7 @@
 using namespace std;
 
 
-// variables for ray tracing
+// for ray tracing
 int w;
 int h;
 int size;
@@ -34,12 +34,12 @@ Color24* img;
 float* zImg;
 
 
-// variables for threading
+// for threading
 static const int numThreads = 8;
 void rayTracing(int i);
 
 
-// variables for camera ray generation
+// for camera ray generation
 void cameraRayVars();
 Point3 *imageTopLeftV;
 Point3 *dXV;
@@ -51,7 +51,7 @@ Transformation* c;
 Point3 cameraRay(int pX, int pY);
 
 
-// trace a ray against all objects
+// for tracing rays to objects
 void objectIntersection(Node &n, Ray r, int pixel);
 
 
@@ -64,22 +64,22 @@ int main(){
   // set up background image color
   renderImage.setBackground(black);
   
-  // variables for ray tracing
+  // set variables for ray tracing
   w = renderImage.GetWidth();
   h = renderImage.GetHeight();
   size = w * h; 
   img = renderImage.GetPixels();
   zImg = renderImage.GetZBuffer();
   
-  // variables for generating camera rays
+  // set variables for generating camera rays
   cameraRayVars();
   
-  // ray tracing loop (in parallel with threads)
-  std::thread t[numThreads];
+  // start ray tracing loop (in parallel with threads)
+  thread t[numThreads];
   for(int i = 0; i < numThreads; i++)
-    t[i] = std::thread(rayTracing, i);
+    t[i] = thread(rayTracing, i);
   
-  // join threads back to main
+  // when finished, join all threads back to main
   for(int i = 0; i < numThreads; i++)
     t[i].join();
   
@@ -114,7 +114,7 @@ void rayTracing(int i){
     // detect ray intersections & update pixel
     objectIntersection(rootNode, *ray, pixel);
     
-    // re-assign next pixel
+    // re-assign next pixel (naive, but works)
     pixel += numThreads;
   }
 }
