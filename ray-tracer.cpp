@@ -138,13 +138,15 @@ void cameraRayVars(){
   Point3 cameraPos = camera.pos;
   c = new Transformation();
   c->Translate(cameraPos);
-  Point3 rot = camera.dir ^ camera.up;
-  rot.Normalize();
-  Point3 *x = new Point3(1.0, 0.0, 0.0);
-  Point3 *y = new Point3(0.0, 1.0, 0.0);
-  Point3 *z = new Point3(0.0, 0.0, 1.0);
-  float deg = ((rot % *x) + (rot % *y) + (rot % *z)) * 90.0;
-  c->Rotate(rot, deg);
+  Matrix3 *rotate = new cyMatrix3f();
+  Point3 cameraDir = camera.dir;
+  Point3 cameraUp = camera.up;
+  cameraDir.Normalize();
+  cameraUp.Normalize();
+  Point3 cameraCross = cameraDir ^ cameraUp;
+  cameraCross.Normalize();
+  rotate->Set(cameraCross, cameraUp, -cameraDir);
+  c->Transform(*rotate);
 }
 
 
