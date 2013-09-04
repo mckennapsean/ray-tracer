@@ -35,7 +35,7 @@ float* zImg;
 
 
 // variables for threading
-static const int numThreads = 4;
+static const int numThreads = 8;
 void rayTracing(int i);
 
 
