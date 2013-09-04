@@ -35,7 +35,7 @@ float* zImg;
 
 
 // variables for threading
-static const int numThreads = 16;
+static const int numThreads = 4;
 void rayTracing(int i);
 
 
@@ -86,7 +86,7 @@ int main(){
   // output ray-traced image & z-buffer
   renderImage.SaveImage("images/image.ppm");
   renderImage.ComputeZBufferImage();
-  renderImage.SaveZImage("images/z-image.ppm");
+  renderImage.SaveZImage("images/imageZ.ppm");
 }
 
 

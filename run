@@ -9,14 +9,14 @@ time ./ray-tracer
 
 # convert and open images
 rm -f images/image.jpg
-rm -f images/z-image.jpg
+rm -f images/imageZ.jpg
 convert images/image.ppm images/image.jpg
-convert images/z-image.ppm images/z-image.jpg
+convert images/imageZ.ppm images/imageZ.jpg
 open -a /Applications/Preview.app/ images/image.jpg
-open -a /Applications/Preview.app/ images/z-image.jpg
+open -a /Applications/Preview.app/ images/imageZ.jpg
 
 # cleanup
 rm -f images/image.ppm
-rm -f images/z-image.ppm
+rm -f images/imageZ.ppm
 rm -f a.out
 rm -f ray-tracer

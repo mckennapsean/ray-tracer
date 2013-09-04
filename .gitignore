@@ -19,6 +19,6 @@ ray-tracer
 
 # Sample Ray Tracing Output
 image.ppm
-z-image.ppm
+imageZ.ppm
 image.jpg
-z-image.jpg
+imageZ.jpg
