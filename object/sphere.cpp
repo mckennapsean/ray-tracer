@@ -13,16 +13,19 @@
 //    limitations under the License.
 //
 
-// sphere object in ray tracer
+// object - Sphere class
 
 
+// namespace
 using namespace scene;
-
 namespace scene{
 
+
+// Sphere definition
 class Sphere: public Object{
-  
   public:
+    
+    // constructor
     Sphere(){
       center.Set(0, 0, 0);
       radius = 1.0;
@@ -30,7 +33,7 @@ class Sphere: public Object{
     
     // intsersect a ray against the unit sphere
     // ray must be transformed into model space, first
-    bool intersectRay(Ray &ray, HitInfo &hit, int face=HIT_FRONT ){
+    bool intersectRay(Ray &ray, HitInfo &hit, int face=HIT_FRONT){
       
       // pre-compute values for quadratic solution
       Point pos = ray.pos - center;
@@ -51,8 +54,9 @@ class Sphere: public Object{
     }
     
   private:
+    
+    // sphere center and its radius
     Point center;
     float radius;
 };
-
 }
