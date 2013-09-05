@@ -21,8 +21,8 @@
 #ifndef _SCENE_
 #define _SCENE_
 #include <vector>
-#include "library/cyPoint.h"
-#include "library/cyMatrix3.h"
+#include "cyCodeBase/cyPoint.h"
+#include "cyCodeBase/cyMatrix3.h"
 using namespace std;
 typedef cyPoint3f Point;
 typedef cyMatrix3f Matrix;

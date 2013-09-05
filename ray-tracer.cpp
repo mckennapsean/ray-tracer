@@ -19,8 +19,8 @@
 // libraries, namespace
 #include <thread>
 #include <fstream>
-#include "loadXML.cpp"
-#include "scene.cpp"
+#include "library/loadXML.cpp"
+#include "library/scene.cpp"
 using namespace std;
 
 
