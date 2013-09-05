@@ -34,6 +34,10 @@ Camera camera;
 Render render;
 
 
+// debug mode for printing out loaded scene
+bool print;
+
+
 // compare two strings and return boolean
 #define compare(a,b) (strcmp(a, b) == 0)
 
@@ -45,7 +49,10 @@ void readFloat(XMLElement *element, float &f);
 
 
 // begin loading scene from file
-int loadScene(const char *file){
+int loadScene(const char *file, bool p = false){
+  
+  // load debug mode
+  print = p;
   
   // make sure file exists
   XMLDocument doc(file);
@@ -138,11 +145,15 @@ void loadNode(Node *node, XMLElement *element, int level){
       // set child node's name
       const char* name = child->Attribute("name");
       childNode->setName(name);
-      printIndent(level);
-      printf("object [");
-      if(name)
-        printf("%s", name);
-      printf("]");
+      
+      // print out object details
+      if(print){
+        printIndent(level);
+        printf("object [");
+        if(name)
+          printf("%s", name);
+        printf("]");
+      }
       
       // set child node's type
       const char* type = child->Attribute("type");
@@ -150,10 +161,14 @@ void loadNode(Node *node, XMLElement *element, int level){
         if(compare(type, "sphere")){
           Object *aSphere = new Sphere();
           childNode->setObject(&*aSphere);
-          printf(" - Sphere");
+          
+          // print out specific object type
+          if(print)
+            printf(" - Sphere");
         }
       }
-      printf("\n");
+      if(print)
+        printf("\n");
       
       // load next child
       loadNode(childNode, child, level + 1);
@@ -166,16 +181,24 @@ void loadNode(Node *node, XMLElement *element, int level){
       readVector(child, s);
       s *= v;
       node->scale(s.x, s.y, s.z);
-      printIndent(level);
-      printf("scale %f %f %f\n", s.x, s.y, s.z);
+      
+      // print out scaling term
+      if(print){
+        printIndent(level);
+        printf("scale %f %f %f\n", s.x, s.y, s.z);
+      }
       
     // check if child is a translation term
     }else if(compare(child->Value(), "translate")){
       Point t(0, 0, 0);
       readVector(child, t);
       node->translate(t);
-      printIndent(level);
-      printf("translate %f %f %f\n", t.x, t.y, t.z);
+      
+      // print out translation term
+      if(print){
+        printIndent(level);
+        printf("translate %f %f %f\n", t.x, t.y, t.z);
+      }
     }
     
     // grab the next child (if any left)
