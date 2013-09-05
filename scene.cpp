@@ -519,7 +519,7 @@ class Render{
     void setBackground(Color c){
       background = c;
       for(int i = 0; i < size; i++)
-        render[i] = background;
+        render[i] = c;
     }
     
     // getters: width, height, size, render, buffer, rendered
@@ -588,7 +588,7 @@ class Render{
       for(int i = 0; i < size; i++){
         
         // background color
-        if(zbuffer[i] == FLOAT_MAX)
+        if(z[i] == FLOAT_MAX)
           zbuffer[i] = background.r;
         
         // for pixels with objects, map from white (close) to dark (far)
@@ -604,33 +604,49 @@ class Render{
       }
     }
     
-    bool save(const char *filename){
-      return savePPM(filename, &render[0].r, 3);
+    // save the rendered image to a file
+    bool save(const char *file){
+      return outputImage(file, 3);
     }
-    bool saveZBuffer(const char *filename){
-      return savePPM(filename, zbuffer, 1);
+    
+    // save the rendered z-buffer image to a file
+    bool saveZBuffer(const char *file){
+      return outputImage(file, 1);
     }
   
   private:
-    bool savePPM(const char *filename, uchar *data, int compCount){
-      FILE *fp = fopen(filename, "wb");
-      if(!fp)
+    
+    // write out an image file
+    bool outputImage(const char *file, int components){
+      ofstream f;
+      f.open(file);
+      
+      // if error writing to file
+      if(!f)
         return false;
-      fprintf(fp, "P6\n%d %d\n255\n", width, height);
-      switch(compCount){
-        case 1:
-          for(int i = 0; i < width * height; i++){
-            uchar d[3] = {data[i], data[i], data[i]};
-            fwrite(d, 1, 3, fp);
-          }
-          break;
-        case 3:
-          fwrite(data, width * height, 3, fp);
-          break;
+      
+      // otherwise, output header in PPM format
+      f << "P6\n" << width << " " << height << "\n255\n";
+      
+      // now write out image in binary
+      for(int i = 0; i < size; i++){
+        
+        // output the rendered color image
+        if(components == 3){
+          uchar d[3] = {render[i].r, render[i].g, render[i].b};
+          f.write(reinterpret_cast<char*>(d), sizeof(d));
+          
+        // output the z-buffer image
+        }else if(components == 1){
+          uchar d[3] = {zbuffer[i], zbuffer[i], zbuffer[i]};
+          f.write(reinterpret_cast<char*>(d), sizeof(d));
+        }
       }
-      fclose(fp);
+      
+      // close file
+      f.close();
       return true;
-    }    
+    }
 };
 
 
