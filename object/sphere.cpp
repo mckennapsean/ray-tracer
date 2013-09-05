@@ -30,10 +30,10 @@ class Sphere: public Object{
     
     // intsersect a ray against the unit sphere
     // ray must be transformed into model space, first
-    bool IntersectRay( const Ray &ray, HitInfo &hit, int face=HIT_FRONT ) const{
+    bool intersectRay(Ray &ray, HitInfo &hit, int face=HIT_FRONT ){
       
       // pre-compute values for quadratic solution
-      Point3 pos = ray.p - center;
+      Point pos = ray.pos - center;
       float A = ray.dir % ray.dir;
       float B = 2.0 * pos % ray.dir;
       float C = pos % pos - radius * radius;
@@ -51,7 +51,7 @@ class Sphere: public Object{
     }
     
   private:
-    Point3 center;
+    Point center;
     float radius;
 };
 

@@ -120,8 +120,8 @@ void DrawNode( Node *node )
 {
     glPushMatrix();
  
-    Matrix3 tm = node->GetTransform();
-    Point3 p = node->GetPosition();
+    Matrix tm = node->GetTransform();
+    Point p = node->GetPosition();
     float m[16] = { tm[0],tm[1],tm[2],0, tm[3],tm[4],tm[5],0, tm[6],tm[7],tm[8],0, p.x,p.y,p.z,1 };
     glMultMatrixf( m );
  
@@ -144,9 +144,9 @@ void DrawScene(bool capture=false)
     glEnable( GL_DEPTH_TEST );
  
     glPushMatrix();
-    Point3 p = camera.pos;
-    Point3 t = camera.pos + camera.dir;
-    Point3 u = camera.up;
+    Point p = camera.pos;
+    Point t = camera.pos + camera.dir;
+    Point u = camera.up;
     gluLookAt( p.x, p.y, p.z,  t.x, t.y, t.z,  u.x, u.y, u.z );
  
     DrawNode(&rootNode);

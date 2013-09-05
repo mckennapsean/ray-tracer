@@ -40,7 +40,7 @@ RenderImage renderImage;
 
 // functions for loading scene
 void loadNode(Node *node, XMLElement *element, int level = 0);
-void readVector(XMLElement *element, Point3 &v);
+void readVector(XMLElement *element, Point &v);
 void readFloat(XMLElement *element, float &f);
 
 
@@ -76,11 +76,11 @@ int loadScene(const char *filename){
   }
   
   // load root node from file
-  rootNode.Init();
+  rootNode.init();
   loadNode(&rootNode, scene);
   
   // load camera from file
-  camera.Init();
+  camera.init();
   camera.dir += camera.pos;
   XMLElement *camChild = cam->FirstChildElement();
   while(camChild){
@@ -104,7 +104,7 @@ int loadScene(const char *filename){
   // ?????
   camera.dir -= camera.pos;
   camera.dir.Normalize();
-  Point3 x = camera.dir ^ camera.up;
+  Point x = camera.dir ^ camera.up;
   camera.up = (x ^ camera.dir).GetNormalized();
   
   // initialize scene image
@@ -136,11 +136,11 @@ void loadNode(Node *node, XMLElement *element, int level){
       
       // store child as node
       Node *childNode = new Node;
-      node->AppendChild(childNode);
+      node->appendChild(childNode);
       
       // set child node's name
       const char* name = child->Attribute("name");
-      childNode->SetName(name);
+      childNode->setName(name);
       printIndent(level);
       printf("object [");
       if(name)
@@ -152,7 +152,7 @@ void loadNode(Node *node, XMLElement *element, int level){
       if(type){
         if(compare(type, "sphere")){
           Object *aSphere = new Sphere();
-          childNode->SetObject(&*aSphere);
+          childNode->setObject(&*aSphere);
           printf(" - Sphere");
         }
       }
@@ -164,19 +164,19 @@ void loadNode(Node *node, XMLElement *element, int level){
     // check if child is a scaling term
     }else if(compare(child->Value(), "scale")){
       float v = 1;
-      Point3 s(1, 1, 1);
+      Point s(1, 1, 1);
       readFloat(child, v);
       readVector(child, s);
       s *= v;
-      node->Scale(s.x, s.y, s.z);
+      node->scale(s.x, s.y, s.z);
       printIndent(level);
       printf("scale %f %f %f\n", s.x, s.y, s.z);
       
     // check if child is a translation term
     }else if(compare(child->Value(), "translate")){
-      Point3 t(0, 0, 0);
+      Point t(0, 0, 0);
       readVector(child, t);
-      node->Translate(t);
+      node->translate(t);
       printIndent(level);
       printf("translate %f %f %f\n", t.x, t.y, t.z);
     }
@@ -188,7 +188,7 @@ void loadNode(Node *node, XMLElement *element, int level){
 
 
 // read in a vector from an XML element
-void readVector(XMLElement *element, Point3 &v){
+void readVector(XMLElement *element, Point &v){
   
   // set vector values
   double x = (double) v.x;

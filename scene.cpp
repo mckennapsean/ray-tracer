@@ -17,76 +17,83 @@
 // originally adapted from code provided by Cem Yuksel
 
 
-// libraries, namespace
-#ifndef _SCENE_CPP_INCLUDED_
-#define _SCENE_CPP_INCLUDED_
+// libraries, namespace, define types
+#ifndef _SCENE_
+#define _SCENE_
 #include <vector>
 #include "library/cyPoint.h"
-typedef cyPoint3f Point3;
 #include "library/cyMatrix3.h"
-typedef cyMatrix3f Matrix3;
 using namespace std;
+typedef cyPoint3f Point;
+typedef cyMatrix3f Matrix;
 
 
-// custom functions
-#ifndef min
-#  define min(a, b) ((a) < (b) ? (a):(b))
-#endif
-#ifndef max
-#  define max(a, b) ((a) > (b) ? (a):(b))
-#endif
-#define BIGFLOAT 1.0e30f
+// custom functions, variables
+#define min(a, b) ((a) < (b) ? (a):(b))
+#define max(a, b) ((a) > (b) ? (a):(b))
+#define FLOAT_MAX 1.0e30f
 
 
 // declare namespace
 namespace scene{
 
 
-// Ray definition (point & direction)
+// Ray definition (position & direction)
 class Ray{
   public:
-    Point3 p, dir;
+    
+    // position & direction of ray
+    Point pos, dir;
+    
+    // ray constructor
     Ray(){}
-    Ray(const Point3 &_p, const Point3 &_dir): p(_p), dir(_dir) {}
-    void Normalize(){
+    Ray(Point &p, Point &d){
+      pos = p;
+      dir = d;
+    }
+    
+    // normalize the ray (only the direction is necessary)
+    void normalize(){
       dir.Normalize();
     }
 };
 
 
-// Node definition
+// Node declaration (definition comes later)
 class Node;
 
 
-// Hit Info definition (for each node)
+// Hit Info struct definitions (set for each node)
 #define HIT_NONE 0
 #define HIT_FRONT 1
 #define HIT_BACK 2
 #define HIT_FRONT_AND_BACK (HIT_FRONT | HIT_BACK)
 struct HitInfo{
   
-  // distance from ray to the hit point
+  // distance from the ray to the hit point
   float z;
   
-  // object node that is hit
-  const Node *node;
+  // object node that ray hits
+  Node *node;
   
   // returns true if the object is hit on a front face, false if back face
   bool front;
   
-  // initialization
+  // constructor
   HitInfo(){
-    Init();
+    init();
   }
-  void Init(){
-    z = BIGFLOAT;
+  
+  // initialize hit info
+  void init(){
+    z = FLOAT_MAX;
     node = NULL;
     front = true;
   }
 };
 
 
-// Item Base definition
+// Item Base definition (basic node info, stores a name)
 class ItemBase{
   private:
     
@@ -94,19 +101,25 @@ class ItemBase{
     char *name;
   
   public:
-    ItemBase(): name(NULL) {}
+    
+    // item constructor
+    ItemBase(){
+      name = NULL;
+    }
     virtual ~ItemBase(){
       if(name)
-        delete [] name;
+        delete[] name;
     }
     
-    const char* GetName() const{
+    // retrive the name of the item
+    const char* getName() const{
       return name ? name: "";
     }
     
-    void SetName(const char *newName){
+    // declare a name for the item (or leave NULL)
+    void setName(const char *newName){
       if(name)
-        delete [] name;
+        delete[] name;
       if(newName){
         int n = strlen(newName);
         name = new char[n + 1];
@@ -119,13 +132,18 @@ class ItemBase{
     }
 };
 
-// ItemList template definition
+
+// ItemList definition (for ItemFileList, and thus a list of objects)
 template <class T> class ItemList: public vector <T*>{
   public:
+    
+    // empty constructor
     virtual ~ItemList(){
-      DeleteAll();
+      deleteAll();
     }
-    void DeleteAll(){
+    
+    // clear all elements within this class
+    void deleteAll(){
       int n = this->size();
       for(int i = 0; i < n; i++)
         if(this->at(i))
@@ -134,134 +152,171 @@ template <class T> class ItemList: public vector <T*>{
 };
 
 
-// ItemFileList template definition
+// ItemFileList definition (from ItemList, feeds into a list of objects)
 template <class T> class ItemFileList{
   public:
-    void Clear(){
-      list.DeleteAll();
+    
+    // clear all elements within this class
+    void clear(){
+      list.deleteAll();
     }
-    void Append(T* item, const char *name){
+    
+    // add an element to this class
+    void append(T* item, const char *name){
       list.push_back(new FileInfo(item, name));
     }
-    T* Find(const char *name) const{
+    
+    // search entire list for a specific object
+    T* find(const char *name){
       int n = list.size();
       for(int i = 0; i < n; i++)
-        if(list[i] && strcmp(name, list[i]->GetName()) == 0)
-          return list[i]->GetObj();
+        if(list[i] && strcmp(name, list[i]->getName()) == 0)
+          return list[i]->getObj();
         return NULL;
     }
   
   private:
+    
+    // FileInfo definition (feeds from the basic item, so each file in a list can have a name)
     class FileInfo: public ItemBase{
       private:
+        
+        // item in the list
         T *item;
       
       public:
-        FileInfo(): item(NULL) {}
-        FileInfo(T *_item, const char *name): item(_item){
-          SetName(name);
+        
+        // constructors
+        FileInfo(){
+          item = NULL;
+        }
+        FileInfo(T *i, const char *name){
+          item = i;
+          setName(name);
         }
         ~FileInfo(){
-          Delete();
+          clear();
         }
-        void Delete(){
+        
+        // clear the item from the list
+        void clear(){
           if(item)
             delete item;
           item = NULL;
         }
-        void SetObj(T *_item){
-          Delete();
-          item = _item;
+        
+        // replace the current item in the list
+        void setObj(T *i){
+          clear();
+          item = i;
         }
-        T* GetObj(){
+        
+        // grab the current list item
+        T* getObj(){
           return item;
         }
     };
     
+    // store items in a list with info (names) attached
     ItemList<FileInfo> list;
 };
 
 
-// Transformation definition
+// Transformation definition (how to change between spaces)
 class Transformation{
   private:
     
-    // transformation matrix (to local space)
-    Matrix3 tm;
+    // transformation matrix (to some coordinate system)
+    Matrix mat;
     
     // translation part of transformation
-    Point3 pos;
+    Point pos;
     
     // inverse of transformation matrix (cached)
-    mutable Matrix3 itm;
+    mutable Matrix imat;
   
   public:
-    Transformation(): pos(0, 0, 0){
-      tm.SetIdentity();
-      itm.SetIdentity();
+    
+    // constructor (identity transformation)
+    Transformation(){
+      pos.Set(0, 0, 0);
+      mat.SetIdentity();
+      imat.SetIdentity();
     }
-    const Matrix3& GetTransform() const{
-      return tm;
+    
+    // get the transformation matrix, position, or inverse transformation matrix
+    Matrix& getTransform(){
+      return mat;
     }
-    const Point3& GetPosition() const{
+    Point& getPosition(){
       return pos;
     }
-    const Matrix3& GetInverseTransform() const{
-      return itm;
+    Matrix& getInverseTransform(){
+      return imat;
     }
     
-    // transform into local space
-    Point3 TransformTo(const Point3 &p) const{
-      return itm * (p - pos);
+    // transform into local coordinate system
+    Point transformTo(Point p){
+      return imat * (p - pos);
     }
     
-    // transform from local space
-    Point3 TransformFrom(const Point3 &p) const{
-      return tm * p + pos;
+    // transform from local coordinate system
+    Point transformFrom(Point p){
+      return mat * p + pos;
     }
     
-    // transform vector to local space
-    Point3 VectorTransformTo(const Point3 &dir) const{
-      return TransposeMult(tm, dir);
+    // transform vector to local coordinate system
+    Point vecTransformTo(Point &dir){
+      return multiplyTranspose(mat, dir);
     }
     
-    // transform vector from local space
-    Point3 VectorTransformFrom(const Point3 &dir) const{
-      return TransposeMult(itm, dir);
+    // transform vector from local coordinate system
+    Point vecTransformFrom(Point &dir){
+      return multiplyTranspose(imat, dir);
     }
     
-    void Translate(Point3 p){
+    // set the translation of the local coordinate system
+    void translate(Point p){
       pos += p;
     }
-    void Rotate(Point3 axis, float degree){
-      Matrix3 m;
+    
+    // set the rotation of the local coordinate system
+    // (about some axis and an amount (degrees) to rotate)
+    void rotate(Point axis, float degree){
+      Matrix m;
       m.SetRotation(axis, degree * (float) M_PI / 180.0);
-      Transform(m);
+      transform(m);
     }
-    void Scale(float sx, float sy, float sz){
-      Matrix3 m;
+    
+    // set the scale of the local coordinate system
+    void scale(float sx, float sy, float sz){
+      Matrix m;
       m.Zero();
       m[0] = sx;
       m[4] = sy;
       m[8] = sz;
-      Transform(m);
+      transform(m);
     }
-    void Transform(const Matrix3 &m){
-      tm *= m;
+    
+    // update the local coordinate system transformation matrix
+    void transform(Matrix &m){
+      mat *= m;
       pos = m * pos;
-      tm.GetInverse(itm);
+      mat.GetInverse(imat);
     }
-    void InitTransform(){
+    
+    // create an initial (identity) transformation matrix
+    void initTransform(){
       pos.Zero();
-      tm.SetIdentity();
-      itm.SetIdentity();
+      mat.SetIdentity();
+      imat.SetIdentity();
     }
   
   private:
     
-    // multiples given vector with transpose of the matrix
-    static Point3 TransposeMult(const Matrix3 &m, const Point3 &dir){
-      Point3 d;
+    // multiplies given vector with transpose of the matrix
+    static Point multiplyTranspose(Matrix &m, Point &dir){
+      Point d;
       d.x = m.GetColumn(0) % dir;
       d.y = m.GetColumn(1) % dir;
       d.z = m.GetColumn(2) % dir;
@@ -274,16 +329,16 @@ class Transformation{
 class Object{
   public:
     virtual ~Object() = 0;
-    virtual bool IntersectRay(const Ray &ray, HitInfo &hit, int face = HIT_FRONT) const = 0;
+    virtual bool intersectRay(Ray &ray, HitInfo &hit, int face = HIT_FRONT) = 0;
 };
 Object::~Object(){}
 
 
-// ObjectFileList definition
+// ObjectFileList definition (objects are all stored in an ItemFileList with their names and search features)
 typedef ItemFileList<Object> ObjFileList;
 
 
-// Node definition (stores objects)
+// Node definition (pieces of the scene which store objects)
 class Node: public ItemBase, public Transformation{
   private:
     
@@ -297,27 +352,34 @@ class Node: public ItemBase, public Transformation{
     Object *obj;
   
   public:
-    Node(): child(NULL), numChild(0), obj(NULL) {}
+    
+    // empty constructor
+    Node(){
+      child = NULL;
+      numChild = 0;
+      obj = NULL;
+    }
     
     // initialize the node, by deleting all its children
-    void Init(){
-      DeleteAllChildNodes();
+    void init(){
+      deleteAllChildNodes();
       obj = NULL;
-      SetName(NULL);
-      InitTransform();
+      setName(NULL);
+      initTransform();
     }
     
-    // managing hierarchy of nodes
-    int GetNumChild() const{
+    // get / set number of children
+    int getNumChild(){
       return numChild;
     }
-    void SetNumChild(int n, int keepOld = false){
+    void setNumChild(int n, int keepOld = false){
       if(n < 0)
         n = 0;
       
       // create a new child pointer
       Node **nc = NULL;
       
+      // create a new child (or shift them all)
       if(n > 0)
         nc = new Node*[n];
       for(int i = 0; i < n; i++)
@@ -328,66 +390,70 @@ class Node: public ItemBase, public Transformation{
           nc[i] = child[i];
       }
       if(child)
-        delete [] child;
+        delete[] child;
       child = nc;
       numChild = n;
     }
     
-    const Node* GetChild(int i) const{
+    // get / set a specific child (with some object)
+    Node* getChild(int i){
       return child[i];
     }
-    Node* GetChild(int i){
-      return child[i];
-    }
-    void SetChild(int i, Node *node){
+    void setChild(int i, Node *node){
       child[i] = node;
     }
-    void AppendChild(Node *node){
-      SetNumChild(numChild + 1, true);
-      SetChild(numChild - 1, node);
-    }
-    void RemoveChild(int i){
-      for(int j = i; j < numChild - 1; j++)
-        child[j] = child[j - 1];
-      SetNumChild(numChild - 1);
-    }
-    void DeleteAllChildNodes(){
-      for(int i = 0; i < numChild; i++){
-        child[i]->DeleteAllChildNodes();
-        delete child[i];
-      }
-      SetNumChild(0);
+    
+    // add an additional child
+    void appendChild(Node *node){
+      setNumChild(numChild + 1, true);
+      setChild(numChild - 1, node);
     }
     
-    // managing node objects
-    const Object* GetObject() const{
+    // remove a specific child
+    void removeChild(int c){
+      for(int i = c; i < numChild - 1; i++)
+        child[i] = child[i - 1];
+      setNumChild(numChild - 1);
+    }
+    
+    // remove all child nodes
+    void deleteAllChildNodes(){
+      for(int i = 0; i < numChild; i++){
+        child[i]->deleteAllChildNodes();
+        delete child[i];
+      }
+      setNumChild(0);
+    }
+    
+    // get / set objects attached to node
+    Object* getObject(){
       return obj;
     }
-    Object* GetObject(){
-      return obj;
-    }
-    void SetObject(Object *object){
+    void setObject(Object *object){
       obj = object;
     }
     
-    // transformations
-    Ray ToNodeCoords(const Ray &ray) const{
+    // transformation of rays to model (local) space
+    Ray toModelSpace(Ray &ray){
       Ray r;
-      r.p = TransformTo(ray.p);
-      r.dir = TransformTo(ray.p + ray.dir) - r.p;
+      r.pos = transformTo(ray.pos);
+      r.dir = transformTo(ray.pos + ray.dir) - r.pos;
       return r;
     }
 };
 
 
-// Camera definition
+// Camera definition (stores basic render info)
 class Camera{
   public:
-    Point3 pos, dir, up;
+    
+    // camera specifications
+    Point pos, dir, up;
     float fov;
     int imgWidth, imgHeight;
     
-    void Init(){
+    // initialize camera
+    void init(){
       pos.Set(0, 0, 0);
       dir.Set(0, 0, -1);
       up.Set(0, 1, 0);
@@ -398,9 +464,9 @@ class Camera{
 };
 
 
-// Color definition
+// Color struct
 typedef unsigned char uchar;
-struct Color24{
+struct Color{
   uchar r, g, b;
 };
 
@@ -408,7 +474,7 @@ struct Color24{
 // RenderImage definition
 class RenderImage{
   private:
-    Color24 *img;
+    Color *img;
     float *zbuffer;
     uchar *zbuffer8;
     int width, height;
@@ -420,30 +486,30 @@ class RenderImage{
       width = w;
       height = h;
       if(img)
-        delete [] img;
-      img = new Color24[width * height];
+        delete[] img;
+      img = new Color[width * height];
       if(zbuffer)
-        delete [] zbuffer;
+        delete[] zbuffer;
       zbuffer = new float[width * height];
       for(int i = 0; i < width * height; i++)
-        zbuffer[i] = BIGFLOAT;
+        zbuffer[i] = FLOAT_MAX;
       if(zbuffer8)
-        delete [] zbuffer8;
+        delete[] zbuffer8;
       zbuffer8 = NULL;
       ResetNumRenderedPixels();
     }
-    void setBackground(Color24 c){
+    void setBackground(Color c){
       for(int i = 0; i < width * height; i++)
         img[i] = c;
     }
     
-    int GetWidth() const{
+    int GetWidth(){
       return width;
     }
-    int GetHeight() const{
+    int GetHeight(){
       return height;
     }
-    Color24* GetPixels(){
+    Color* GetPixels(){
       return img;
     }
     float* GetZBuffer(){
@@ -456,7 +522,7 @@ class RenderImage{
     void ResetNumRenderedPixels(){
       numRenderedPixels = 0;
     }
-    int GetNumRenderedPixels() const{
+    int GetNumRenderedPixels(){
       return numRenderedPixels;
     }
     void IncrementNumRenderPixel(){
@@ -465,19 +531,19 @@ class RenderImage{
     void IncrementNumRenderPixel(int n){
       numRenderedPixels += n;
     }
-    bool IsRenderDone() const{
+    bool IsRenderDone(){
       return numRenderedPixels >= width * height;
     }
     
     void ComputeZBufferImage(){
       int size = width * height;
       if(zbuffer8)
-        delete [] zbuffer8;
+        delete[] zbuffer8;
       zbuffer8 = new unsigned char[size];
       
-      float zmin = BIGFLOAT, zmax = 0;
+      float zmin = FLOAT_MAX, zmax = 0;
       for(int i = 0; i < size; i++){
-        if(zbuffer[i] == BIGFLOAT)
+        if(zbuffer[i] == FLOAT_MAX)
           continue;
         if(zmin > zbuffer[i])
           zmin = zbuffer[i];
@@ -485,7 +551,7 @@ class RenderImage{
           zmax = zbuffer[i];
       }
       for(int i = 0; i < size; i++){
-        if(zbuffer[i] == BIGFLOAT)
+        if(zbuffer[i] == FLOAT_MAX)
           zbuffer8[i] = 33;
         else{
           float f = (zmax - zbuffer[i]) / (zmax - zmin);
@@ -499,15 +565,15 @@ class RenderImage{
       }
     }
     
-    bool SaveImage(const char *filename) const{
+    bool SaveImage(const char *filename){
       return SavePPM(filename, &img[0].r, 3);
     }
-    bool SaveZImage(const char *filename) const{
+    bool SaveZImage(const char *filename){
       return SavePPM(filename, zbuffer8, 1);
     }
   
   private:
-    bool SavePPM(const char *filename, uchar *data, int compCount) const{
+    bool SavePPM(const char *filename, uchar *data, int compCount){
       FILE *fp = fopen(filename, "wb");
       if(!fp)
         return false;

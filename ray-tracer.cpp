@@ -28,9 +28,9 @@ using namespace std;
 int w;
 int h;
 int size;
-Color24 white = {233, 233, 233};
-Color24 black = {33, 33, 33};
-Color24* img;
+Color white = {233, 233, 233};
+Color black = {33, 33, 33};
+Color* img;
 float* zImg;
 
 
@@ -41,14 +41,14 @@ void rayTracing(int i);
 
 // for camera ray generation
 void cameraRayVars();
-Point3 *imageTopLeftV;
-Point3 *dXV;
-Point3 *dYV;
-Point3 firstPixel;
-Point3 cameraPos;
-Point3 cameraDir;
+Point *imageTopLeftV;
+Point *dXV;
+Point *dYV;
+Point firstPixel;
+Point cameraPos;
+Point cameraDir;
 Transformation* c;
-Point3 cameraRay(int pX, int pY);
+Point cameraRay(int pX, int pY);
 
 
 // for tracing rays to objects
@@ -104,10 +104,10 @@ void rayTracing(int i){
     int pY = pixel / w;
     
     // transform ray into world space
-    Point3 rayDir = cameraRay(pX, pY);
+    Point rayDir = cameraRay(pX, pY);
     Ray *ray = new Ray();
-    ray->p = cameraPos;
-    ray->dir = c->TransformFrom(rayDir);
+    ray->pos = cameraPos;
+    ray->dir = c->transformFrom(rayDir);
     
     // traverse through scene DOM
     // transform rays into model space
@@ -129,30 +129,30 @@ void cameraRayVars(){
   float imageTipX = imageTipY * aspectRatio;
   float dX = (2.0 * imageTipX) / (float) w;
   float dY = (2.0 * imageTipY) / (float) h;
-  imageTopLeftV = new Point3(-imageTipX, imageTipY, -imageDistance);
-  dXV = new Point3(dX, 0.0, 0.0);
-  dYV = new Point3(0.0, -dY, 0.0);
+  imageTopLeftV = new Point(-imageTipX, imageTipY, -imageDistance);
+  dXV = new Point(dX, 0.0, 0.0);
+  dYV = new Point(0.0, -dY, 0.0);
   firstPixel = *imageTopLeftV + (*dXV * 0.5) + (*dYV * 0.5);
   
   // set up camera transformation (translation + rotation)
-  Point3 cameraPos = camera.pos;
+  Point cameraPos = camera.pos;
   c = new Transformation();
-  c->Translate(cameraPos);
-  Matrix3 *rotate = new cyMatrix3f();
-  Point3 cameraDir = camera.dir;
-  Point3 cameraUp = camera.up;
+  c->translate(cameraPos);
+  Matrix *rotate = new cyMatrix3f();
+  Point cameraDir = camera.dir;
+  Point cameraUp = camera.up;
   cameraDir.Normalize();
   cameraUp.Normalize();
-  Point3 cameraCross = cameraDir ^ cameraUp;
+  Point cameraCross = cameraDir ^ cameraUp;
   cameraCross.Normalize();
   rotate->Set(cameraCross, cameraUp, -cameraDir);
-  c->Transform(*rotate);
+  c->transform(*rotate);
 }
 
 
 // compute camera rays
-Point3 cameraRay(int pX, int pY){
-  Point3 ray = firstPixel + (*dXV * pX) + (*dYV * pY);
+Point cameraRay(int pX, int pY){
+  Point ray = firstPixel + (*dXV * pX) + (*dYV * pY);
   ray.Normalize();
   return ray;
 }
@@ -163,19 +163,19 @@ void objectIntersection(Node &n, Ray r, int pixel){
   
   // loop on child nodes
   int j = 0;
-  int numChild = n.GetNumChild();
+  int numChild = n.getNumChild();
   while(j < numChild){
     
     // grab child node
-    Node *child = n.GetChild(j);
-    Object *obj = child->GetObject();
+    Node *child = n.getChild(j);
+    Object *obj = child->getObject();
     
     // transform rays into model space (or local space)
-    Ray r2 = child->ToNodeCoords(r);
+    Ray r2 = child->toModelSpace(r);
     
     // compute ray intersections
     HitInfo h = HitInfo();
-    bool hit = obj->IntersectRay(r2, h);
+    bool hit = obj->intersectRay(r2, h);
     
     // check the ray computation, update pixel & z-buffer
     if(hit){
