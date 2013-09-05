@@ -448,7 +448,7 @@ class Camera{
   public:
     
     // camera specifications
-    Point pos, dir, up;
+    Point pos, dir, up, cross;
     float fov;
     int imgWidth, imgHeight;
     
@@ -460,6 +460,15 @@ class Camera{
       fov = 40;
       imgWidth = 200;
       imgHeight = 150;
+    }
+    
+    // calculate necessary camera values from input
+    void setup(){
+      dir -= pos;
+      dir.Normalize();
+      cross = dir ^ up;
+      cross.Normalize();
+      up = (cross ^ dir).GetNormalized();
     }
 };
 

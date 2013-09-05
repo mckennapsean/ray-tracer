@@ -34,7 +34,7 @@ Camera camera;
 Render render;
 
 
-// to compare two strings and return boolean
+// compare two strings and return boolean
 #define compare(a,b) (strcmp(a, b) == 0)
 
 
@@ -45,12 +45,12 @@ void readFloat(XMLElement *element, float &f);
 
 
 // begin loading scene from file
-int loadScene(const char *filename){
+int loadScene(const char *file){
   
   // make sure file exists
-  XMLDocument doc(filename);
-  if(doc.LoadFile(filename)){
-    printf("Failed to load the file '%s'\n", filename);
+  XMLDocument doc(file);
+  if(doc.LoadFile(file)){
+    printf("Failed to load the file '%s'\n", file);
     exit(EXIT_FAILURE);
   }
   
@@ -101,11 +101,8 @@ int loadScene(const char *filename){
     camChild = camChild->NextSiblingElement();
   }
   
-  // ?????
-  camera.dir -= camera.pos;
-  camera.dir.Normalize();
-  Point x = camera.dir ^ camera.up;
-  camera.up = (x ^ camera.dir).GetNormalized();
+  // compute remaining camera values
+  camera.setup();
   
   // initialize scene image
   render.init(camera.imgWidth, camera.imgHeight);
