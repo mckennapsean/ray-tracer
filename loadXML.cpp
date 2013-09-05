@@ -31,7 +31,7 @@ Camera camera;
 
 
 // scene image
-RenderImage renderImage;
+Render render;
 
 
 // to compare two strings and return boolean
@@ -108,7 +108,7 @@ int loadScene(const char *filename){
   camera.up = (x ^ camera.dir).GetNormalized();
   
   // initialize scene image
-  renderImage.Init(camera.imgWidth, camera.imgHeight);
+  render.init(camera.imgWidth, camera.imgHeight);
   
   // return success
   return 1;

@@ -471,109 +471,148 @@ struct Color{
 };
 
 
-// RenderImage definition
-class RenderImage{
+// Render definition (image output from the ray tracer)
+class Render{
   private:
-    Color *img;
-    float *zbuffer;
-    uchar *zbuffer8;
+    Color *render;
+    Color background;
+    float *z;
+    uchar *zbuffer;
     int width, height;
-    int numRenderedPixels;
+    int size;
+    int rendered;
   
   public:
-    RenderImage(): img(NULL), zbuffer(NULL), zbuffer8(NULL), width(0), height(0), numRenderedPixels(0) {}
-    void Init(int w, int h){
+    
+    // empty constructor
+    Render(){
+      render = NULL;
+      z = NULL;
+      zbuffer = NULL;
+      width = 0;
+      height = 0;
+      size = 0;
+      rendered = 0;
+    }
+    
+    // initialization of render (need screen size)
+    void init(int w, int h){
       width = w;
       height = h;
-      if(img)
-        delete[] img;
-      img = new Color[width * height];
+      size = w * h;
+      if(render)
+        delete[] render;
+      render = new Color[size];
+      background = {0, 0, 0};
+      if(z)
+        delete[] z;
+      z = new float[size];
+      for(int i = 0; i < size; i++)
+        z[i] = FLOAT_MAX;
       if(zbuffer)
         delete[] zbuffer;
-      zbuffer = new float[width * height];
-      for(int i = 0; i < width * height; i++)
-        zbuffer[i] = FLOAT_MAX;
-      if(zbuffer8)
-        delete[] zbuffer8;
-      zbuffer8 = NULL;
-      ResetNumRenderedPixels();
-    }
-    void setBackground(Color c){
-      for(int i = 0; i < width * height; i++)
-        img[i] = c;
+      zbuffer = NULL;
+      reset();
     }
     
-    int GetWidth(){
+    // set background color for render
+    void setBackground(Color c){
+      background = c;
+      for(int i = 0; i < size; i++)
+        render[i] = background;
+    }
+    
+    // getters: width, height, size, render, buffer, rendered
+    int getWidth(){
       return width;
     }
-    int GetHeight(){
+    int getHeight(){
       return height;
     }
-    Color* GetPixels(){
-      return img;
+    int getSize(){
+      return size;
     }
-    float* GetZBuffer(){
-      return zbuffer;
+    Color* getRender(){
+      return render;
     }
-    uchar* GetZBufferImage(){
-      return zbuffer8;
+    float* getZBuffer(){
+      return z;
     }
-    
-    void ResetNumRenderedPixels(){
-      numRenderedPixels = 0;
-    }
-    int GetNumRenderedPixels(){
-      return numRenderedPixels;
-    }
-    void IncrementNumRenderPixel(){
-      numRenderedPixels++;
-    }
-    void IncrementNumRenderPixel(int n){
-      numRenderedPixels += n;
-    }
-    bool IsRenderDone(){
-      return numRenderedPixels >= width * height;
+    int getRendered(){
+      return rendered;
     }
     
-    void ComputeZBufferImage(){
-      int size = width * height;
-      if(zbuffer8)
-        delete[] zbuffer8;
-      zbuffer8 = new unsigned char[size];
+    // reset the total number of rendered pixels
+    void reset(){
+      rendered = 0;
+    }
+    
+    // increment total rendered pixels (one or arbitrary)
+    void add(){
+      rendered++;
+    }
+    void add(int n){
+      rendered += n;
+    }
+    
+    // check if render is done
+    bool finished(){
+      return rendered >= size;
+    }
+    
+    // calculate the z-buffer image
+    void computeZBuffer(){
       
-      float zmin = FLOAT_MAX, zmax = 0;
+      // clear z-buffer image
+      if(zbuffer)
+        delete[] zbuffer;
+      zbuffer = new unsigned char[size];
+      
+      // find min, max z-values
+      float minZ = FLOAT_MAX;
+      float maxZ = 0;
       for(int i = 0; i < size; i++){
-        if(zbuffer[i] == FLOAT_MAX)
+        if(z[i] == FLOAT_MAX)
           continue;
-        if(zmin > zbuffer[i])
-          zmin = zbuffer[i];
-        if(zmax < zbuffer[i])
-          zmax = zbuffer[i];
+        if(minZ > z[i])
+          minZ = z[i];
+        if(maxZ < z[i])
+          maxZ = z[i];
       }
+      
+      // offset for background and object color
+      int diff = 14;
+      int offset = background.r + diff;
+      
+      // assign pixel values based on min & max z-values
       for(int i = 0; i < size; i++){
+        
+        // background color
         if(zbuffer[i] == FLOAT_MAX)
-          zbuffer8[i] = 33;
+          zbuffer[i] = background.r;
+        
+        // for pixels with objects, map from white (close) to dark (far)
         else{
-          float f = (zmax - zbuffer[i]) / (zmax - zmin);
+          float f = (maxZ - z[i]) / (maxZ - minZ);
           int c = int(f * 200);
           if(c < 0)
             f = 0;
           if(c > 200)
             f = 200;
-          zbuffer8[i] = c + 47;
+          zbuffer[i] = c + offset;
         }
       }
     }
     
-    bool SaveImage(const char *filename){
-      return SavePPM(filename, &img[0].r, 3);
+    bool save(const char *filename){
+      return savePPM(filename, &render[0].r, 3);
     }
-    bool SaveZImage(const char *filename){
-      return SavePPM(filename, zbuffer8, 1);
+    bool saveZBuffer(const char *filename){
+      return savePPM(filename, zbuffer, 1);
     }
   
   private:
-    bool SavePPM(const char *filename, uchar *data, int compCount){
+    bool savePPM(const char *filename, uchar *data, int compCount){
       FILE *fp = fopen(filename, "wb");
       if(!fp)
         return false;

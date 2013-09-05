@@ -32,6 +32,7 @@ Color white = {233, 233, 233};
 Color black = {33, 33, 33};
 Color* img;
 float* zImg;
+void objectIntersection(Node &n, Ray r, int pixel);
 
 
 // for threading
@@ -51,10 +52,6 @@ Transformation* c;
 Point cameraRay(int pX, int pY);
 
 
-// for tracing rays to objects
-void objectIntersection(Node &n, Ray r, int pixel);
-
-
 // ray tracer
 int main(){
   
@@ -62,14 +59,14 @@ int main(){
   loadScene("scenes/prj1.xml");
   
   // set up background image color
-  renderImage.setBackground(black);
+  render.setBackground(black);
   
   // set variables for ray tracing
-  w = renderImage.GetWidth();
-  h = renderImage.GetHeight();
-  size = w * h; 
-  img = renderImage.GetPixels();
-  zImg = renderImage.GetZBuffer();
+  w = render.getWidth();
+  h = render.getHeight();
+  size = render.getSize(); 
+  img = render.getRender();
+  zImg = render.getZBuffer();
   
   // set variables for generating camera rays
   cameraRayVars();
@@ -84,9 +81,9 @@ int main(){
     t[i].join();
   
   // output ray-traced image & z-buffer
-  renderImage.SaveImage("images/image.ppm");
-  renderImage.ComputeZBufferImage();
-  renderImage.SaveZImage("images/imageZ.ppm");
+  render.save("images/image.ppm");
+  render.computeZBuffer();
+  render.saveZBuffer("images/imageZ.ppm");
 }
 
 
