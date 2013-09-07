@@ -19,7 +19,7 @@
 
 // libraries, namespace
 #include "scene.cpp"
-#include "../object/sphere.cpp"
+#include "objects.cpp"
 #include "tinyxml2/tinyxml2.cpp"
 using namespace scene;
 using namespace tinyxml2;
