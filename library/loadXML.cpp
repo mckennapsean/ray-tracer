@@ -181,7 +181,7 @@ void loadNode(Node *n, XMLElement *e, int level){
   // print out object name
   if(print){
     printIndent(level);
-    printf("object [");
+    printf("Object [");
     if(name)
       printf("%s", name);
     printf("]");
@@ -244,14 +244,17 @@ void loadTransform(Transformation *t, XMLElement *e, int level){
     
     // check if child is a scaling term
     if(compare(child->Value(), "scale")){
+      float v = 1.0;
       Point s(1, 1, 1);
+      readFloat(child, v);
       readVector(child, s);
+      s *= v;
       t->scale(s.x, s.y, s.z);
       
       // print out scaling term
       if(print){
-        printIndent(level);
-        printf("   scale %f %f %f\n", s.x, s.y, s.z);
+        printIndent(level + 1);
+        printf("scale %f %f %f\n", s.x, s.y, s.z);
       }
       
     // check if child is a rotation term
@@ -265,8 +268,8 @@ void loadTransform(Transformation *t, XMLElement *e, int level){
       
       // print out rotation term
       if(print){
-        printIndent(level);
-        printf("   rotate %f degrees around %f %f %f\n", a, r.x, r.y, r.z);
+        printIndent(level + 1);
+        printf("rotate %f degrees around %f %f %f\n", a, r.x, r.y, r.z);
       }
     
     // check if child is a translation term
@@ -277,8 +280,8 @@ void loadTransform(Transformation *t, XMLElement *e, int level){
       
       // print out translation term
       if(print){
-        printIndent(level);
-        printf("   translate %f %f %f\n", p.x, p.y, p.z);
+        printIndent(level + 1);
+        printf("translate %f %f %f\n", p.x, p.y, p.z);
       }
     }
   }
@@ -327,7 +330,7 @@ void loadMaterial(XMLElement *e){
           
           // print out diffuse color
           if(print)
-            printf("   diffuse %f %f %f\n", c.r, c.g, c.b);
+            printf("  diffuse %f %f %f\n", c.r, c.g, c.b);
         
         // load specular color
         }else if(compare(child->Value(), "specular")){
@@ -336,7 +339,7 @@ void loadMaterial(XMLElement *e){
           
           //print out specular color
           if(print)
-            printf("   specular %f %f %f\n", c.r, c.g, c.b);
+            printf("  specular %f %f %f\n", c.r, c.g, c.b);
         
         // load shininess value
         }else if(compare(child->Value(), "shininess")){
@@ -345,7 +348,7 @@ void loadMaterial(XMLElement *e){
           
           // print out shininess value
           if(print)
-            printf("   shininess %f\n", f);
+            printf("  shininess %f\n", f);
         }
       }
     
@@ -372,7 +375,7 @@ void loadMaterial(XMLElement *e){
           
           // print out diffuse color
           if(print)
-            printf("   diffuse %f %f %f\n", c.r, c.g, c.b);
+            printf("  diffuse %f %f %f\n", c.r, c.g, c.b);
         
         // load specular color
         }else if(compare(child->Value(), "specular")){
@@ -381,7 +384,7 @@ void loadMaterial(XMLElement *e){
           
           //print out specular color
           if(print)
-            printf("   specular %f %f %f\n", c.r, c.g, c.b);
+            printf("  specular %f %f %f\n", c.r, c.g, c.b);
         
         // load shininess value
         }else if(compare(child->Value(), "shininess")){
@@ -390,7 +393,7 @@ void loadMaterial(XMLElement *e){
           
           // print out shininess value
           if(print)
-            printf("   shininess %f\n", f);
+            printf("  shininess %f\n", f);
         }
       }
     
@@ -450,7 +453,7 @@ void loadLight(XMLElement *e){
           
           // print out light intensity color
           if(print)
-            printf("   intensity %f %f %f\n", c.r, c.g, c.b);
+            printf("  intensity %f %f %f\n", c.r, c.g, c.b);
         }
       }
     
@@ -475,7 +478,7 @@ void loadLight(XMLElement *e){
           
           // print out light intensity color
           if(print)
-            printf("   intensity %f %f %f\n", c.r, c.g, c.b);
+            printf("  intensity %f %f %f\n", c.r, c.g, c.b);
         
         // load direction of light
         }else if(compare(child->Value(), "direction")){
@@ -485,7 +488,7 @@ void loadLight(XMLElement *e){
           
           // print out light direction
           if(print)
-            printf("   direction %f %f %f\n", v.x, v.y, v.z);
+            printf("  direction %f %f %f\n", v.x, v.y, v.z);
         }
       }
     
@@ -509,7 +512,7 @@ void loadLight(XMLElement *e){
           
           // print out light intensity color
           if(print)
-            printf("   intensity %f %f %f\n", c.r, c.g, c.b);
+            printf("  intensity %f %f %f\n", c.r, c.g, c.b);
         
         // load position of light
         }else if(compare(child->Value(), "position")){
@@ -519,7 +522,7 @@ void loadLight(XMLElement *e){
           
           // print out position of light
           if(print)
-            printf("   position %f %f %f\n", v.x, v.y, v.z);
+            printf("  position %f %f %f\n", v.x, v.y, v.z);
         }
       }
     
