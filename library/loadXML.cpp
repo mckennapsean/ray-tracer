@@ -103,9 +103,15 @@ int loadScene(const char *file, bool p = false){
   
   // pass on scene XML element to load scene elements only
   loadScene(scene);
-  // load root node from file
-  //rootNode.init();
-  //loadNode(&rootNode, scene);
+  
+  // assign materials to each node
+  int numNodes = nodeMaterialList.size();
+  for(int i = 0; i < numNodes; i++){
+    Material *mat = materials.find(nodeMaterialList[i].materialName);
+    if(mat)
+      nodeMaterialList[i].node->setMaterial(mat);
+  }
+  nodeMaterialList.clear();
   
   // load camera from file
   camera.init();
