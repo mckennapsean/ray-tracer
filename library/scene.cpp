@@ -509,6 +509,14 @@ class Node: public ItemBase, public Transformation{
 };
 
 
+// NodeMaterial definition (connecting a node and material together)
+struct NodeMaterial{
+  Node *node;
+  const char *materialName;
+};
+vector<NodeMaterial> nodeMaterialList;
+
+
 // Camera definition (stores basic render info)
 class Camera{
   public:

@@ -31,6 +31,8 @@ using namespace tinyxml2;
 Node rootNode;
 Camera camera;
 Object *aSphere;
+MaterialList materials;
+LightList lights;
 
 
 // scene image
@@ -46,9 +48,14 @@ bool print;
 
 
 // functions for loading scene
-void loadNode(Node *node, XMLElement *element, int level = 0);
+void loadScene(XMLElement *e);
+void loadNode(Node *n, XMLElement *e, int level = 0);
+void loadTransform(Transformation *t, XMLElement *e, int level);
+void loadMaterial(XMLElement *e);
+void loadLight(XMLElement *e);
 void readVector(XMLElement *element, Point &v);
-void readFloat(XMLElement *element, float &f);
+void readColor(XMLElement *e, Color &c);
+void readFloat(XMLElement *element, float &f, const char *name = "value");
 
 
 // begin loading scene from file
@@ -85,12 +92,20 @@ int loadScene(const char *file, bool p = false){
     exit(EXIT_FAILURE);
   }
   
+  // clear out initial scene variables
+  nodeMaterialList.clear();
+  rootNode.init();
+  materials.deleteAll();
+  lights.deleteAll();
+  
   // load object types once
   aSphere = new Sphere();
   
+  // pass on scene XML element to load scene elements only
+  loadScene(scene);
   // load root node from file
-  rootNode.init();
-  loadNode(&rootNode, scene);
+  //rootNode.init();
+  //loadNode(&rootNode, scene);
   
   // load camera from file
   camera.init();
@@ -132,82 +147,387 @@ void printIndent(int level){
 }
 
 
-// add a node's children from the XML structure
-void loadNode(Node *node, XMLElement *element, int level){
-  
-  // grab first child
-  XMLElement *child = element->FirstChildElement();
-  
-  // continue for all children
-  while(child){
+// continue loading the scene from an XML element (recursively load as nodes, materials, or lights)
+void loadScene(XMLElement *e){
+  for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
     
-    // check if child is an object
-    if(compare(child->Value(), "object")){
+    if(compare(child->Value(), "object"))
+      loadNode(&rootNode, child);
+    else if(compare(child->Value(), "material"))
+      loadMaterial(child);
+    else if(compare(child->Value(), "light"))
+      loadLight(child);
+  }
+}
+
+
+// add a node's children from the XML structure
+void loadNode(Node *n, XMLElement *e, int level){
+  
+  // assign a child to the parent node
+  Node *node = new Node();
+  n->appendChild(node);
+  
+  // get the name of the parent node
+  const char* name = e->Attribute("name");
+  node->setName(name);
+  
+  // print out object name
+  if(print){
+    printIndent(level);
+    printf("object [");
+    if(name)
+      printf("%s", name);
+    printf("]");
+  }
+  
+  // get the type of the parent node
+  const char* type = e->Attribute("type");
+  if(type){
+    
+    // for sphere
+    if(compare(type, "sphere")){
+      node->setObject(&*aSphere);
       
-      // store child as node
-      Node *childNode = new Node;
-      node->appendChild(childNode);
-      
-      // set child node's name
-      const char* name = child->Attribute("name");
-      childNode->setName(name);
-      
-      // print out object details
-      if(print){
-        printIndent(level);
-        printf("object [");
-        if(name)
-          printf("%s", name);
-        printf("]");
-      }
-      
-      // set child node's type
-      const char* type = child->Attribute("type");
-      if(type){
-        if(compare(type, "sphere")){
-          childNode->setObject(&*aSphere);
-          
-          // print out specific object type
-          if(print)
-            printf(" - Sphere");
-        }
-      }
+      // print out object type
       if(print)
-        printf("\n");
+        printf(" - Sphere");
+    
+    // for unknown object
+    }else{
       
-      // load next child
-      loadNode(childNode, child, level + 1);
+      // print out object type
+      if(print)
+        printf(" - UNKNOWN TYPE");
+    }
+  }
+  
+  // get the material type of the parent node
+  const char* materialName = e->Attribute("material");
+  if(materialName){
+    
+    // print out object material
+    if(print)
+      printf(" <%s>", materialName);
+    
+    // load and save object material
+    NodeMaterial nm;
+    nm.node = node;
+    nm.materialName = materialName;
+    nodeMaterialList.push_back(nm);
+  }
+  if(print)
+    printf("\n");
+  
+  // recursively loop through remaining objects
+  for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
+    if(compare(child->Value(), "object"))
+      loadNode(node, child, level + 1);
+  }
+  
+  // load the appropriate transformation information
+  loadTransform(node, e, level);
+}
+
+
+// load in the transformation terms for each node
+void loadTransform(Transformation *t, XMLElement *e, int level){
+  
+  // recursively apply transformations to child nodes that have been set already
+  for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
     
     // check if child is a scaling term
-    }else if(compare(child->Value(), "scale")){
-      float v = 1;
+    if(compare(child->Value(), "scale")){
       Point s(1, 1, 1);
-      readFloat(child, v);
       readVector(child, s);
-      s *= v;
-      node->scale(s.x, s.y, s.z);
+      t->scale(s.x, s.y, s.z);
       
       // print out scaling term
       if(print){
         printIndent(level);
-        printf("scale %f %f %f\n", s.x, s.y, s.z);
+        printf("   scale %f %f %f\n", s.x, s.y, s.z);
       }
       
+    // check if child is a rotation term
+    }else if(compare(child->Value(), "rotate")){
+      Point r(1, 1, 1);
+      readVector(child, r);
+      r.Normalize();
+      float a;
+      readFloat(child, a, "angle");
+      t->rotate(r, a);
+      
+      // print out rotation term
+      if(print){
+        printIndent(level);
+        printf("   rotate %f degrees around %f %f %f\n", a, r.x, r.y, r.z);
+      }
+    
     // check if child is a translation term
     }else if(compare(child->Value(), "translate")){
-      Point t(0, 0, 0);
-      readVector(child, t);
-      node->translate(t);
+      Point p(0, 0, 0);
+      readVector(child, p);
+      t->translate(p);
       
       // print out translation term
       if(print){
         printIndent(level);
-        printf("translate %f %f %f\n", t.x, t.y, t.z);
+        printf("   translate %f %f %f\n", p.x, p.y, p.z);
       }
     }
+  }
+}
+
+
+// load in the material information for each element
+void loadMaterial(XMLElement *e){
+  
+  // initial material
+  Material *mat = NULL;
+  
+  // get & print material name
+  const char* name = e->Attribute("name");
+  if(print){
+    printf("Material [");
+    if(name)
+      printf("%s", name);
+    printf("]");
+  }
+  
+  // get material type
+  const char* type = e->Attribute("type");
+  if(type){
     
-    // grab the next child (if any left)
-    child = child->NextSiblingElement();
+    // blinn-phong material type
+    if(compare(type, "blinn")){
+      BlinnMaterial *m = new BlinnMaterial();
+      mat = m;
+      
+      // print out material type
+      if(print)
+        printf(" - Blinn\n");
+      
+      // check children for material properties
+      for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
+        
+        // initialize values
+        Color c(1, 1, 1);
+        float f = 1.0;
+        
+        // load diffuse color
+        if(compare(child->Value(), "diffuse")){
+          readColor(child, c);
+          m->setDiffuse(c);
+          
+          // print out diffuse color
+          if(print)
+            printf("   diffuse %f %f %f\n", c.r, c.g, c.b);
+        
+        // load specular color
+        }else if(compare(child->Value(), "specular")){
+          readColor(child, c);
+          m->setSpecular(c);
+          
+          //print out specular color
+          if(print)
+            printf("   specular %f %f %f\n", c.r, c.g, c.b);
+        
+        // load shininess value
+        }else if(compare(child->Value(), "shininess")){
+          readFloat(child, f);
+          m->setShininess(f);
+          
+          // print out shininess value
+          if(print)
+            printf("   shininess %f\n", f);
+        }
+      }
+    
+    // phong material type
+    }else if(compare(type, "phong")){
+      PhongMaterial *m = new PhongMaterial();
+      mat = m;
+      
+      // print out material type
+      if(print)
+        printf(" - Phong\n");
+      
+      // check children for material properties
+      for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
+        
+        // initialize values
+        Color c(1, 1, 1);
+        float f = 1.0;
+        
+        // load diffuse color
+        if(compare(child->Value(), "diffuse")){
+          readColor(child, c);
+          m->setDiffuse(c);
+          
+          // print out diffuse color
+          if(print)
+            printf("   diffuse %f %f %f\n", c.r, c.g, c.b);
+        
+        // load specular color
+        }else if(compare(child->Value(), "specular")){
+          readColor(child, c);
+          m->setSpecular(c);
+          
+          //print out specular color
+          if(print)
+            printf("   specular %f %f %f\n", c.r, c.g, c.b);
+        
+        // load shininess value
+        }else if(compare(child->Value(), "shininess")){
+          readFloat(child, f);
+          m->setShininess(f);
+          
+          // print out shininess value
+          if(print)
+            printf("   shininess %f\n", f);
+        }
+      }
+    
+    // unknown material type
+    }else{
+      
+      // print out material type
+      if(print)
+        printf(" - UNKNOWN MATERIAL\n");
+    }
+  }
+  
+  // add material to materials list
+  if(mat){
+    mat->setName(name);
+    materials.push_back(mat);
+  }
+}
+
+
+// load in the light information for each element
+void loadLight(XMLElement *e){
+  
+  // initialize light
+  Light *light = NULL;
+  
+  // get & print light name
+  const char* name = e->Attribute("name");
+  if(print){
+    printf("Light [");
+    if(name)
+      printf("%s", name);
+    printf("]");
+  }
+  
+  // get light type
+  const char* type = e->Attribute("type");
+  if(type){
+    
+    // ambient light type
+    if(compare(type, "ambient")){
+      AmbientLight *l = new AmbientLight();
+      light = l;
+      
+      // print out light type
+      if(print)
+        printf(" - Ambient\n");
+      
+      // check children for light properties
+      for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
+        
+        // load intensity (color) of light (for all lights)
+        if(compare(child->Value(), "intensity")){
+          Color c(1, 1, 1);
+          readColor(child, c);
+          l->setIntensity(c);
+          
+          // print out light intensity color
+          if(print)
+            printf("   intensity %f %f %f\n", c.r, c.g, c.b);
+        }
+      }
+    
+    
+    // direct light type
+    }else if(compare(type, "direct")){
+      DirectLight *l = new DirectLight();
+      light = l;
+      
+      // print out light type
+      if(print)
+        printf(" - Direct\n");
+      
+      // check children for light properties
+      for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
+        
+        // load intensity (color) of light (for all lights)
+        if(compare(child->Value(), "intensity")){
+          Color c(1, 1, 1);
+          readColor(child, c);
+          l->setIntensity(c);
+          
+          // print out light intensity color
+          if(print)
+            printf("   intensity %f %f %f\n", c.r, c.g, c.b);
+        
+        // load direction of light
+        }else if(compare(child->Value(), "direction")){
+          Point v(1, 1, 1);
+          readVector(child, v);
+          l->setDirection(v);
+          
+          // print out light direction
+          if(print)
+            printf("   direction %f %f %f\n", v.x, v.y, v.z);
+        }
+      }
+    
+    // point light type
+    }else if(compare(type, "point")){
+      PointLight *l = new PointLight();
+      light = l;
+      
+      // print out light type
+      if(print)
+        printf(" - Point\n");
+      
+      // check children for light properties
+      for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
+        
+        // load intensity (color) of light (for all lights)
+        if(compare(child->Value(), "intensity")){
+          Color c(1, 1, 1);
+          readColor(child, c);
+          l->setIntensity(c);
+          
+          // print out light intensity color
+          if(print)
+            printf("   intensity %f %f %f\n", c.r, c.g, c.b);
+        
+        // load position of light
+        }else if(compare(child->Value(), "position")){
+          Point v(0, 0, 0);
+          readVector(child, v);
+          l->setPosition(v);
+          
+          // print out position of light
+          if(print)
+            printf("   position %f %f %f\n", v.x, v.y, v.z);
+        }
+      }
+    
+    // unknown light type
+    }else{
+      if(print)
+        printf(" - UNKNOWN LIGHT\n");
+    }
+  }
+  
+  // add light to lights list
+  if(light){
+    light->setName(name);
+    lights.push_back(light);
   }
 }
 
@@ -228,9 +548,30 @@ void readVector(XMLElement *element, Point &v){
 }
 
 
+// read in a color from an XML element
+void readColor(XMLElement *e, Color &c){
+  
+  // set 3-channel color values
+  double r = (double) c.r;
+  double g = (double) c.g;
+  double b = (double) c.b;
+  e->QueryDoubleAttribute("r", &r);
+  e->QueryDoubleAttribute("g", &g);
+  e->QueryDoubleAttribute("b", &b);
+  c.r = (float) r;
+  c.g = (float) g;
+  c.b = (float) b;
+  
+  // read in color scaling factor
+  float f = 1.0;
+  readFloat(e, f);
+  c *= f;
+}
+
+
 // read in a float from an XML element
-void readFloat(XMLElement *element, float &f){
+void readFloat(XMLElement *element, float &f, const char *name){
   double d = (double) f;
-  element->QueryDoubleAttribute("value", &d);
+  element->QueryDoubleAttribute(name, &d);
   f = (float) d;
 }

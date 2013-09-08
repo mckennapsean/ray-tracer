@@ -56,7 +56,7 @@ Point cameraRay(int pX, int pY);
 int main(){
   
   // load scene: root node, camera, image
-  loadScene("scenes/prj1.xml");
+  loadScene("scenes/prj1.xml", true);
   
   // set up colors & background image color
   white.Set(233, 233, 233);
