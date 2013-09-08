@@ -540,6 +540,7 @@ class Camera{
     void setup(){
       dir -= pos;
       dir.Normalize();
+      up.Normalize();
       cross = dir ^ up;
       cross.Normalize();
       up = (cross ^ dir).GetNormalized();

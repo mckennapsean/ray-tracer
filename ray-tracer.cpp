@@ -24,6 +24,11 @@
 using namespace std;
 
 
+// scene to load (project #) & whether to debug
+const char* xml = "scenes/prj2.xml";
+bool printXML = false;
+
+
 // for ray tracing
 int w;
 int h;
@@ -46,8 +51,6 @@ Point *imageTopLeftV;
 Point *dXV;
 Point *dYV;
 Point firstPixel;
-Point cameraPos;
-Point cameraDir;
 Transformation* c;
 Point cameraRay(int pX, int pY);
 
@@ -56,7 +59,7 @@ Point cameraRay(int pX, int pY);
 int main(){
   
   // load scene: root node, camera, image
-  loadScene("scenes/prj2.xml", true);
+  loadScene(xml, printXML);
   
   // set up colors & background image color
   white.Set(233, 233, 233);
@@ -105,7 +108,7 @@ void rayTracing(int i){
     // transform ray into world space
     Point rayDir = cameraRay(pX, pY);
     Ray *ray = new Ray();
-    ray->pos = cameraPos;
+    ray->pos = camera.pos;
     ray->dir = c->transformFrom(rayDir);
     
     // traverse through scene DOM
@@ -133,10 +136,8 @@ void cameraRayVars(){
   dYV = new Point(0.0, -dY, 0.0);
   firstPixel = *imageTopLeftV + (*dXV * 0.5) + (*dYV * 0.5);
   
-  // set up camera transformation (translation + rotation)
-  Point cameraPos = camera.pos;
+  // set up camera transformation (only need to rotate coordinates)
   c = new Transformation();
-  c->translate(cameraPos);
   Matrix *rotate = new cyMatrix3f();
   rotate->Set(camera.cross, camera.up, -camera.dir);
   c->transform(*rotate);
