@@ -28,8 +28,8 @@ using namespace std;
 int w;
 int h;
 int size;
-Color white = {233, 233, 233};
-Color black = {33, 33, 33};
+Color white;
+Color black;
 Color* img;
 float* zImg;
 void objectIntersection(Node &n, Ray r, int pixel);
@@ -58,7 +58,9 @@ int main(){
   // load scene: root node, camera, image
   loadScene("scenes/prj1.xml");
   
-  // set up background image color
+  // set up colors & background image color
+  white.Set(233, 233, 233);
+  black.Set(33, 33, 33);
   render.setBackground(black);
   
   // set variables for ray tracing

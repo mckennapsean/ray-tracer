@@ -20,6 +20,7 @@
 // libraries, namespace
 #include "scene.cpp"
 #include "objects.cpp"
+#include "lights.cpp"
 #include "tinyxml2/tinyxml2.cpp"
 using namespace scene;
 using namespace tinyxml2;

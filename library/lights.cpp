@@ -34,8 +34,8 @@ class AmbientLight: public GenericLight{
       intensity.Set(0, 0, 0);
     }
     
-    // get color of ambient light
-    Color illuminate(Point p){
+    // get ColorF of ambient light
+    ColorF illuminate(Point p){
       return intensity;
     }
     
@@ -49,15 +49,15 @@ class AmbientLight: public GenericLight{
       return true;
     }
     
-    // set color of ambient light
-    void setIntensity(Color c){
+    // set ColorF of ambient light
+    void setIntensity(ColorF c){
       intensity = c;
     }
     
   private:
     
-    // intensity (or color) of light
-    Color intensity;
+    // intensity (or ColorF) of light
+    ColorF intensity;
 };
 
 
@@ -68,36 +68,36 @@ class DirectLight: public GenericLight{
     // constructor
     DirectLight(){
       intensity.Set(0, 0, 0);
-      direction.Set(0, 0, 1);
+      dir.Set(0, 0, 1);
     }
     
-    // get color of direct light
-    Color illuminate(Point p){
+    // get ColorF of direct light
+    ColorF illuminate(Point p){
       return intensity;
     }
     
     // get direction of direct light (constant)
     Point direction(Point p){
-      return direction;
+      return dir;
     }
     
-    // set color of direct light
-    void setIntensity(Color c){
+    // set ColorF of direct light
+    void setIntensity(ColorF c){
       intensity = c;
     }
     
     // set direction of direct light
-    void setDirection(Point dir){
-      direction = dir.GetNormalized();
+    void setDirection(Point d){
+      dir = d.GetNormalized();
     }
     
   private:
     
-    // intensity (or color) of light
-    Color intensity;
+    // intensity (or ColorF) of light
+    ColorF intensity;
     
     // direction of light
-    Point direction;
+    Point dir;
 };
 
 
@@ -111,8 +111,8 @@ class PointLight: public GenericLight{
       position.Set(0, 0, 0);
     }
     
-    // get color of point light
-    Color illuminate(Point p){
+    // get ColorF of point light
+    ColorF illuminate(Point p){
       return intensity;
     }
     
@@ -121,8 +121,8 @@ class PointLight: public GenericLight{
       return (p - position).GetNormalized();
     }
     
-    // set color of point light
-    void setIntensity(Color c){
+    // set ColorF of point light
+    void setIntensity(ColorF c){
       intensity = c;
     }
     
@@ -133,8 +133,8 @@ class PointLight: public GenericLight{
     
   private:
     
-    // intensity (or color) of light
-    Color intensity;
+    // intensity (or ColorF) of light
+    ColorF intensity;
     
     // location of light
     Point position;

@@ -23,9 +23,13 @@
 #include <vector>
 #include "cyCodeBase/cyPoint.h"
 #include "cyCodeBase/cyMatrix3.h"
+#include "cyCodeBase/cyColor.h"
 using namespace std;
 typedef cyPoint3f Point;
 typedef cyMatrix3f Matrix;
+typedef cyColor ColorF;
+typedef cyColor24 Color;
+typedef unsigned char uchar;
 
 
 // custom functions, variables
@@ -338,6 +342,21 @@ Object::~Object(){}
 typedef ItemFileList<Object> ObjFileList;
 
 
+// Light definition (extended to a GenericLight, and then nested to specific lights)
+class Light: public ItemBase{
+  public:
+    virtual ColorF illuminate(Point p) = 0;
+    virtual Point direction(Point p) = 0;
+    virtual bool isAmbient(){
+      return false;
+    }
+};
+
+
+// LightLight definition (store all lights in a list)
+class LightList: public ItemList<Light> {};
+
+
 // Node definition (pieces of the scene which store objects)
 class Node: public ItemBase, public Transformation{
   private:
@@ -473,13 +492,6 @@ class Camera{
 };
 
 
-// Color struct
-typedef unsigned char uchar;
-struct Color{
-  uchar r, g, b;
-};
-
-
 // Render definition (image output from the ray tracer)
 class Render{
   private:
@@ -512,7 +524,7 @@ class Render{
       if(render)
         delete[] render;
       render = new Color[size];
-      background = {0, 0, 0};
+      background.Set(0, 0, 0);
       if(z)
         delete[] z;
       z = new float[size];
