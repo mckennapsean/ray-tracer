@@ -28,6 +28,7 @@ using namespace tinyxml2;
 // scene properties
 Node rootNode;
 Camera camera;
+Object *aSphere;
 
 
 // scene image
@@ -81,6 +82,9 @@ int loadScene(const char *file, bool p = false){
     printf("No 'camera' tag found.\n");
     exit(EXIT_FAILURE);
   }
+  
+  // load object types once
+  aSphere = new Sphere();
   
   // load root node from file
   rootNode.init();
@@ -159,7 +163,6 @@ void loadNode(Node *node, XMLElement *element, int level){
       const char* type = child->Attribute("type");
       if(type){
         if(compare(type, "sphere")){
-          Object *aSphere = new Sphere();
           childNode->setObject(&*aSphere);
           
           // print out specific object type
