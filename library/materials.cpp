@@ -14,6 +14,7 @@
 //
 
 // materials sub-classes (e.g. blinn-phong, phong shading)
+// originally adapted from code provided by Cem Yuksel
 
 
 // namespace

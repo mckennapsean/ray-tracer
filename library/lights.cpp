@@ -14,6 +14,7 @@
 //
 
 // light sub-classes (e.g. generic, ambient, direct, point)
+// originally adapted from code provided by Cem Yuksel
 
 
 // namespace
