@@ -27,8 +27,9 @@
 using namespace std;
 typedef cyPoint3f Point;
 typedef cyMatrix3f Matrix;
-typedef cyColor ColorF;
-typedef cyColor24 Color;
+typedef cyColor Color;
+typedef cyColorA ColorA;
+typedef cyColor24 Color24;
 typedef unsigned char uchar;
 
 
@@ -345,7 +346,7 @@ typedef ItemFileList<Object> ObjFileList;
 // Light definition (extended to a GenericLight, and then nested to specific lights)
 class Light: public ItemBase{
   public:
-    virtual ColorF illuminate(Point p) = 0;
+    virtual Color illuminate(Point p) = 0;
     virtual Point direction(Point p) = 0;
     virtual bool isAmbient(){
       return false;
@@ -495,8 +496,8 @@ class Camera{
 // Render definition (image output from the ray tracer)
 class Render{
   private:
-    Color *render;
-    Color background;
+    Color24 *render;
+    Color24 background;
     float *z;
     uchar *zbuffer;
     int width, height;
@@ -523,7 +524,7 @@ class Render{
       size = w * h;
       if(render)
         delete[] render;
-      render = new Color[size];
+      render = new Color24[size];
       background.Set(0, 0, 0);
       if(z)
         delete[] z;
@@ -537,7 +538,7 @@ class Render{
     }
     
     // set background color for render
-    void setBackground(Color c){
+    void setBackground(Color24 c){
       background = c;
       for(int i = 0; i < size; i++)
         render[i] = c;
@@ -553,7 +554,7 @@ class Render{
     int getSize(){
       return size;
     }
-    Color* getRender(){
+    Color24* getRender(){
       return render;
     }
     float* getZBuffer(){

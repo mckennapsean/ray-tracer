@@ -28,9 +28,9 @@ using namespace std;
 int w;
 int h;
 int size;
-Color white;
-Color black;
-Color* img;
+Color24 white;
+Color24 black;
+Color24* img;
 float* zImg;
 void objectIntersection(Node &n, Ray r, int pixel);
 
