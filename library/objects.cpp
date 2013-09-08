@@ -13,7 +13,7 @@
 //    limitations under the License.
 //
 
-// object - Sphere class
+// object sub-classes (e.g. sphere)
 
 
 // namespace
