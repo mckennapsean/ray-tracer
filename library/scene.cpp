@@ -78,6 +78,12 @@ struct HitInfo{
   // distance from the ray to the hit point
   float z;
   
+  // where the object gets hit
+  Point p;
+  
+  // surface normal of the object at the hit point
+  Point n;
+  
   // object node that ray hits
   Node *node;
   
@@ -393,6 +399,9 @@ class Node: public ItemBase, public Transformation{
     
     // object reference
     Object *obj;
+    
+    // material used in shading an object
+    Material *mat;
   
   public:
     
@@ -476,12 +485,26 @@ class Node: public ItemBase, public Transformation{
       obj = object;
     }
     
+    // get / set materials attached to node
+    Material* getMaterial(){
+      return mat;
+    }
+    void setMaterial(Material *m){
+      mat = m;
+    }
+    
     // transformation of rays to model (local) space
     Ray toModelSpace(Ray &ray){
       Ray r;
       r.pos = transformTo(ray.pos);
       r.dir = transformTo(ray.pos + ray.dir) - r.pos;
       return r;
+    }
+    
+    // transformation of hit information to world space
+    void FromNodeCoords(HitInfo &hitInfo){
+      hitInfo.p = transformFrom(hitInfo.p);
+      hitInfo.n = vecTransformFrom(hitInfo.n).GetNormalized();
     }
 };
 
