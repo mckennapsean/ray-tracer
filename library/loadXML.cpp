@@ -259,7 +259,7 @@ void loadTransform(Transformation *t, XMLElement *e, int level){
       
     // check if child is a rotation term
     }else if(compare(child->Value(), "rotate")){
-      Point r(1, 1, 1);
+      Point r(0, 0, 0);
       readVector(child, r);
       r.Normalize();
       float a;
