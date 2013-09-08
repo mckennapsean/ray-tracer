@@ -501,8 +501,8 @@ class Node: public ItemBase, public Transformation{
       return r;
     }
     
-    // transformation of hit information to world space
-    void FromNodeCoords(HitInfo &hitInfo){
+    // transformation of hit information from model (local) space back to world space
+    void fromModelSpace(HitInfo &hitInfo){
       hitInfo.p = transformFrom(hitInfo.p);
       hitInfo.n = vecTransformFrom(hitInfo.n).GetNormalized();
     }
