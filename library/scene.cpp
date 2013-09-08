@@ -358,6 +358,29 @@ class Light: public ItemBase{
 class LightList: public ItemList<Light> {};
 
 
+// Material definition (extended to specific materials for shading)
+class Material: public ItemBase{
+  public:
+    
+    // shade method which calls all lights in the list
+    // uses the incoming ray, hit info of rendering pixel, and all lights
+    virtual Color shade(Ray &ray, HitInfo &hitInfo, LightList &lights) = 0;
+};
+
+
+// MaterialList definition (stores all materials, searchable)
+class MaterialList: public ItemList<Material> {
+  public:
+    Material* find(const char *name){
+      int n = size();
+      for(int i = 0; i < n; i++)
+        if(at(i) && strcmp(name, at(i)->getName()) == 0)
+          return at(i);
+      return NULL;
+    }
+};
+
+
 // Node definition (pieces of the scene which store objects)
 class Node: public ItemBase, public Transformation{
   private:
