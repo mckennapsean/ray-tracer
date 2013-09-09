@@ -60,7 +60,7 @@ class BlinnMaterial: public Material{
           float geom = h.n % l->direction(h.p);
           
           // calculate half-way vector
-          Point half = (h.n + l->direction(h.p)) / (h.n + l->direction(h.p)).Length();
+          Point half = (r.dir + l->direction(h.p)) / (r.dir + l->direction(h.p)).Length();
           
           // calculate total specular factor
           float s = pow(half % h.n, shininess);
@@ -113,8 +113,43 @@ class PhongMaterial: public Material{
     
     // shading function (phong)
     Color shade(Ray &r, HitInfo &h, LightList &lights){
-      // to be implemented
-      return Color();
+      
+      // initialize color at pixel
+      Color c;
+      c.Set(0.0, 0.0, 0.0);
+      
+      // add shading from each light
+      int numLights = lights.size();
+      for(int i = 0; i < numLights; i++){
+        
+        // grab light
+        Light *l = lights[i];
+        
+        // ambient light check
+        if(l->isAmbient()){
+          
+          // add ambient lighting term
+          c += diffuse * l->illuminate(h.p);
+        
+        // otherwise, add diffuse and specular components from light
+        }else{
+          
+          // calculate geometry term
+          float geom = h.n % l->direction(h.p);
+          
+          // calculate reflection vector
+          Point refl = l->direction(h.p) - 2.0 * (l->direction(h.p) % h.n) * h.n;
+          
+          // calculate total specular factor
+          float s = pow(refl % r.dir, shininess);
+          
+          // add specular and diffuse lighting terms
+          c += l->illuminate(h.p) * geom * (diffuse + s * specular);
+        }
+      }
+      
+      // return final shaded color
+      return c;
     }
     
     
