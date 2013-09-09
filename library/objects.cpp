@@ -33,24 +33,24 @@ class Sphere: public Object{
     
     // intsersect a ray against the unit sphere
     // ray must be transformed into model space, first
-    bool intersectRay(Ray &ray, HitInfo &hit, int face=HIT_FRONT){
+    bool intersectRay(Ray &r, HitInfo &h, int face=HIT_FRONT){
       
       // pre-compute values for quadratic solution
-      Point pos = ray.pos - center;
-      float A = ray.dir % ray.dir;
-      float B = 2.0 * pos % ray.dir;
+      Point pos = r.pos - center;
+      float A = r.dir % r.dir;
+      float B = 2.0 * pos % r.dir;
       float C = pos % pos - radius * radius;
       float det = (B * B) - (4 * A * C);
       
       // if the ray intersects, compute the z-buffer value
       if(det >= 0){
         float z = (-B - sqrt(det)) / (2.0 * A);
-        hit.z = z;
+        h.z = z;
         
         // also get the surface intersection and normal
-        hit.p = ray.pos + z * ray.dir;
-        hit.p.Normalize();
-        hit.n = hit.p;
+        h.p = r.pos + z * r.dir;
+        h.p.Normalize();
+        h.n = h.p;
         
         // return true, ray is hit
         return true;

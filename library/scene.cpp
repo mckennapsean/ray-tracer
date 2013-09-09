@@ -340,7 +340,7 @@ class Transformation{
 class Object{
   public:
     virtual ~Object() = 0;
-    virtual bool intersectRay(Ray &ray, HitInfo &hit, int face = HIT_FRONT) = 0;
+    virtual bool intersectRay(Ray &r, HitInfo &h, int face = HIT_FRONT) = 0;
 };
 Object::~Object(){}
 
@@ -370,7 +370,7 @@ class Material: public ItemBase{
     
     // shade method which calls all lights in the list
     // uses the incoming ray, hit info of rendering pixel, and all lights
-    virtual Color shade(Ray &ray, HitInfo &hitInfo, LightList &lights) = 0;
+    virtual Color shade(Ray &r, HitInfo &h, LightList &l) = 0;
 };
 
 

@@ -34,7 +34,7 @@ class BlinnMaterial: public Material{
     }
     
     // shading function (blinn-phong)
-    Color shade(Ray &ray, HitInfo &hitInfo, LightList &lights){
+    Color shade(Ray &r, HitInfo &h, LightList &l){
       // to be implemented
       Color w;
       w.Set(0.91, 0.91, 0.91);
@@ -79,7 +79,7 @@ class PhongMaterial: public Material{
     }
     
     // shading function (phong)
-    Color shade(Ray &ray, HitInfo &hitInfo, LightList &lights){
+    Color shade(Ray &r, HitInfo &h, LightList &l){
       // to be implemented
       return Color();
     }
