@@ -171,11 +171,17 @@ void objectIntersection(Node &n, Ray r, int pixel){
     HitInfo h = HitInfo();
     bool hit = obj->intersectRay(r2, h);
     
-    // check the ray computation, update pixel & z-buffer
+    // update pixel & z-buffer, only if node is closer
     if(hit){
-      img[pixel] = white;
-      if(h.z < zImg[pixel])
+      if(h.z < zImg[pixel]){
         zImg[pixel] = h.z;
+        
+        // get this node's material
+        Material *m = n.getMaterial();
+        
+        // shade the pixel appropriately
+        img[pixel] = m->shade(r, h, lights);
+      }
     }
         
     // recursively check this child's children

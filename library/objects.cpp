@@ -46,6 +46,12 @@ class Sphere: public Object{
       if(det >= 0){
         float z = (-B - sqrt(det)) / (2.0 * A);
         hit.z = z;
+        
+        // also get the surface intersection and normal
+        hit.p = ray.pos + z * ray.dir;
+        hit.n = hit.p;
+        
+        // return true, ray is hit
         return true;
       
       // otherwise, return false
