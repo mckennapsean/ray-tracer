@@ -49,6 +49,7 @@ class Sphere: public Object{
         
         // also get the surface intersection and normal
         hit.p = ray.pos + z * ray.dir;
+        hit.p.Normalize();
         hit.n = hit.p;
         
         // return true, ray is hit

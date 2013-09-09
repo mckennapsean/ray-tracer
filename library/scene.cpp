@@ -401,7 +401,7 @@ class Node: public ItemBase, public Transformation{
     Object *obj;
     
     // material used in shading an object
-    Material *mat;
+    Material *matl;
   
   public:
     
@@ -487,10 +487,10 @@ class Node: public ItemBase, public Transformation{
     
     // get / set materials attached to node
     Material* getMaterial(){
-      return mat;
+      return matl;
     }
     void setMaterial(Material *m){
-      mat = m;
+      matl = m;
     }
     
     // transformation of rays to model (local) space

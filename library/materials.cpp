@@ -36,9 +36,9 @@ class BlinnMaterial: public Material{
     // shading function (blinn-phong)
     Color shade(Ray &ray, HitInfo &hitInfo, LightList &lights){
       // to be implemented
-      Color c;
-      c.Set(1, 1, 1);
-      return c;
+      Color w;
+      w.Set(0.91, 0.91, 0.91);
+      return w;
     }
     
     // set the diffuse color of the material
@@ -83,6 +83,7 @@ class PhongMaterial: public Material{
       // to be implemented
       return Color();
     }
+    
     
     // set the diffuse color of the material
     void setDiffuse(Color c){

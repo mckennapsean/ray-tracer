@@ -176,11 +176,15 @@ void objectIntersection(Node &n, Ray r, int pixel){
       if(h.z < zImg[pixel]){
         zImg[pixel] = h.z;
         
+        // transform hit information back to world space
+        n.fromModelSpace(h);
+        
         // get this node's material
         Material *m = n.getMaterial();
         
         // shade the pixel appropriately
-        img[pixel] = m->shade(r, h, lights);
+        img[pixel] = white;
+        //img[pixel] = m->shade(r, h, lights);
       }
     }
         
