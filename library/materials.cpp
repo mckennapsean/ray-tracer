@@ -34,11 +34,44 @@ class BlinnMaterial: public Material{
     }
     
     // shading function (blinn-phong)
-    Color shade(Ray &r, HitInfo &h, LightList &l){
-      // to be implemented
-      Color w;
-      w.Set(0.91, 0.91, 0.91);
-      return w;
+    Color shade(Ray &r, HitInfo &h, LightList &lights){
+      
+      // initialize color at pixel
+      Color c;
+      c.Set(0.0, 0.0, 0.0);
+      
+      // add shading from each light
+      int numLights = lights.size();
+      for(int i = 0; i < numLights; i++){
+        
+        // grab light
+        Light *l = lights[i];
+        
+        // ambient light check
+        if(l->isAmbient()){
+          
+          // add ambient lighting term
+          c += diffuse * l->illuminate(h.p);
+        
+        // otherwise, add diffuse and specular components from light
+        }else{
+          
+          // calculate geometry term
+          float geom = h.n % l->direction(h.p);
+          
+          // calculate half-way vector
+          Point half = (h.n + l->direction(h.p)) / (h.n + l->direction(h.p)).Length();
+          
+          // calculate total specular factor
+          float s = pow(half % h.n, shininess);
+          
+          // add specular and diffuse lighting terms
+          c += l->illuminate(h.p) * geom * (diffuse + s * specular);
+        }
+      }
+      
+      // return final shaded color
+      return c;
     }
     
     // set the diffuse color of the material
@@ -79,7 +112,7 @@ class PhongMaterial: public Material{
     }
     
     // shading function (phong)
-    Color shade(Ray &r, HitInfo &h, LightList &l){
+    Color shade(Ray &r, HitInfo &h, LightList &lights){
       // to be implemented
       return Color();
     }

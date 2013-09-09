@@ -370,7 +370,7 @@ class Material: public ItemBase{
     
     // shade method which calls all lights in the list
     // uses the incoming ray, hit info of rendering pixel, and all lights
-    virtual Color shade(Ray &r, HitInfo &h, LightList &l) = 0;
+    virtual Color shade(Ray &r, HitInfo &h, LightList &lights) = 0;
 };
 
 
