@@ -19,7 +19,6 @@
 
 // namespace
 using namespace scene;
-namespace scene{
 
 
 // blinn-phong material definition (shading)
@@ -176,4 +175,3 @@ class PhongMaterial: public Material{
     // shininess factor for shading
     float shininess;
 };
-}

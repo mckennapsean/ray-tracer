@@ -117,6 +117,8 @@ class ItemBase{
     ItemBase(){
       name = NULL;
     }
+    
+    // item deconstructor
     virtual ~ItemBase(){
       if(name)
         delete[] name;
@@ -148,7 +150,7 @@ class ItemBase{
 template <class T> class ItemList: public vector <T*>{
   public:
     
-    // empty constructor
+    // item list destructor
     virtual ~ItemList(){
       deleteAll();
     }
@@ -205,6 +207,8 @@ template <class T> class ItemFileList{
           item = i;
           setName(name);
         }
+        
+        // destructor
         ~FileInfo(){
           clear();
         }

@@ -18,7 +18,6 @@
 
 // namespace
 using namespace scene;
-namespace scene{
 
 
 // Sphere definition
@@ -66,4 +65,3 @@ class Sphere: public Object{
     Point center;
     float radius;
 };
-}
