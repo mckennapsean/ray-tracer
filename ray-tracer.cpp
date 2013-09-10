@@ -183,7 +183,7 @@ void objectIntersection(Node &n, Ray r, int pixel){
         Material *m = h.node->getMaterial();
         
         // shade the pixel appropriately
-        img[pixel] = m->shade(r, h, lights, pixel);
+        img[pixel] = m->shade(r, h, lights);
       }
     }
         
