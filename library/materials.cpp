@@ -135,28 +135,41 @@ class PhongMaterial: public Material{
       for(int i = 0; i < numLights; i++){
         
         // grab light
-        Light *l = lights[i];
+        Light *light = lights[i];
         
         // ambient light check
-        if(l->isAmbient()){
+        if(light->isAmbient()){
           
           // add ambient lighting term
-          c += diffuse * l->illuminate(h.p);
+          c += diffuse * light->illuminate(h.p);
         
         // otherwise, add diffuse and specular components from light
         }else{
           
+          // grab vector to light
+          Point l = -light->direction(h.p);
+          l.Normalize();
+          
+          // grab vector to camera
+          Point v = -r.dir;
+          v.Normalize();
+          
+          // grab normal
+          Point n = h.n;
+          n.Normalize();
+          
           // calculate geometry term
-          float geom = h.n % l->direction(h.p);
+          float geom = n % l;
           
           // calculate reflection vector
-          Point refl = l->direction(h.p) - 2.0 * (l->direction(h.p) % h.n) * h.n;
+          Point refl = l - 2.0 * (l % n) * n;
           
           // calculate total specular factor
-          float s = pow(refl % r.dir, shininess);
+          // (adjusted shininess to match blinn-phong values)
+          float s = pow(refl % v, shininess);
           
           // add specular and diffuse lighting terms
-          c += l->illuminate(h.p) * geom * (diffuse + s * specular);
+          c += light->illuminate(h.p) * geom * (diffuse + s * specular);
         }
       }
       
