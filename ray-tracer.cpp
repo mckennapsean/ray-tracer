@@ -36,7 +36,7 @@ int h;
 int size;
 Color24* img;
 float* zImg;
-void objectIntersection(Node &n, Ray r, int pixel);
+void objectIntersection(Node &n, Ray r, Transformation t, int pixel);
 
 
 // for threading
@@ -110,7 +110,7 @@ void rayTracing(int i){
     // traverse through scene DOM
     // transform rays into model space
     // detect ray intersections & update pixel
-    objectIntersection(rootNode, *ray, pixel);
+    objectIntersection(rootNode, *ray, Transformation(), pixel);
     
     // re-assign next pixel (naive, but works)
     pixel += numThreads;
@@ -149,7 +149,7 @@ Point cameraRay(int pX, int pY){
 
 
 // recursive object intersection through all scene objects
-void objectIntersection(Node &n, Ray r, int pixel){
+void objectIntersection(Node &n, Ray r, Transformation t, int pixel){
   
   // loop on child nodes
   int j = 0;
@@ -167,13 +167,18 @@ void objectIntersection(Node &n, Ray r, int pixel){
     HitInfo h = HitInfo(child);
     bool hit = obj->intersectRay(r2, h);
     
+    // store transformation matrix for this node and its children
+    Transformation mat = t;
+    
     // update pixel & z-buffer, only if node is closer
     if(hit){
       if(h.z < zImg[pixel]){
         zImg[pixel] = h.z;
         
-        // transform hit information back to world space
+        // transform hit information back to world space (and for nested nodes, too)
         child->fromModelSpace(h);
+        h.p = mat.transformFrom(h.p);
+        h.n = mat.vecTransformFrom(h.n).GetNormalized();
         
         // get this node's material
         Material *m = child->getMaterial();
@@ -192,9 +197,12 @@ void objectIntersection(Node &n, Ray r, int pixel){
         img[pixel] = c;
       }
     }
+    
+    // update transformation matrix (for nested nodes)
+    mat.transform(child->getTransform());
         
     // recursively check this child's children
-    objectIntersection(*child, r2, pixel);
+    objectIntersection(*child, r2, mat, pixel);
     j++;
   }
 }
