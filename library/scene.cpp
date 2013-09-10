@@ -91,8 +91,9 @@ struct HitInfo{
   bool front;
   
   // constructor
-  HitInfo(){
+  HitInfo(Node *n){
     init();
+    setNode(n);
   }
   
   // initialize hit info
@@ -100,6 +101,11 @@ struct HitInfo{
     z = FLOAT_MAX;
     node = NULL;
     front = true;
+  }
+  
+  // set node that object hits
+  void setNode(Node *n){
+    node = n;
   }
 };
 

@@ -85,10 +85,10 @@ int main(){
   for(int i = 0; i < numThreads; i++)
     t[i].join();
   
-  // output ray-traced image & z-buffer
+  // output ray-traced image & z-buffer (if uncommented)
   render.save("images/image.ppm");
-  render.computeZBuffer();
-  render.saveZBuffer("images/imageZ.ppm");
+  //render.computeZBuffer();
+  //render.saveZBuffer("images/imageZ.ppm");
 }
 
 
@@ -168,7 +168,7 @@ void objectIntersection(Node &n, Ray r, int pixel){
     Ray r2 = child->toModelSpace(r);
     
     // compute ray intersections
-    HitInfo h = HitInfo();
+    HitInfo h = HitInfo(child);
     bool hit = obj->intersectRay(r2, h);
     
     // update pixel & z-buffer, only if node is closer
@@ -177,14 +177,13 @@ void objectIntersection(Node &n, Ray r, int pixel){
         zImg[pixel] = h.z;
         
         // transform hit information back to world space
-        n.fromModelSpace(h);
+        h.node->fromModelSpace(h);
         
         // get this node's material
-        Material *m = n.getMaterial();
+        Material *m = h.node->getMaterial();
         
         // shade the pixel appropriately
-        img[pixel] = white;
-        //img[pixel] = m->shade(r, h, lights);
+        img[pixel] = m->shade(r, h, lights, pixel);
       }
     }
         
