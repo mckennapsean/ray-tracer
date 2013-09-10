@@ -3,10 +3,12 @@
 # input parameter:
 #   0 - cleanup
 #   1 - compile
-#   2 - compile & run
-#   3 - compile & run & convert
-#   4 - compile & run & convert & open
-#   5 - compile & run & convert & open & cleanup
+#   2 - compile & package
+#   3 - compile & run
+#   4 - compile & run & convert
+#   5 - compile & run & convert & open
+#   6 - compile & run & convert & open & cleanup
+
 
 # compile C++ v. 11 (Mac)
 # param > 0
@@ -15,22 +17,41 @@ then
   clang++ -std=c++11 -stdlib=libc++ -o ray-tracer ray-tracer.cpp
 fi
 
+# package (zip) project directory
+# param = 2
+if [ $1 -eq 2 ]
+then
+  mv ray-tracer rt
+  mkdir ray-tracer
+  cp rt ray-tracer/ray-tracer
+  cp -r library/ ray-tracer/library/
+  cp -r scenes/ ray-tracer/scenes/
+  cp LICENSE ray-tracer/
+  cp README.md ray-tracer/
+  cp ray-tracer.cpp ray-tracer/
+  cp run ray-tracer/
+  mkdir ray-tracer/images/
+  zip -r ray-tracer.zip ray-tracer/
+  rm -rf ray-tracer/
+  mv rt ray-tracer
+fi
+
 # run and time ray tracer
-# param > 1
-if [ $1 -gt 1 ]
+# param > 2
+if [ $1 -gt 2 ]
 then
   echo "Ray tracer run time:"
   time ./ray-tracer
 fi
 
 # cleanup old images
-# param = 0 || 5
+# param = 0 || 6
 if [ $1 -eq 0 ]
 then
   rm -f images/image.jpg
   #rm -f images/imageZ.jpg
 else
-  if [ $1 -eq 5 ]
+  if [ $1 -eq 6 ]
   then
     rm -f images/image.jpg
     #rm -f images/imageZ.jpg
@@ -38,23 +59,23 @@ else
 fi
 
 # convert images
-# param > 2
-if [ $1 -gt 2 ]
+# param > 3
+if [ $1 -gt 3 ]
 then
   convert images/image.ppm images/image.jpg
   #convert images/imageZ.ppm images/imageZ.jpg
 fi
 
 # open images
-# param > 3
-if [ $1 -gt 3 ]
+# param > 4
+if [ $1 -gt 4 ]
 then
   open -a /Applications/Preview.app/ images/image.jpg
   #open -a /Applications/Preview.app/ images/imageZ.jpg
 fi
 
 # cleanup
-# param = 0 || 5
+# param = 0 || 6
 if [ $1 -eq 0 ]
 then
   rm -f images/image.ppm
@@ -62,7 +83,7 @@ then
   rm -f a.out
   rm -f ray-tracer
 else
-  if [ $1 -eq 5 ]
+  if [ $1 -eq 6 ]
   then
     rm -f images/image.ppm
     #rm -f images/imageZ.ppm
