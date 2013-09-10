@@ -562,7 +562,6 @@ class Camera{
 class Render{
   private:
     Color24 *render;
-    Color24 background;
     float *z;
     uchar *zbuffer;
     int width, height;
@@ -590,7 +589,6 @@ class Render{
       if(render)
         delete[] render;
       render = new Color24[size];
-      background.Set(0, 0, 0);
       if(z)
         delete[] z;
       z = new float[size];
@@ -600,13 +598,6 @@ class Render{
         delete[] zbuffer;
       zbuffer = NULL;
       reset();
-    }
-    
-    // set background color for render
-    void setBackground(Color24 c){
-      background = c;
-      for(int i = 0; i < size; i++)
-        render[i] = c;
     }
     
     // getters: width, height, size, render, buffer, rendered
@@ -668,24 +659,25 @@ class Render{
       }
       
       // offset for background and object color
-      int diff = 14;
-      int offset = background.r + diff;
+      int offset = 14;
+      int contrast = -23;
+      int mx = 255 + contrast - offset;
       
       // assign pixel values based on min & max z-values
       for(int i = 0; i < size; i++){
         
         // background color
         if(z[i] == FLOAT_MAX)
-          zbuffer[i] = background.r;
+          zbuffer[i] = 0;
         
         // for pixels with objects, map from white (close) to dark (far)
         else{
           float f = (maxZ - z[i]) / (maxZ - minZ);
-          int c = int(f * 200);
+          int c = int(f * mx);
           if(c < 0)
             f = 0;
-          if(c > 200)
-            f = 200;
+          if(c > mx)
+            f = 2;
           zbuffer[i] = c + offset;
         }
       }

@@ -27,14 +27,13 @@ using namespace std;
 // scene to load (project #) & whether to debug
 const char* xml = "scenes/prj2.xml";
 bool printXML = false;
+bool zBuffer = false;
 
 
 // for ray tracing
 int w;
 int h;
 int size;
-Color24 white;
-Color24 black;
 Color24* img;
 float* zImg;
 void objectIntersection(Node &n, Ray r, int pixel);
@@ -61,11 +60,6 @@ int main(){
   // load scene: root node, camera, image
   loadScene(xml, printXML);
   
-  // set up colors & background image color
-  white.Set(233, 233, 233);
-  black.Set(33, 33, 33);
-  render.setBackground(black);
-  
   // set variables for ray tracing
   w = render.getWidth();
   h = render.getHeight();
@@ -85,10 +79,12 @@ int main(){
   for(int i = 0; i < numThreads; i++)
     t[i].join();
   
-  // output ray-traced image & z-buffer (if uncommented)
+  // output ray-traced image & z-buffer (if set)
   render.save("images/image.ppm");
-  //render.computeZBuffer();
-  //render.saveZBuffer("images/imageZ.ppm");
+  if(zBuffer){
+    render.computeZBuffer();
+    render.saveZBuffer("images/imageZ.ppm");
+  }
 }
 
 
@@ -183,7 +179,16 @@ void objectIntersection(Node &n, Ray r, int pixel){
         Material *m = child->getMaterial();
         
         // shade the pixel back to 24-bit color output
-        Color24 c = Color24(m->shade(r, h, lights));
+        Color24 c;
+        if(m){
+          c = Color24(m->shade(r, h, lights));
+        
+        // if no material, just color white
+        }else{
+          c.Set(237, 237, 237);
+        }
+          
+        // color the pixel image
         img[pixel] = c;
       }
     }
