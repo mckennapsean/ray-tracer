@@ -19,6 +19,38 @@ html,body{color:black}*{margin:0;padding:0}body{font:13.34px helvetica,arial,fre
 github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 
 */
+ 
+ /* hover image replacement code */
+ nav li{
+    position: relative;
+    min-height: 455px;
+  }
+  nav li img{
+    margin: auto;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    -webkit-transition-duration: .4s;
+    -moz-transition-duration: .4s;
+    -o-transition-duration: .4s;
+    -ms-transition-duration: .4s;
+    transition-duration: .4s;
+    opacity: 1;
+  }
+  nav li img:first-child{
+    opacity: 0;
+  }
+  nav li:hover img{
+    opacity: 0;
+  }
+  nav li:hover img:first-child{
+    opacity: 1;
+  }
+  nav li a{
+    display: block;
+  }
 
 pre code {
   display: block; padding: 0.5em;
@@ -185,7 +217,11 @@ pre .tex .formula {
 <p>Hover over the image to see the Blinn-Phong equivalent. </p>
 
 <figure>
-<img src="images/prj2/phong.jpg" alt="" /></figure>
+<nav> <ul type=none> <li>
+  <img src="images/prj2/blinn-phong-2.jpg" alt="" />
+  <img src="images/prj2/phong.jpg" alt="" />
+  <a id="foobar" href="#"> </a>
+</li> </ul> </nav> </figure>
 
 
 
