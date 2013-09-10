@@ -44,28 +44,41 @@ class BlinnMaterial: public Material{
       for(int i = 0; i < numLights; i++){
         
         // grab light
-        Light *l = lights[i];
+        Light *light = lights[i];
         
         // ambient light check
-        if(l->isAmbient()){
+        if(light->isAmbient()){
           
           // add ambient lighting term
-          c += diffuse * l->illuminate(h.p);
+          c += diffuse * light->illuminate(h.p);
         
         // otherwise, add diffuse and specular components from light
         }else{
           
+          // grab vector to light
+          Point l = -light->direction(h.p);
+          l.Normalize();
+          
+          // grab vector to camera
+          Point v = -r.dir;
+          v.Normalize();
+          
+          // grab normal
+          Point n = h.n;
+          n.Normalize();
+          
           // calculate geometry term
-          float geom = h.n % l->direction(h.p);
+          float geom = n % l;
           
           // calculate half-way vector
-          Point half = (r.dir + l->direction(h.p)) / (r.dir + l->direction(h.p)).Length();
+          Point half = v + l;
+          half.Normalize();
           
           // calculate total specular factor
-          float s = pow(half % h.n, shininess);
+          float s = pow(half % n, shininess);
           
           // add specular and diffuse lighting terms
-          c += l->illuminate(h.p) * geom * (diffuse + s * specular);
+          c += light->illuminate(h.p) * geom * (diffuse + s * specular);
         }
       }
       
