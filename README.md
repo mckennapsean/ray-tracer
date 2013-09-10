@@ -9,6 +9,8 @@ Compiling and Running
 
 The main file (*ray-tracer.cpp*) must be compiled using C++11, since it uses threading. There is a *run* script developed for Mac to assist with compiling.
 
+When run, the program will create binary PPM image files in the *images/* folder, which can then be converted to other image formats.
+
 The provided script takes an integer parameter to compile, run, and convert images for the user.
 
     ./run 0    # cleanup
