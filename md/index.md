@@ -36,10 +36,11 @@ The provided script takes an integer parameter to compile, run, and convert imag
 
     ./run 0    # cleanup
     ./run 1    # compile
-    ./run 2    # compile & run
-    ./run 3    # compile & run & convert
-    ./run 4    # compile & run & convert & open
-    ./run 5    # compile & run & convert & open & cleanup
+    ./run 2    # compile & package
+    ./run 3    # compile & run
+    ./run 4    # compile & run & convert
+    ./run 5    # compile & run & convert & open
+    ./run 6    # compile & run & convert & open & cleanup
 
 
 Credit
