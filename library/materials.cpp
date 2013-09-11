@@ -79,7 +79,7 @@ class BlinnMaterial: public Material{
           
           // add specular and diffuse lighting terms (only if positive)
           if (geom > 0)
-            c += light->illuminate(h.p) * geom * (diffuse + s * specular);
+            c += light->illuminate(h.p) * (geom * diffuse + s * specular);
         }
       }
       
