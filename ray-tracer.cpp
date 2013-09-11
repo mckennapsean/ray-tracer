@@ -201,8 +201,10 @@ HitInfo objectIntersection(Node &n, Ray r){
     HitInfo hitDesc = objectIntersection(*child, ray);
     
     // is descendants' hit info closer?
-    if(hitDesc.z < hit.z)
+    if(hitDesc.z < hit.z){
       hit = hitDesc;
+      objectHit = true;
+    }
     
     // only store the closest hit info
     if(objectHit)
