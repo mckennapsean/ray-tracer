@@ -28,8 +28,8 @@ Details
 
 [*Specs*](specs.html)
 
-*Blinn-Phong render time:* **0.726** s
+*Blinn-Phong render time:* **0.306** s
 
-*Phong render time:* **0.727** s
+*Phong render time:* **0.303** s
 
 - - -
