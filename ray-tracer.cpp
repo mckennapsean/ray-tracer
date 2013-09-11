@@ -128,11 +128,11 @@ void rayTracing(int i){
       c.Set(0, 0, 0);
       
     // shade pixel if it has material
-    //}else if(m)
-      //c = Color24(m->shade(*ray, h, lights));
+    }else if(m)
+      c = Color24(m->shade(*ray, h, lights));
     
     // otherwise, just color it white
-    }else
+    else
       c.Set(237, 237, 237);
     
     // color the pixel image
@@ -177,7 +177,7 @@ Point cameraRay(int pX, int pY){
 // recursive object intersection through all scene objects for some ray
 HitInfo objectIntersection(Node &n, Ray r){
   
-  // hit info to eventually return
+  // hit info of closest node
   HitInfo h = HitInfo();
   
   // loop on child nodes
@@ -192,26 +192,31 @@ HitInfo objectIntersection(Node &n, Ray r){
     // transform rays into model space (or local space)
     Ray ray = child->toModelSpace(r);
     
-    // compute ray intersections into hit info
+    // for the child, compute ray intersections into hit info
     HitInfo hit = HitInfo();
-    bool objectHit = obj->intersectRay(ray, h);
+    bool objectHit = obj->intersectRay(ray, hit);
     hit.setNode(child);
     
-    // recursively check this child's children for hit info
-    h = objectIntersection(*child, ray);
+    // recursively check this child's descendants for hit info
+    HitInfo hitDesc = objectIntersection(*child, ray);
     
-    // only store hit info if closer than previous hits
+    // is descendants' hit info closer?
+    if(hitDesc.z < hit.z)
+      hit = hitDesc;
+    
+    // only store the closest hit info
     if(objectHit)
-      if(hit.z < h.z)
+      if(hit.z < h.z){
         h = hit;
-    
-    // transform hit info from model space (towards world space)
-    child->fromModelSpace(h);
+        
+        // transform hit info from model space (towards world space)
+        child->fromModelSpace(h);
+      }
     
     // loop through all children
     j++;
   }
   
-  // return hit info
+  // return hit info of closest node
   return h;
 }
