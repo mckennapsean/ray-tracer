@@ -91,9 +91,8 @@ struct HitInfo{
   bool front;
   
   // constructor
-  HitInfo(Node *n){
+  HitInfo(){
     init();
-    setNode(n);
   }
   
   // initialize hit info

@@ -36,7 +36,7 @@ int h;
 int size;
 Color24* img;
 float* zImg;
-void objectIntersection(Node &n, Ray r, Transformation t, int pixel);
+HitInfo objectIntersection(Node &n, Ray r);
 
 
 // for threading
@@ -109,8 +109,34 @@ void rayTracing(int i){
     
     // traverse through scene DOM
     // transform rays into model space
-    // detect ray intersections & update pixel
-    objectIntersection(rootNode, *ray, Transformation(), pixel);
+    // detect ray intersections and return HitInfo
+    HitInfo h = objectIntersection(rootNode, *ray);
+    
+    // update z-buffer, if necessary
+    if(zBuffer)
+      zImg[pixel] = h.z;
+    
+    // try and get the hit object & material
+    Node *n = h.node;
+    Material *m;
+    if(n)
+      m = n->getMaterial();
+    
+    // if we hit nothing
+    Color24 c;
+    if(h.z == FLOAT_MAX){
+      c.Set(0, 0, 0);
+      
+    // shade pixel if it has material
+    //}else if(m)
+      //c = Color24(m->shade(*ray, h, lights));
+    
+    // otherwise, just color it white
+    }else
+      c.Set(237, 237, 237);
+    
+    // color the pixel image
+    img[pixel] = c;
     
     // re-assign next pixel (naive, but works)
     pixel += numThreads;
@@ -148,8 +174,11 @@ Point cameraRay(int pX, int pY){
 }
 
 
-// recursive object intersection through all scene objects
-void objectIntersection(Node &n, Ray r, Transformation t, int pixel){
+// recursive object intersection through all scene objects for some ray
+HitInfo objectIntersection(Node &n, Ray r){
+  
+  // hit info to eventually return
+  HitInfo h = HitInfo();
   
   // loop on child nodes
   int j = 0;
@@ -161,48 +190,28 @@ void objectIntersection(Node &n, Ray r, Transformation t, int pixel){
     Object *obj = child->getObject();
     
     // transform rays into model space (or local space)
-    Ray r2 = child->toModelSpace(r);
+    Ray ray = child->toModelSpace(r);
     
-    // compute ray intersections
-    HitInfo h = HitInfo(child);
-    bool hit = obj->intersectRay(r2, h);
+    // compute ray intersections into hit info
+    HitInfo hit = HitInfo();
+    bool objectHit = obj->intersectRay(ray, h);
+    hit.setNode(child);
     
-    // store transformation matrix for this node and its children
-    Transformation mat = t;
+    // recursively check this child's children for hit info
+    h = objectIntersection(*child, ray);
     
-    // update pixel & z-buffer, only if node is closer
-    if(hit){
-      if(h.z < zImg[pixel]){
-        zImg[pixel] = h.z;
-        
-        // transform hit information back to world space (and for nested nodes, too)
-        child->fromModelSpace(h);
-        h.p = mat.transformFrom(h.p);
-        h.n = mat.vecTransformFrom(h.n).GetNormalized();
-        
-        // get this node's material
-        Material *m = child->getMaterial();
-        
-        // shade the pixel back to 24-bit color output
-        Color24 c;
-        if(m){
-          c = Color24(m->shade(r, h, lights));
-        
-        // if no material, just color white
-        }else{
-          c.Set(237, 237, 237);
-        }
-          
-        // color the pixel image
-        img[pixel] = c;
-      }
-    }
+    // only store hit info if closer than previous hits
+    if(objectHit)
+      if(hit.z < h.z)
+        h = hit;
     
-    // update transformation matrix (for nested nodes)
-    mat.transform(child->getTransform());
-        
-    // recursively check this child's children
-    objectIntersection(*child, r2, mat, pixel);
+    // transform hit info from model space (towards world space)
+    child->fromModelSpace(h);
+    
+    // loop through all children
     j++;
   }
+  
+  // return hit info
+  return h;
 }
