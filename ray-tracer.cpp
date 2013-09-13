@@ -36,7 +36,6 @@ int h;
 int size;
 Color24* img;
 float* zImg;
-bool objectIntersection(Ray r, HitInfo &h, Node &n);
 
 
 // for threading
@@ -59,6 +58,9 @@ int main(){
   
   // load scene: root node, camera, image
   loadScene(xml, printXML);
+  
+  // set the scene as the root node
+  setScene(rootNode);
   
   // set variables for ray tracing
   w = render.getWidth();
@@ -111,7 +113,7 @@ void rayTracing(int i){
     // transform rays into model space
     // detect ray intersections and get back HitInfo
     HitInfo h = HitInfo();
-    bool hit = objectIntersection(*ray, h, rootNode);
+    bool hit = traceRay(*ray, h);
     
     // update z-buffer, if necessary
     if(zBuffer)
@@ -171,63 +173,4 @@ Point cameraRay(int pX, int pY){
   Point ray = firstPixel + (*dXV * pX) + (*dYV * pY);
   ray.Normalize();
   return ray;
-}
-
-
-// recursive object intersection through all scene objects for some ray
-bool objectIntersection(Ray r, HitInfo &h, Node &n){
-  
-  // if object gets hit and hit first
-  bool objectHit;
-  
-  // grab node's object
-  Object *obj = n.getObject();
-  
-  // transform ray into model space (or local space)
-  Ray ray = n.toModelSpace(r);
-  
-  // make hit info for node object (if exists)
-  HitInfo hit = HitInfo();
-  if(obj){
-    hit.setNode(&n);
-    
-    // check if object is hit
-    objectHit = obj->intersectRay(ray, hit);
-  }
-  
-  // check if hit was closer than previous hits
-  if(objectHit){
-    if(hit.z < h.z)
-      h = hit;
-    
-    // if hit is not closer, don't count as hit
-    else
-      objectHit = false; 
-  }
-  
-  // loop on child nodes
-  int j = 0;
-  int numChild = n.getNumChild();
-  while(j < numChild){
-    
-    // grab child node
-    Node *child = n.getChild(j);
-    
-    // recursively check this child's descendants for hit info
-    bool childHit = objectIntersection(ray, h, *child);
-    
-    // if child is hit, make sure we pass that on
-    if(childHit)
-      objectHit = true;
-    
-    // loop through all children
-    j++;
-  }
-  
-  // if object (or a descendant) was hit, transform from model space (to world space)
-  if(objectHit)
-    n.fromModelSpace(h);
-  
-  // return whether there was a hit on object or its descendants
-  return objectHit;
 }

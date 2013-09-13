@@ -41,6 +41,8 @@ typedef unsigned char uchar;
 
 // declare namespace
 namespace scene{
+  
+  
 
 
 // Ray definition (position & direction)
@@ -527,6 +529,13 @@ struct NodeMaterial{
 vector<NodeMaterial> nodeMaterialList;
 
 
+// abstract root node as the scene object
+Node *scene;
+void setScene(Node &n){
+  scene = &n;
+}
+
+
 // Camera definition (stores basic render info)
 class Camera{
   public:
@@ -727,6 +736,70 @@ class Render{
       return true;
     }
 };
+
+
+// recursively go through node & descendants, find the closest ray hit info
+bool traceRayToNode(Ray r, HitInfo &h, Node &n){
+  
+  // if object gets hit and hit first
+  bool objectHit;
+  
+  // grab node's object
+  Object *obj = n.getObject();
+  
+  // transform ray into model space (or local space)
+  Ray ray = n.toModelSpace(r);
+  
+  // make hit info for node object (if exists)
+  HitInfo hit = HitInfo();
+  if(obj){
+    hit.setNode(&n);
+    
+    // check if object is hit
+    objectHit = obj->intersectRay(ray, hit);
+  }
+  
+  // check if hit was closer than previous hits
+  if(objectHit){
+    if(hit.z < h.z)
+      h = hit;
+    
+    // if hit is not closer, don't count as hit
+    else
+      objectHit = false; 
+  }
+  
+  // loop on child nodes
+  int j = 0;
+  int numChild = n.getNumChild();
+  while(j < numChild){
+    
+    // grab child node
+    Node *child = n.getChild(j);
+    
+    // recursively check this child's descendants for hit info
+    bool childHit = traceRayToNode(ray, h, *child);
+    
+    // if child is hit, make sure we pass that on
+    if(childHit)
+      objectHit = true;
+    
+    // loop through all children
+    j++;
+  }
+  
+  // if object (or a descendant) was hit, transform from model space (to world space)
+  if(objectHit)
+    n.fromModelSpace(h);
+  
+  // return whether there was a hit on object or its descendants
+  return objectHit;
+}
+
+// main ray tracing function, recursively traverses scene for ray hits
+bool traceRay(Ray r, HitInfo &h){
+  return traceRayToNode(r, h, *scene);
+}
 
 
 }
