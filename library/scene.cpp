@@ -419,6 +419,7 @@ class Node: public ItemBase, public Transformation{
       child = NULL;
       numChild = 0;
       obj = NULL;
+      matl = NULL;
     }
     
     // initialize the node, by deleting all its children
