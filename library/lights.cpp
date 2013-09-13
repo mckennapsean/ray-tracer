@@ -28,7 +28,22 @@ class GenericLight: public Light{
     
     // calculate a shadow for any light (never call from ambient!)
     float shadow(Ray ray, float z = FLOAT_MAX){
-      return 1.0;
+      
+      // need to add bias!
+      
+      
+      // set initial hit info
+      HitInfo h = HitInfo();
+      h.z = z;
+      
+      // check ray from point to light, is it occluded?
+      bool occlude = traceRay(ray, h);
+      
+      // return 0 if in shadow, 1 if lit directly
+      if(occlude)
+        return 0.0;
+      else
+        return 1.0;
     }
 };
 
