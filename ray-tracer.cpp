@@ -36,7 +36,7 @@ int h;
 int size;
 Color24* img;
 float* zImg;
-HitInfo objectIntersection(Node &n, Ray r);
+bool objectIntersection(Ray r, HitInfo &h, Node &n);
 
 
 // for threading
@@ -109,8 +109,9 @@ void rayTracing(int i){
     
     // traverse through scene DOM
     // transform rays into model space
-    // detect ray intersections and return HitInfo
-    HitInfo h = objectIntersection(rootNode, *ray);
+    // detect ray intersections and get back HitInfo
+    HitInfo h = HitInfo();
+    bool hit = objectIntersection(*ray, h, rootNode);
     
     // update z-buffer, if necessary
     if(zBuffer)
@@ -124,7 +125,7 @@ void rayTracing(int i){
     
     // if we hit nothing
     Color24 c;
-    if(h.z == FLOAT_MAX){
+    if(!hit){
       c.Set(0, 0, 0);
       
     // shade pixel if it has material
@@ -137,7 +138,6 @@ void rayTracing(int i){
     
     // color the pixel image
     img[pixel] = c;
-    
     // re-assign next pixel (naive, but works)
     pixel += numThreads;
   }
@@ -175,10 +175,35 @@ Point cameraRay(int pX, int pY){
 
 
 // recursive object intersection through all scene objects for some ray
-HitInfo objectIntersection(Node &n, Ray r){
+bool objectIntersection(Ray r, HitInfo &h, Node &n){
   
-  // hit info of closest node
-  HitInfo h = HitInfo();
+  // if object gets hit and hit first
+  bool objectHit;
+  
+  // grab node's object
+  Object *obj = n.getObject();
+  
+  // transform ray into model space (or local space)
+  Ray ray = n.toModelSpace(r);
+  
+  // make hit info for node object (if exists)
+  HitInfo hit = HitInfo();
+  if(obj){
+    hit.setNode(&n);
+    
+    // check if object is hit
+    objectHit = obj->intersectRay(ray, hit);
+  }
+  
+  // check if hit was closer than previous hits
+  if(objectHit){
+    if(hit.z < h.z)
+      h = hit;
+    
+    // if hit is not closer, don't count as hit
+    else
+      objectHit = false; 
+  }
   
   // loop on child nodes
   int j = 0;
@@ -187,38 +212,22 @@ HitInfo objectIntersection(Node &n, Ray r){
     
     // grab child node
     Node *child = n.getChild(j);
-    Object *obj = child->getObject();
-    
-    // transform rays into model space (or local space)
-    Ray ray = child->toModelSpace(r);
-    
-    // for the child, compute ray intersections into hit info
-    HitInfo hit = HitInfo();
-    bool objectHit = obj->intersectRay(ray, hit);
-    hit.setNode(child);
     
     // recursively check this child's descendants for hit info
-    HitInfo hitDesc = objectIntersection(*child, ray);
+    bool childHit = objectIntersection(ray, h, *child);
     
-    // is descendants' hit info closer?
-    if(hitDesc.z < hit.z){
-      hit = hitDesc;
+    // if child is hit, make sure we pass that on
+    if(childHit)
       objectHit = true;
-    }
-    
-    // only store the closest hit info
-    if(objectHit)
-      if(hit.z < h.z){
-        h = hit;
-        
-        // transform hit info from model space (towards world space)
-        child->fromModelSpace(h);
-      }
     
     // loop through all children
     j++;
   }
   
-  // return hit info of closest node
-  return h;
+  // if object (or a descendant) was hit, transform from model space (to world space)
+  if(objectHit)
+    n.fromModelSpace(h);
+  
+  // return whether there was a hit on object or its descendants
+  return objectHit;
 }
