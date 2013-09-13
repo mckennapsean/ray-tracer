@@ -25,7 +25,7 @@ using namespace std;
 
 
 // scene to load (project #) & whether to debug
-const char* xml = "scenes/prj2.xml";
+const char* xml = "scenes/prj3-1.xml";
 bool printXML = false;
 bool zBuffer = false;
 
