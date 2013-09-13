@@ -23,7 +23,14 @@ namespace scene{
 
 
 // generic light definition (from main light class)
-class GenericLight: public Light{};
+class GenericLight: public Light{
+  public:
+    
+    // calculate a shadow for any light (never call from ambient!)
+    float shadow(Ray ray, float z = FLOAT_MAX){
+      return 1.0;
+    }
+};
 
 
 // ambient light definition
@@ -72,9 +79,12 @@ class DirectLight: public GenericLight{
       dir.Set(0, 0, 1);
     }
     
-    // get color of direct light
+    // get color of direct light (check for shadows)
     Color illuminate(Point p){
-      return intensity;
+      Ray r = Ray();
+      r.pos = p;
+      r.dir = -dir;
+      return shadow(r) * intensity;
     }
     
     // get direction of direct light (constant)
@@ -112,9 +122,12 @@ class PointLight: public GenericLight{
       position.Set(0, 0, 0);
     }
     
-    // get color of point light
+    // get color of point light (check for shadows)
     Color illuminate(Point p){
-      return intensity;
+      Ray r = Ray();
+      r.pos = p;
+      r.dir = position - p;
+      return shadow(r, 1.0) * intensity;
     }
     
     // get direction of point light (calculated)
