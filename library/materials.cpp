@@ -78,7 +78,7 @@ class BlinnMaterial: public Material{
           float s = pow(half % n, shininess);
           
           // add specular and diffuse lighting terms (only if positive)
-          if (geom > 0)
+          if(geom > 0)
             c += light->illuminate(h.p) * (geom * diffuse + s * specular);
         }
       }
