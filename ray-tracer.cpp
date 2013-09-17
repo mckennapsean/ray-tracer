@@ -28,7 +28,7 @@ using namespace std;
 const char* xml = "scenes/prj3-1.xml";
 bool printXML = false;
 bool zBuffer = false;
-bool specGeom = true;
+bool specGeom = false;
 
 
 // for ray tracing
