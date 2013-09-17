@@ -43,22 +43,38 @@ class Sphere: public Object{
       
       // if the ray intersects, compute the z-buffer value
       if(det >= 0){
-        float z = (-B - sqrt(det)) / (2.0 * A);
+        float z1 = (-B - sqrt(det)) / (2.0 * A);
+        float z2 = (-B + sqrt(det)) / (2.0 * A);
         
-        // only count hits ahead of 
-        if(z > 0){
-        h.z = z;
+        // check closest z-buffer value, if positive (ahead of our ray)
+        if(z1 > 0){
+          h.z = z1;
+          
+          // compute surface intersection and normal
+          h.p = r.pos + z1 * r.dir;
+          h.n = h.p.GetNormalized();
+          
+          // return true, ray is hit
+          return true;
         
-        // also get the surface intersection and normal
-        h.p = r.pos + z * r.dir;
-        h.n = h.p.GetNormalized();
-        
-        // return true, ray is hit
-        return true;
-      }else{return true;}
+        // check the next ray, if necessary
+        }else if(z2 > 0){
+          h.z = z2;
+          
+          // compute surface intersection and normal
+          h.p = r.pos + z2 * r.dir;
+          h.n = h.p.GetNormalized();
+          
+          // return true, ray is hit
+          return true;
+          
+        // otherwise, all z-buffer values are negative, return false
+        }else
+          return false;
+      }
       
-      // otherwise, return false
-      }else
+      // otherwise, return false (no ray hit)
+      else
         return false;
     }
     
