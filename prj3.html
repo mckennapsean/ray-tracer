@@ -167,23 +167,14 @@ pre .tex .formula {
   <div id="wrapper">
       <h1 id="project3-shadows">Project 3 - Shadows</h1>
 
-<p>In theory, a simple addition of code should produce ray-traced shadows in our scene. For some reason, this functionality is putting my entire scene in shadow. Ignoring the shadow, the shading is right, and I have quadruple-checked the shadow rays being generated. I am completely stumped.</p>
+<p>Shadows are nice and simple to compute using a ray tracer. By simply taking every point and checking to see if there are occluding objects in a scene, we can get free shadows in our ray tracer. This builds off the traceRay() functionality designed within our ray tracer, which checks to see if a ray hits any object within our scene.</p>
 
 <hr />
 
 <h2 id="testscene">Test Scene</h2>
 
-<p>entire scene in shadow:</p>
-
 <figure>
 <img src="images/prj3/test.jpg" alt="" /></figure>
-
-
-
-<p>regular shading:</p>
-
-<figure>
-<img src="images/prj3/test-shading.jpg" alt="" /></figure>
 
 
 
@@ -191,17 +182,8 @@ pre .tex .formula {
 
 <h2 id="boxscene">Box Scene</h2>
 
-<p>entire scene in shadow: </p>
-
 <figure>
 <img src="images/prj3/box.jpg" alt="" /></figure>
-
-
-
-<p>regular shading:</p>
-
-<figure>
-<img src="images/prj3/box-shading.jpg" alt="" /></figure>
 
 
 
@@ -211,9 +193,9 @@ pre .tex .formula {
 
 <p><a href="specs.html"><em>Specs</em></a></p>
 
-<p><em>Test render time:</em> <strong>0.648</strong> s</p>
+<p><em>Test render time:</em> <strong>0.531</strong> s</p>
 
-<p><em>Box render time:</em> <strong>1.210</strong> s</p>
+<p><em>Box render time:</em> <strong>1.052</strong> s</p>
 
 <hr />
 

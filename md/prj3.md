@@ -1,7 +1,7 @@
 Project 3 - Shadows
 ===================
 
-In theory, a simple addition of code should produce ray-traced shadows in our scene. For some reason, this functionality is putting my entire scene in shadow. Ignoring the shadow, the shading is right, and I have quadruple-checked the shadow rays being generated. I am completely stumped.
+Shadows are nice and simple to compute using a ray tracer. By simply taking every point and checking to see if there are occluding objects in a scene, we can get free shadows in our ray tracer. This builds off the traceRay() functionality designed within our ray tracer, which checks to see if a ray hits any object within our scene.
 
 
 - - -
@@ -10,26 +10,14 @@ In theory, a simple addition of code should produce ray-traced shadows in our sc
 Test Scene
 ----------
 
-entire scene in shadow:
-
 ![](images/prj3/test.jpg)
-
-regular shading:
-
-![](images/prj3/test-shading.jpg)
 
 - - -
 
 Box Scene
 ---------
 
-entire scene in shadow: 
-
 ![](images/prj3/box.jpg)
-
-regular shading:
-
-![](images/prj3/box-shading.jpg)
 
 - - -
 
@@ -38,8 +26,8 @@ Details
 
 [*Specs*](specs.html)
 
-*Test render time:* **0.648** s
+*Test render time:* **0.531** s
 
-*Box render time:* **1.210** s
+*Box render time:* **1.052** s
 
 - - -
