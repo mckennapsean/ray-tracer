@@ -738,6 +738,13 @@ class Render{
 };
 
 
+// determines if geometry term is used in the specular reflection
+bool specularGeometry = false;
+void setSpecularGeometry(bool b){
+  specularGeometry = b;
+}
+
+
 // recursively go through node & descendants, find the closest ray hit info
 bool traceRayToNode(Ray r, HitInfo &h, Node &n){
   
