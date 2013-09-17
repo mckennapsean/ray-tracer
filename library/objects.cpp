@@ -44,6 +44,9 @@ class Sphere: public Object{
       // if the ray intersects, compute the z-buffer value
       if(det >= 0){
         float z = (-B - sqrt(det)) / (2.0 * A);
+        
+        // only count hits ahead of 
+        if(z > 0){
         h.z = z;
         
         // also get the surface intersection and normal
@@ -52,6 +55,7 @@ class Sphere: public Object{
         
         // return true, ray is hit
         return true;
+      }else{return true;}
       
       // otherwise, return false
       }else
