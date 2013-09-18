@@ -33,7 +33,7 @@ class BlinnMaterial: public Material{
     }
     
     // shading function (blinn-phong)
-    Color shade(Ray &r, HitInfo &h, LightList &lights){
+    Color shade(Ray &r, HitInfo &h, LightList &lights, int bounceCount = 1){
       
       // initialize color at pixel
       Color c;
@@ -106,6 +106,26 @@ class BlinnMaterial: public Material{
       shininess = s;
     }
     
+    // set the reflection color of the material
+    void setReflection(Color c){
+      reflection = c;
+    }
+    
+    // set the refraction color of the material
+    void setRefraction(Color c){
+      refraction = c;
+    }
+    
+    // set the absorption color of the material
+    void setAbsorption(Color c){
+      absorption = c;
+    }
+    
+    // set the index of refraction of the material
+    void setRefractionIndex(float f){
+      index = f;
+    }
+    
   private:
     
     // colors for shading
@@ -113,6 +133,15 @@ class BlinnMaterial: public Material{
     
     // shininess factor for shading
     float shininess;
+    
+    // colors for reflection, refraction
+    Color reflection, refraction;
+    
+    // index of refraction
+    float index;
+    
+    // color for absorption
+    Color absorption;
 };
 
 
@@ -129,7 +158,7 @@ class PhongMaterial: public Material{
     }
     
     // shading function (phong)
-    Color shade(Ray &r, HitInfo &h, LightList &lights){
+    Color shade(Ray &r, HitInfo &h, LightList &lights, int bounceCount = 1){
       
       // initialize color at pixel
       Color c;
@@ -199,6 +228,26 @@ class PhongMaterial: public Material{
       shininess = s;
     }
     
+    // set the reflection color of the material
+    void setReflection(Color c){
+      reflection = c;
+    }
+    
+    // set the refraction color of the material
+    void setRefraction(Color c){
+      refraction = c;
+    }
+    
+    // set the absorption color of the material
+    void setAbsorption(Color c){
+      absorption = c;
+    }
+    
+    // set the index of refraction of the material
+    void setRefractionIndex(float f){
+      index = f;
+    }
+    
   private:
     
     // colors for shading
@@ -206,4 +255,13 @@ class PhongMaterial: public Material{
     
     // shininess factor for shading
     float shininess;
+    
+    // colors for reflection, refraction
+    Color reflection, refraction;
+    
+    // index of refraction
+    float index;
+    
+    // color for absorption
+    Color absorption;
 };

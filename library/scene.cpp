@@ -381,7 +381,8 @@ class Material: public ItemBase{
     
     // shade method which calls all lights in the list
     // uses the incoming ray, hit info of rendering pixel, and all lights
-    virtual Color shade(Ray &r, HitInfo &h, LightList &lights) = 0;
+    // also keeps an integer count of how many reflection bounces remaining
+    virtual Color shade(Ray &r, HitInfo &h, LightList &lights, int bounceCount = 1) = 0;
 };
 
 

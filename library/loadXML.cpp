@@ -349,6 +349,35 @@ void loadMaterial(XMLElement *e){
           // print out shininess value
           if(print)
             printf("  shininess %f\n", f);
+        
+        // load reflection color
+        }else if(compare(child->Value(), "reflection")){
+          readColor(child, c);
+          m->setReflection(c);
+          
+          // print out reflection color
+          if(print)
+            printf("  reflection %f %f %f\n", c.r, c.g, c.b);
+        
+        // load refraction color and index
+        }else if(compare(child->Value(), "refraction")){
+          readColor(child, c);
+          m->setRefraction(c);
+          readFloat(child, f, "index");
+          m->setRefractionIndex(f);
+          
+          // print out refraction color and index
+          if(print)
+            printf("  refraction %f %f %f (index %f)\n", c.r, c.g, c.b, f);
+        
+        // load absorption color
+        }else if(compare(child->Value(), "absorption")){
+          readColor(child, c);
+          m->setAbsorption(c);
+          
+          // print out absorption color
+          if(print)
+            printf("  absorption %f %f %f\n", c.r, c.g, c.b);
         }
       }
     
@@ -394,6 +423,35 @@ void loadMaterial(XMLElement *e){
           // print out shininess value
           if(print)
             printf("  shininess %f\n", f);
+        
+        // load reflection color
+        }else if(compare(child->Value(), "reflection")){
+          readColor(child, c);
+          m->setReflection(c);
+          
+          // print out reflection color
+          if(print)
+            printf("  reflection %f %f %f\n", c.r, c.g, c.b);
+        
+        // load refraction color and index
+        }else if(compare(child->Value(), "refraction")){
+          readColor(child, c);
+          m->setRefraction(c);
+          readFloat(child, f, "index");
+          m->setRefractionIndex(f);
+          
+          // print out refraction color and index
+          if(print)
+            printf("  refraction %f %f %f (index %f)\n", c.r, c.g, c.b, f);
+        
+        // load absorption color
+        }else if(compare(child->Value(), "absorption")){
+          readColor(child, c);
+          m->setAbsorption(c);
+          
+          // print out absorption color
+          if(print)
+            printf("  absorption %f %f %f\n", c.r, c.g, c.b);
         }
       }
     

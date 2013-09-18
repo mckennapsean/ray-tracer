@@ -25,7 +25,7 @@ using namespace std;
 
 
 // scene to load (project #) & whether to debug
-const char* xml = "scenes/prj3-1.xml";
+const char* xml = "scenes/prj4.xml";
 bool printXML = false;
 bool zBuffer = false;
 bool specGeom = false;
