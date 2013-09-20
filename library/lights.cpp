@@ -29,11 +29,6 @@ class GenericLight: public Light{
     // calculate a shadow for any light (never call from ambient!)
     float shadow(Ray ray, float z = FLOAT_MAX){
       
-      // add bias to position to avoid first hit
-      float bias = 0.001;
-      Point d = ray.dir.GetNormalized();
-      ray.pos += bias * d;
-      
       // set initial hit info
       HitInfo h = HitInfo();
       h.z = z;
