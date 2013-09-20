@@ -188,12 +188,13 @@ class BlinnMaterial: public Material{
               refractionShade = Color(0.929, 0.929, 0.929);
             
             // Schlick's approximation for transmittance vs. reflectance
-            float r0 = pow((n1 - n2) / (n1 + n2), 2);
+            float r0 = (n1 - n2) / (n1 + n2);
+            r0 *= r0;
             float r;
             if(n1 <= n2)
-              r = r0 + (1.0 - r0) * pow((1 - c1), 5);
+              r = r0 + (1.0 - r0) * (1 - c1) * (1 - c1) * (1 - c1) * (1 - c1) * (1 - c1);
             else
-              r = r0 + (1.0 - r0) * pow((1 - c2), 5);
+              r = r0 + (1.0 - r0) * (1 - c2) * (1 - c2) * (1 - c2) * (1 - c2) * (1 - c2);
             float t = 1.0 - r;
             
             // add refraction color
