@@ -197,8 +197,18 @@ class BlinnMaterial: public Material{
               r = r0 + (1.0 - r0) * (1 - c2) * (1 - c2) * (1 - c2) * (1 - c2) * (1 - c2);
             float t = 1.0 - r;
             
+            // compute total refraction color
+            Color refractionColor = refraction * (t * refractionShade + r * reflectionShade);
+            
+            // attenuate refraction color by absorption
+            if(!refractHI.front){
+              refractionColor.r *= exp(-absorption.r * refractHI.z);
+              refractionColor.g *= exp(-absorption.g * refractHI.z);
+              refractionColor.b *= exp(-absorption.b * refractHI.z);
+            }
+            
             // add refraction color
-            c += refraction * (t * refractionShade + r * reflectionShade);
+            c += refractionColor;
           }
         
         // for total internal reflection
