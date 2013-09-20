@@ -161,9 +161,13 @@ class BlinnMaterial: public Material{
         Point pt = s2 * -p;
         Point nt = c2 * -n;
         
+        // debugging
+        //printf("(%f, %f) & (%f, %f, %f, %f)\n", n1, n2, c1, s1, s2, c2);
+        
         // store ray direction
         refract->dir = pt + nt;
-        
+        //refract->dir = n1 / n2 * v + (n1 / n2 * c1 - sqrt(1 - (n1 / n2) * (n1 / n2) * (1 - c1 * c1))) * n;
+        if(s2 * s2 <= 1.0){
         // create and store refracted hit info
         HitInfo refractHI = HitInfo();
         bool refractHit = traceRay(*refract, refractHI);
@@ -176,18 +180,20 @@ class BlinnMaterial: public Material{
             m = n->getMaterial();
           
           // for the material, recursively add refractions, within bounce count
-          Color refractionShade;
+          Color refractionShade = Color(0.0, 0.0, 0.0);
+          if(c1 < 1.0 && c2 < 1.0 && s1 < 1.0 && s2 < 1.0 && c1 > 0.0 && c2 > 0.0 && s1 > 0.0 && s2 > 0.0){
+            
           if(m)
             refractionShade = m->shade(*refract, refractHI, lights, bounceCount - 1);
           
           // for no material, show the hit
           else
-            refractionShade = Color(0.929, 0.929, 0.929);
+            refractionShade = Color(0.929, 0.929, 0.929);}
           
           // add refraction color
           c += refraction * refractionShade;
           //c += refraction * (T * refractionShade + R * reflectionShade);
-        }
+        }}
       }
       
       // return final shaded color
