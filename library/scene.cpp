@@ -352,6 +352,11 @@ class Object{
   public:
     virtual ~Object() = 0;
     virtual bool intersectRay(Ray &r, HitInfo &h, int face = HIT_FRONT) = 0;
+    
+    // bias used in ray intersection hit detection
+    float getBias(){
+      return 0.001;
+    }
 };
 Object::~Object(){}
 

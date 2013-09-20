@@ -28,7 +28,6 @@ class Sphere: public Object{
     Sphere(){
       center.Set(0, 0, 0);
       radius = 1.0;
-      bias = 0.001;
     }
     
     // intsersect a ray against the unit sphere
@@ -48,7 +47,7 @@ class Sphere: public Object{
         float z2 = (-B + sqrt(det)) / (2.0 * A);
         
         // check closest z-buffer value, if positive (ahead of our ray)
-        if(z1 > bias){
+        if(z1 > getBias()){
           h.z = z1;
           
           // compute surface intersection and normal
@@ -59,7 +58,7 @@ class Sphere: public Object{
           return true;
         
         // check the next ray, if necessary
-        }else if(z2 > bias){
+        }else if(z2 > getBias()){
           h.z = z2;
           
           // compute surface intersection and normal
@@ -84,7 +83,4 @@ class Sphere: public Object{
     // sphere center and its radius
     Point center;
     float radius;
-    
-    // bias for avoiding detection of hits too close to the ray
-    float bias;
 };
