@@ -30,6 +30,10 @@ class BlinnMaterial: public Material{
       diffuse.Set(0.5, 0.5, 0.5);
       specular.Set(0.7, 0.7, 0.7);
       shininess = 20.0;
+      reflection.Set(0.0, 0.0, 0.0);
+      refraction.Set(0.0, 0.0, 0.0);
+      absorption.Set(0.0, 0.0, 0.0);
+      index = 1.0;
     }
     
     // shading function (blinn-phong)
@@ -155,6 +159,10 @@ class PhongMaterial: public Material{
       diffuse.Set(0.5, 0.5, 0.5);
       specular.Set(0.7, 0.7, 0.7);
       shininess = 20.0;
+      reflection.Set(0.0, 0.0, 0.0);
+      refraction.Set(0.0, 0.0, 0.0);
+      absorption.Set(0.0, 0.0, 0.0);
+      index = 1.0;
     }
     
     // shading function (phong)
