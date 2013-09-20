@@ -134,9 +134,9 @@ void rayTracing(int i){
     if(!hit){
       c.Set(0, 0, 0);
       
-    // shade pixel if it has material
+    // shade pixel if it has material (16-pass refractions/reflections)
     }else if(m)
-      c = Color24(m->shade(*ray, h, lights));
+      c = Color24(m->shade(*ray, h, lights, 16));
     
     // otherwise, just color it white
     else

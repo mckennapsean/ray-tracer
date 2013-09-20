@@ -91,6 +91,29 @@ class BlinnMaterial: public Material{
         }
       }
       
+      // add reflection color (till out of bounces)
+      if(bounceCount > 0 && reflection.Grey() != 0.0){
+        
+        // create reflected vector
+        Ray *reflect = new Ray();
+        reflect->pos = h.p;
+        reflect->dir = 2 * (h.n % -r.dir) * h.n + r.dir;
+        
+        // create and store reflected hit info
+        HitInfo reflectHI = HitInfo();
+        bool reflectHit = traceRay(*reflect, reflectHI);
+        
+        // grab the node material hit
+        if(reflectHit){
+          Node *n = reflectHI.node;
+          Material *m;
+          m = n->getMaterial();
+          
+          // if hit, recursively add reflections, within bounce count
+          c += reflection * m->shade(*reflect, reflectHI, lights, bounceCount - 1);
+        }
+      }
+      
       // return final shaded color
       return c;
     }
