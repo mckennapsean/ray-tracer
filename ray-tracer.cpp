@@ -123,24 +123,28 @@ void rayTracing(int i){
     if(zBuffer)
       zImg[pixel] = h.z;
     
-    // try and get the hit object & material
-    Node *n = h.node;
-    Material *m;
-    if(n)
-      m = n->getMaterial();
+    // color for the pixel
+    Color24 c;
+    
+    // if hit, get the node's material
+    if(hit){
+      Node *n = h.node;
+      Material *m;
+      if(n)
+        m = n->getMaterial();
+      
+      // if there is a material, shade the pixel
+      // 16-passes for reflections and refractions
+      if(m)
+        c = Color24(m->shade(*ray, h, lights, 16));
+      
+      // otherwise color it white (as a hit)
+      else
+        c.Set(237, 237, 237);
     
     // if we hit nothing
-    Color24 c;
-    if(!hit){
-      c.Set(0, 0, 0);
-      
-    // shade pixel if it has material (16-pass refractions/reflections)
-    }else if(m)
-      c = Color24(m->shade(*ray, h, lights, 16));
-    
-    // otherwise, just color it white
-    else
-      c.Set(237, 237, 237);
+    }else
+      c.Set(0.0, 0.0, 0.0);
     
     // color the pixel image
     img[pixel] = c;

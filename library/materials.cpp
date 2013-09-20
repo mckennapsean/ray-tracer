@@ -107,10 +107,16 @@ class BlinnMaterial: public Material{
         if(reflectHit){
           Node *n = reflectHI.node;
           Material *m;
-          m = n->getMaterial();
+          if(n)
+            m = n->getMaterial();
           
           // if hit, recursively add reflections, within bounce count
-          c += reflection * m->shade(*reflect, reflectHI, lights, bounceCount - 1);
+          if(m)
+            c += reflection * m->shade(*reflect, reflectHI, lights, bounceCount - 1);
+          
+          // for no material objects, show the hit
+          else
+            c += Color(0.929, 0.929, 0.929);
         }
       }
       
