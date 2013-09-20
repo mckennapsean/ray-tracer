@@ -134,7 +134,35 @@ class BlinnMaterial: public Material{
         // create refracted vector
         Ray *refract = new Ray();
         refract->pos = h.p;
-        refract->dir = 2 * (h.n % -r.dir) * h.n + r.dir;
+        
+        // variables for refraction calculation
+        Point v = -r.dir;
+        Point n;
+        float n1;
+        float n2;
+        
+        // handle front-face and back-face hits accordingly
+        if(h.front){
+          n1 = 1.0;
+          n2 = index;
+          n = h.n;
+        }else{
+          n1 = index;
+          n2 = 1.0;
+          n = -h.n;
+        }
+        
+        // calculate refraction ray direction
+        float c1 = n % v;
+        float s1 = sqrt(1.0 - c1 * c1);
+        float s2 = n1 / n2 * s1;
+        float c2 = sqrt(1.0 - s2 * s2);
+        Point p = (v - c1 * n).GetNormalized();
+        Point pt = s2 * -p;
+        Point nt = c2 * -n;
+        
+        // store ray direction
+        refract->dir = pt + nt;
         
         // create and store refracted hit info
         HitInfo refractHI = HitInfo();
@@ -148,6 +176,7 @@ class BlinnMaterial: public Material{
             m = n->getMaterial();
           
           // for the material, recursively add refractions, within bounce count
+          Color refractionShade;
           if(m)
             refractionShade = m->shade(*refract, refractHI, lights, bounceCount - 1);
           
@@ -156,7 +185,8 @@ class BlinnMaterial: public Material{
             refractionShade = Color(0.929, 0.929, 0.929);
           
           // add refraction color
-          c += refraction * (T * refractionShade + R * reflectionShade);
+          c += refraction * refractionShade;
+          //c += refraction * (T * refractionShade + R * reflectionShade);
         }
       }
       
