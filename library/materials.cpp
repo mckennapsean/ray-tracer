@@ -161,13 +161,24 @@ class BlinnMaterial: public Material{
         Point pt = s2 * -p;
         Point nt = c2 * -n;
         
+        // Shick's approximation for transmittance vs. reflectance
+        float r0 = pow((n1 - n2) / (n1 + n2), 2);
+        float r;
+        if(n1 <= n2)
+          r = r0 + (1.0 - r0) * pow((1 - c1), 5);
+        else
+          r = r0 + (1.0 - r0) * pow((1 - c2), 5);
+        float t = 1.0 - r;
+        
         // debugging
         //printf("(%f, %f) & (%f, %f, %f, %f)\n", n1, n2, c1, s1, s2, c2);
         
         // store ray direction
         refract->dir = pt + nt;
-        //refract->dir = n1 / n2 * v + (n1 / n2 * c1 - sqrt(1 - (n1 / n2) * (n1 / n2) * (1 - c1 * c1))) * n;
-        if(s2 * s2 <= 1.0){
+        
+        // avoid total internal reflection
+        if(s2 * s2 <= 1.0 || c1 > 0.0){
+          
         // create and store refracted hit info
         HitInfo refractHI = HitInfo();
         bool refractHit = traceRay(*refract, refractHI);
@@ -181,7 +192,7 @@ class BlinnMaterial: public Material{
           
           // for the material, recursively add refractions, within bounce count
           Color refractionShade = Color(0.0, 0.0, 0.0);
-          if(c1 < 1.0 && c2 < 1.0 && s1 < 1.0 && s2 < 1.0 && c1 > 0.0 && c2 > 0.0 && s1 > 0.0 && s2 > 0.0){
+          if(c1 > 0.0){
             
           if(m)
             refractionShade = m->shade(*refract, refractHI, lights, bounceCount - 1);
@@ -192,8 +203,9 @@ class BlinnMaterial: public Material{
           
           // add refraction color
           c += refraction * refractionShade;
-          //c += refraction * (T * refractionShade + R * reflectionShade);
-        }}
+          //c += refraction * (t * refractionShade + r * reflectionShade);
+        }}else
+          c += refraction * reflectionShade;
       }
       
       // return final shaded color
