@@ -161,47 +161,43 @@ class BlinnMaterial: public Material{
         Point pt = s2 * -p;
         Point nt = c2 * -n;
         
-        // Shick's approximation for transmittance vs. reflectance
-        float r0 = pow((n1 - n2) / (n1 + n2), 2);
-        float r;
-        if(n1 <= n2)
-          r = r0 + (1.0 - r0) * pow((1 - c1), 5);
-        else
-          r = r0 + (1.0 - r0) * pow((1 - c2), 5);
-        float t = 1.0 - r;
-        
         // store ray direction
         refract->dir = pt + nt;
         
-        // avoid total internal reflection
+        // only cast rays if not total internal reflection
         if(s2 * s2 <= 1.0){
-          
-        // create and store refracted hit info
-        HitInfo refractHI = HitInfo();
-        bool refractHit = traceRay(*refract, refractHI);
-        
-        // grab the node material hit
-        if(refractHit){
-          Node *n = refractHI.node;
-          Material *m;
-          if(n)
-            m = n->getMaterial();
-          
-          // for the material, recursively add refractions, within bounce count
-          Color refractionShade = Color(0.0, 0.0, 0.0);
-          if(c1 > 0.0){
             
-          if(m)
-            refractionShade = m->shade(*refract, refractHI, lights, bounceCount - 1);
+          // create and store refracted hit info
+          HitInfo refractHI = HitInfo();
+          bool refractHit = traceRay(*refract, refractHI);
           
-          // for no material, show the hit
-          else
-            refractionShade = Color(0.929, 0.929, 0.929);}
-          
-          // add refraction color
-          c += refraction * refractionShade;
-          //c += refraction * (t * refractionShade + r * reflectionShade);
-        }}else
+          // grab the node material hit
+          if(refractHit){
+            Node *n = refractHI.node;
+            Material *m;
+            if(n)
+              m = n->getMaterial();
+            
+            // for the material, recursively add refractions, within bounce count
+            Color refractionShade = Color(0.0, 0.0, 0.0);
+            if(m)
+              refractionShade = m->shade(*refract, refractHI, lights, bounceCount - 1);
+            
+            // for no material, show the hit
+            else
+              refractionShade = Color(0.929, 0.929, 0.929);
+            
+            // Schlick's approximation for transmittance vs. reflectance
+            float r0 = pow((n1 - n2) / (n1 + n2), 2);
+            float r = r0 + (1.0 - r0) * pow((1 - c1), 5);
+            float t = 1.0 - r;
+            
+            // add refraction color
+            c += refraction * (t * refractionShade + r * reflectionShade);
+          }
+        
+        // for total internal reflection
+        }else
           c += refraction * reflectionShade;
       }
       
