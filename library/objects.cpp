@@ -50,6 +50,7 @@ class Sphere: public Object{
         if(z1 * z2 < 0.0)
           h.front = false;
         
+        // if hit is too close, assume it is a back-face hit
         else if(z1 <= getBias())
           h.front = false;
         
