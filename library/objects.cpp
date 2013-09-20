@@ -50,6 +50,9 @@ class Sphere: public Object{
         if(z1 * z2 < 0.0)
           h.front = false;
         
+        else if(z1 <= getBias())
+          h.front = false;
+        
         // check closest z-buffer value, if positive (ahead of our ray)
         if(z1 > getBias()){
           h.z = z1;

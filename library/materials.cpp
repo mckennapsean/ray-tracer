@@ -170,14 +170,11 @@ class BlinnMaterial: public Material{
           r = r0 + (1.0 - r0) * pow((1 - c2), 5);
         float t = 1.0 - r;
         
-        // debugging
-        //printf("(%f, %f) & (%f, %f, %f, %f)\n", n1, n2, c1, s1, s2, c2);
-        
         // store ray direction
         refract->dir = pt + nt;
         
         // avoid total internal reflection
-        if(s2 * s2 <= 1.0 || c1 > 0.0){
+        if(s2 * s2 <= 1.0){
           
         // create and store refracted hit info
         HitInfo refractHI = HitInfo();
