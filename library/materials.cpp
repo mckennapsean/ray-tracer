@@ -120,6 +120,10 @@ class BlinnMaterial: public Material{
         }
       }
       
+      // reset color if we have a back hit
+      if(!h.front)
+        c.Set(0.0, 0.0, 0.0);
+      
       // return final shaded color
       return c;
     }

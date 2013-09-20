@@ -46,6 +46,10 @@ class Sphere: public Object{
         float z1 = (-B - sqrt(det)) / (2.0 * A);
         float z2 = (-B + sqrt(det)) / (2.0 * A);
         
+        // determine if we have a back hit
+        if(z1 * z2 < 0.0)
+          h.front = false;
+        
         // check closest z-buffer value, if positive (ahead of our ray)
         if(z1 > getBias()){
           h.z = z1;
