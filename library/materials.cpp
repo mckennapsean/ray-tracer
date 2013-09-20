@@ -131,8 +131,33 @@ class BlinnMaterial: public Material{
       // add refraction color (front and back face hits)
       if(refraction.Grey() != 0.0){
         
-        //
+        // create refracted vector
+        Ray *refract = new Ray();
+        refract->pos = h.p;
+        refract->dir = 2 * (h.n % -r.dir) * h.n + r.dir;
         
+        // create and store refracted hit info
+        HitInfo refractHI = HitInfo();
+        bool refractHit = traceRay(*refract, refractHI);
+        
+        // grab the node material hit
+        if(refractHit){
+          Node *n = refractHI.node;
+          Material *m;
+          if(n)
+            m = n->getMaterial();
+          
+          // for the material, recursively add refractions, within bounce count
+          if(m)
+            refractionShade = m->shade(*refract, refractHI, lights, bounceCount - 1);
+          
+          // for no material, show the hit
+          else
+            refractionShade = Color(0.929, 0.929, 0.929);
+          
+          // add refraction color
+          c += refraction * (T * refractionShade + R * reflectionShade);
+        }
       }
       
       // return final shaded color
