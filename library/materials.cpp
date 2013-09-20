@@ -43,56 +43,60 @@ class BlinnMaterial: public Material{
       Color c;
       c.Set(0.0, 0.0, 0.0);
       
-      // add shading from each light
-      int numLights = lights.size();
-      for(int i = 0; i < numLights; i++){
-        
-        // grab light
-        Light *light = lights[i];
-        
-        // ambient light check
-        if(light->isAmbient()){
+      // add shading from each light (front hit only)
+      if(h.front){
+        int numLights = lights.size();
+        for(int i = 0; i < numLights; i++){
           
-          // add ambient lighting term
-          c += diffuse * light->illuminate(h.p);
-        
-        // otherwise, add diffuse and specular components from light
-        }else{
+          // grab light
+          Light *light = lights[i];
           
-          // grab vector to light
-          Point l = -light->direction(h.p);
-          l.Normalize();
+          // ambient light check
+          if(light->isAmbient()){
+            
+            // add ambient lighting term
+            c += diffuse * light->illuminate(h.p);
           
-          // grab vector to camera
-          Point v = -r.dir;
-          v.Normalize();
-          
-          // grab normal
-          Point n = h.n;
-          n.Normalize();
-          
-          // calculate geometry term
-          float geom = n % l;
-          
-          // calculate half-way vector
-          Point half = v + l;
-          half.Normalize();
-          
-          // calculate total specular factor
-          float s = pow(half % n, shininess);
-          
-          // add specular and diffuse lighting terms (only if positive)
-          if(geom > 0){
-            if(specularGeometry)
-              c += light->illuminate(h.p) * geom * (diffuse + s * specular);
-            else
-              c += light->illuminate(h.p) * (geom * diffuse + s * specular);
+          // otherwise, add diffuse and specular components from light
+          }else{
+            
+            // grab vector to light
+            Point l = -light->direction(h.p);
+            l.Normalize();
+            
+            // grab vector to camera
+            Point v = -r.dir;
+            v.Normalize();
+            
+            // grab normal
+            Point n = h.n;
+            n.Normalize();
+            
+            // calculate geometry term
+            float geom = n % l;
+            
+            // calculate half-way vector
+            Point half = v + l;
+            half.Normalize();
+            
+            // calculate total specular factor
+            float s = pow(half % n, shininess);
+            
+            // add specular and diffuse lighting terms (only if positive)
+            if(geom > 0){
+              if(specularGeometry)
+                c += light->illuminate(h.p) * geom * (diffuse + s * specular);
+              else
+                c += light->illuminate(h.p) * (geom * diffuse + s * specular);
+            }
           }
         }
       }
       
-      // add reflection color (till out of bounces)
-      if(bounceCount > 0 && reflection.Grey() != 0.0){
+      // calculate and add reflection color (till out of bounces)
+      Color reflectionShade;
+      reflectionShade.Set(0.0, 0.0, 0.0);
+      if(bounceCount > 0 && (reflection.Grey() != 0.0 || refraction.Grey() != 0.0)){
         
         // create reflected vector
         Ray *reflect = new Ray();
@@ -110,19 +114,26 @@ class BlinnMaterial: public Material{
           if(n)
             m = n->getMaterial();
           
-          // if hit, recursively add reflections, within bounce count
+          // for the material, recursively add reflections, within bounce count
           if(m)
-            c += reflection * m->shade(*reflect, reflectHI, lights, bounceCount - 1);
+            reflectionShade = m->shade(*reflect, reflectHI, lights, bounceCount - 1);
           
-          // for no material objects, show the hit
+          // for no material, show the hit
           else
-            c += Color(0.929, 0.929, 0.929);
+            reflectionShade = Color(0.929, 0.929, 0.929);
+          
+          // only add reflection color for front hits
+          if(h.front)
+            c += reflection * reflectionShade;
         }
       }
       
-      // reset color if we have a back hit
-      if(!h.front)
-        c.Set(0.0, 0.0, 0.0);
+      // add refraction color (front and back face hits)
+      if(refraction.Grey() != 0.0){
+        
+        //
+        
+      }
       
       // return final shaded color
       return c;
