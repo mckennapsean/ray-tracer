@@ -48,13 +48,13 @@ fi
 # param = 0 || 6
 if [ $1 -eq 0 ]
 then
-  rm -f images/image.jpg
-  #rm -f images/imageZ.jpg
+  rm -f images/image.png
+  #rm -f images/imageZ.png
 else
   if [ $1 -eq 6 ]
   then
-    rm -f images/image.jpg
-    #rm -f images/imageZ.jpg
+    rm -f images/image.png
+    #rm -f images/imageZ.png
   fi
 fi
 
@@ -62,16 +62,16 @@ fi
 # param > 3
 if [ $1 -gt 3 ]
 then
-  convert images/image.ppm images/image.jpg
-  #convert images/imageZ.ppm images/imageZ.jpg
+  convert images/image.ppm images/image.png
+  #convert images/imageZ.ppm images/imageZ.png
 fi
 
 # open images
 # param > 4
 if [ $1 -gt 4 ]
 then
-  open -a /Applications/Preview.app/ images/image.jpg
-  #open -a /Applications/Preview.app/ images/imageZ.jpg
+  open -a /Applications/Preview.app/ images/image.png
+  #open -a /Applications/Preview.app/ images/imageZ.png
 fi
 
 # cleanup
