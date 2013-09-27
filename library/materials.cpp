@@ -332,12 +332,8 @@ class PhongMaterial: public Material{
           float s = pow(refl % v, shininess);
           
           // add specular and diffuse lighting terms (only if positive)
-          if(geom > 0){
-            if(specularGeometry)
-              c += light->illuminate(h.p) * geom * (diffuse + s * specular);
-            else
-              c += light->illuminate(h.p) * (geom * diffuse + s * specular);
-          }
+          if(geom > 0)
+            c += light->illuminate(h.p) * geom * (diffuse + s * specular);
         }
       }
       
