@@ -13,7 +13,11 @@
 //    limitations under the License.
 //
 
-// object sub-classes (e.g. sphere)
+// object sub-classes (e.g. sphere, plane, triangular mesh OBJ)
+
+
+// import triangular mesh class
+#include "cyCodeBase/cyTriMesh.h"
 
 
 // namespace
@@ -86,9 +90,69 @@ class Sphere: public Object{
         return false;
     }
     
+    // get sphere bounding box
+    BoundingBox getBoundBox(){
+      return BoundingBox(-1.0, -1.0, -1.0, 1.0, 1.0, 1.0);
+    }
+    
   private:
     
     // sphere center and its radius
     Point center;
     float radius;
+};
+
+
+// Plane definition (a "unit" plane)
+class Plane: public Object{
+  public:
+    
+    // intersect a ray against the "unit" plane
+    bool intersectRay(Ray &r, HitInfo &h, int face = HIT_FRONT){
+      
+      // to be implemented
+      return false;
+    }
+    
+    // get plane bounding box
+    BoundingBox getBoundBox(){
+      return BoundingBox(-1.0, -1.0, 0.0, 1.0, 1.0, 0.0);
+    }
+};
+
+
+// Triangular Mesh Object definition (from an OBJ file)
+class TriObj: public Object, private cyTriMesh{
+  public:
+    
+    // intersect a ray against the triangular mesh
+    bool intersectRay(Ray &r, HitInfo &h, int face = HIT_FRONT){
+      
+      // to be implemented
+      return false;
+    }
+    
+    // get triangular mesh bounding box
+    BoundingBox getBoundBox(){
+      return BoundingBox(GetBoundMin(), GetBoundMax());
+    }
+    
+    // when loading a triangular mesh, get its bounding box
+    bool load(const char *file){
+      if(!LoadFromFileObj(file))
+        return false;
+      if(!HasNormals())
+        ComputeNormals();
+      ComputeBoundingBox();
+      return true;
+    }
+    
+  private:
+    
+    // intersect a ray with a single triangle
+    bool intersectTriangle(Ray &r, HitInfo &h, int face, int faceID){
+      
+      // to be implemented
+      return false;
+    }
 };

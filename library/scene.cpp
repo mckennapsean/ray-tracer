@@ -66,6 +66,101 @@ class Ray{
 };
 
 
+// Bounding Box definition (for 
+class BoundingBox{
+  public:
+    
+    // store min and max bounding box values
+    Point minP, maxP;
+    
+    // constructors
+    BoundingBox(){
+      init();
+    }
+    BoundingBox(Point min, Point max){
+      minP = min;
+      maxP = max;
+    }
+    BoundingBox(float minX, float minY, float minZ, float maxX, maxY, maxZ){
+      minP = Point(minX, minY, minZ);
+      maxP = Point(maxX, maxY, maxZ);
+    }
+    BoundingBox(float *dim){
+      minP = dim;
+      maxP = &dim[3];
+    }
+    
+    // initialize the bounding box
+    // no points should exist in the box (aka, empty)
+    void init(){
+      minP.set(FLOAT_MAX, FLOAT_MAX, FLOAT_MAX);
+      maxP.set(-FLOAT_MAX, -FLOAT_MAX, -FLOAT_MAX);
+    }
+    
+    // return true only if the bounding box is empty
+    bool isEmpty(){
+      return (minP.x > maxP.x || minP.y > maxP.y || minP.z > maxP.z);
+    }
+    
+    // returns one of the eight corners of the bounding box, in order:
+    // 0: (minX, minY, minZ)   1: (maxX, minY, minZ)
+    // 2: (minX, maxY, minZ)   3: (maxX, maxY, minZ)
+    // 4: (minX, minY, maxZ)   5: (maxX, minY, maxZ)
+    // 6: (minX, maxY, maxZ)   7: (maxX, maxY, maxZ)
+    Point corner(int i){
+      Point p;
+      if(i % 2 == 0)
+        p.x = minX;
+      else
+        p.x = maxX;
+      if(i % 4 < 2)
+        p.y = minY;
+      else
+        p.y = maxY;
+      if(i < 4)
+        p.z = minZ;
+      else
+        p.z = maxZ;
+      return p;
+    }
+    
+    // enlarge the bounding box to encompass some point p
+    void operator += (Point &p){
+      for(int i = 0; i < 3; i++){
+        if(minP[i] > p[i])
+          minP[i] = p[i];
+        if(maxP[i] < p[i])
+          maxP[i] = p[i];
+      }
+    }
+    
+    // enlarge the bounding box by another bounding box
+    void operator += (Box &b){
+      for(int i = 0; i < 3; i++){
+        if(minP[i] > b.minP[i])
+          minP[i] = b.minP[i];
+        if(maxP[i] < b.maxP[i])
+          maxP[i] = b.maxP[i];
+      }
+    }
+    
+    // return true only for a point in the bounding box
+    bool isInside(Point &p){
+      for(int i = 0; i < 3; i++)
+        if(minP[i] > p[i] || maxP[i] < p[i])
+          return false;
+      return true;
+    }
+    
+    // returns true only for a ray intersecting the bounding box, if the parameter of the hit is less than some maxT
+    bool intersectRay(Ray &r, float maxT){
+      
+      // to be implemented
+      return false;
+    }
+};
+
+
 // Node declaration (definition comes later)
 class Node;
 
@@ -351,7 +446,12 @@ class Transformation{
 class Object{
   public:
     virtual ~Object() = 0;
+    
+    // intersect ray function for each object
     virtual bool intersectRay(Ray &r, HitInfo &h, int face = HIT_FRONT) = 0;
+    
+    // bounding box function for each object
+    virtual BoundingBox getBoundBox() = 0;
     
     // bias used in ray intersection hit detection
     float getBias(){
@@ -419,6 +519,10 @@ class Node: public ItemBase, public Transformation{
     
     // material used in shading an object
     Material *matl;
+    
+    // bounding box for all child nodes
+    // does not include this node's object!
+    BoundingBox childBoundBox;
   
   public:
     
@@ -430,10 +534,17 @@ class Node: public ItemBase, public Transformation{
       matl = NULL;
     }
     
+    // deconstructor
+    ~Node(){
+      deleteAllChildNodes();
+    }
+    
     // initialize the node, by deleting all its children
     void init(){
       deleteAllChildNodes();
       obj = NULL;
+      matl = NULL;
+      childBoundBox.init();
       setName(NULL);
       initTransform();
     }
@@ -493,6 +604,34 @@ class Node: public ItemBase, public Transformation{
         delete child[i];
       }
       setNumChild(0);
+    }
+    
+    // bounding box computation (for all children)
+    Box& computeChildBoundBox(){
+      childBoundBox.init();
+      
+      // grab all child bounding boxes!
+      for(int i = 0; i < numChild; i++){
+        BoundingBox childBox = child[i]->computeChildBoundBox();
+        Object *childObj = child[i]->getObject();
+        
+        // add child object's bounding box
+        if(childObj)
+          childBox += childObj->getBoundBox;
+        
+        // transform the bounding box space
+        Matrix childTM = child[i]->getTransform();
+        for(int j = 0; j < 8; j++)
+          childBoundBox += childTM * childBox.corner(j);
+      }
+      
+      // return the computed child node bounding box
+      return childBoundBox;
+    }
+    
+    // get the child bounding box
+    BoundingBox& getChildBoundBox(){
+      return childBoundBox;
     }
     
     // get / set objects attached to node

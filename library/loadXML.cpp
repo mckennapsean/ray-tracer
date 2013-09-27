@@ -33,6 +33,7 @@ Camera camera;
 Object *aSphere;
 MaterialList materials;
 LightList lights;
+ObjFileList objList;
 
 
 // scene image
@@ -97,12 +98,17 @@ int loadScene(const char *file, bool p = false){
   rootNode.init();
   materials.deleteAll();
   lights.deleteAll();
+  objList.clear();
   
   // load object types once
   aSphere = new Sphere();
+  aPlane = new Plane();
   
   // pass on scene XML element to load scene elements only
   loadScene(scene);
+  
+  // calculate bounding boxes for all nodes
+  rootNode.computeChildBoundBox();
   
   // assign materials to each node
   int numNodes = nodeMaterialList.size();
@@ -198,6 +204,38 @@ void loadNode(Node *n, XMLElement *e, int level){
       // print out object type
       if(print)
         printf(" - Sphere");
+    
+    // for plane
+    }else if(compare(type, "plane"){
+      node->setObject(&*aPlane);
+      
+      // print out object type
+      if(print)
+        printf(" - Plane");
+    
+    // for object (composed of triangles)
+    }else if(compare(type, "obj"){
+      Object *obj = objList.find(name);
+      
+      // no object on list, so load it a triangular mesh
+      if(obj == NULL){
+        TriObj *triObj = new TriObj;
+        
+        // try to load OBJ file
+        if(!triObj->load(name)){
+          if(print)
+            printf(" -- ERROR: Cannot load file \"%s.\"", name);
+          delete triObj;
+        
+        // add the OBJ file
+        }else{
+          objList.append(triObj, name);
+          obj = triObj;
+        }
+      }
+      
+      // set triangular mesh node object
+      node->setObject(obj);
     
     // for unknown object
     }else{
