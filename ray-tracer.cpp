@@ -28,7 +28,6 @@ using namespace std;
 const char* xml = "scenes/prj4.xml";
 bool printXML = false;
 bool zBuffer = false;
-bool specGeom = false;
 
 
 // for ray tracing
@@ -62,9 +61,6 @@ int main(){
   
   // set the scene as the root node
   setScene(rootNode);
-  
-  // whether to use geometry term in specular reflection
-  setSpecularGeometry(specGeom);
   
   // set variables for ray tracing
   w = render.getWidth();
