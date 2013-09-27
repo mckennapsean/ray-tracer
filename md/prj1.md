@@ -10,14 +10,14 @@ This project provides the barebones structure and fundamental functions that the
 Ray Casting
 -----------
 
-![](images/prj1/ray-casting.jpg)
+![](images/prj1/ray-casting.png)
 
 - - -
 
 Z-Buffer
 --------
 
-![](images/prj1/z-buffer.jpg)
+![](images/prj1/z-buffer.png)
 
 - - -
 

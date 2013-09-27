@@ -10,7 +10,7 @@ Now, the ray tracer can follow camera rays as they bounce off and through our di
 Box Scene
 ---------
 
-![](images/prj4/box.jpg)
+![](images/prj4/box.png)
 
 - - -
 

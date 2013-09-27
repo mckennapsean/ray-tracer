@@ -10,7 +10,7 @@ Now, the ray tracer can detect both lighting in the scene and materials that get
 Blinn-Phong
 -----------
 
-![](images/prj2/blinn-phong.jpg)
+![](images/prj2/blinn-phong.png)
 
 - - -
 
@@ -19,7 +19,7 @@ Phong Comparison
 
 Hover over the image to see the Blinn-Phong equivalent. 
 
-![](images/prj2/phong.jpg)
+![](images/prj2/phong.png)
 
 - - -
 

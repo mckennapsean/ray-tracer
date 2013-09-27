@@ -10,14 +10,14 @@ Shadows are nice and simple to compute using a ray tracer. By simply taking ever
 Test Scene
 ----------
 
-![](images/prj3/test.jpg)
+![](images/prj3/test.png)
 
 - - -
 
 Box Scene
 ---------
 
-![](images/prj3/box.jpg)
+![](images/prj3/box.png)
 
 - - -
 
