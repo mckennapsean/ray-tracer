@@ -81,7 +81,7 @@ class BoundingBox{
       minP = min;
       maxP = max;
     }
-    BoundingBox(float minX, float minY, float minZ, float maxX, maxY, maxZ){
+    BoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ){
       minP = Point(minX, minY, minZ);
       maxP = Point(maxX, maxY, maxZ);
     }
@@ -93,8 +93,8 @@ class BoundingBox{
     // initialize the bounding box
     // no points should exist in the box (aka, empty)
     void init(){
-      minP.set(FLOAT_MAX, FLOAT_MAX, FLOAT_MAX);
-      maxP.set(-FLOAT_MAX, -FLOAT_MAX, -FLOAT_MAX);
+      minP.Set(FLOAT_MAX, FLOAT_MAX, FLOAT_MAX);
+      maxP.Set(-FLOAT_MAX, -FLOAT_MAX, -FLOAT_MAX);
     }
     
     // return true only if the bounding box is empty
@@ -110,22 +110,22 @@ class BoundingBox{
     Point corner(int i){
       Point p;
       if(i % 2 == 0)
-        p.x = minX;
+        p.x = minP.x;
       else
-        p.x = maxX;
+        p.x = maxP.x;
       if(i % 4 < 2)
-        p.y = minY;
+        p.y = minP.y;
       else
-        p.y = maxY;
+        p.y = maxP.y;
       if(i < 4)
-        p.z = minZ;
+        p.z = minP.z;
       else
-        p.z = maxZ;
+        p.z = maxP.z;
       return p;
     }
     
     // enlarge the bounding box to encompass some point p
-    void operator += (Point &p){
+    void operator += (Point p){
       for(int i = 0; i < 3; i++){
         if(minP[i] > p[i])
           minP[i] = p[i];
@@ -135,7 +135,7 @@ class BoundingBox{
     }
     
     // enlarge the bounding box by another bounding box
-    void operator += (Box &b){
+    void operator += (BoundingBox b){
       for(int i = 0; i < 3; i++){
         if(minP[i] > b.minP[i])
           minP[i] = b.minP[i];
@@ -145,7 +145,7 @@ class BoundingBox{
     }
     
     // return true only for a point in the bounding box
-    bool isInside(Point &p){
+    bool isInside(Point p){
       for(int i = 0; i < 3; i++)
         if(minP[i] > p[i] || maxP[i] < p[i])
           return false;
@@ -607,7 +607,7 @@ class Node: public ItemBase, public Transformation{
     }
     
     // bounding box computation (for all children)
-    Box& computeChildBoundBox(){
+    BoundingBox& computeChildBoundBox(){
       childBoundBox.init();
       
       // grab all child bounding boxes!
@@ -617,7 +617,7 @@ class Node: public ItemBase, public Transformation{
         
         // add child object's bounding box
         if(childObj)
-          childBox += childObj->getBoundBox;
+          childBox += childObj->getBoundBox();
         
         // transform the bounding box space
         Matrix childTM = child[i]->getTransform();

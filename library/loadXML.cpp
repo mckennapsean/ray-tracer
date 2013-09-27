@@ -31,6 +31,7 @@ using namespace tinyxml2;
 Node rootNode;
 Camera camera;
 Object *aSphere;
+Object *aPlane;
 MaterialList materials;
 LightList lights;
 ObjFileList objList;
@@ -206,7 +207,7 @@ void loadNode(Node *n, XMLElement *e, int level){
         printf(" - Sphere");
     
     // for plane
-    }else if(compare(type, "plane"){
+    }else if(compare(type, "plane")){
       node->setObject(&*aPlane);
       
       // print out object type
@@ -214,7 +215,7 @@ void loadNode(Node *n, XMLElement *e, int level){
         printf(" - Plane");
     
     // for object (composed of triangles)
-    }else if(compare(type, "obj"){
+    }else if(compare(type, "obj")){
       Object *obj = objList.find(name);
       
       // no object on list, so load it a triangular mesh
