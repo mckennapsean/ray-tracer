@@ -110,7 +110,33 @@ class Plane: public Object{
     // intersect a ray against the "unit" plane
     bool intersectRay(Ray &r, HitInfo &h, int face = HIT_FRONT){
       
-      // to be implemented
+      // only compute for rays not parallel to the unit plane
+      if(r.dir.z > getBias() || r.dir.z < getBias()){
+        
+        // compute distance along ray direction to plane
+        float t = -r.pos.z / r.dir.z;
+        
+        // only accept hits in front of ray (with some bias)
+        if(t > getBias()){
+          
+          // compute the hit point
+          Point hit = r.pos + t * r.dir;
+          
+          // only allow a hit to occur if on the "unit" plane
+          if(hit.x >= -1.0 && hit.y >= -1.0 && hit.x <= 1.0 && hit.y <= 1.0){
+            
+            // distance to hit
+            h.z = t;
+            
+            // set hit point, normal, and return hit info
+            h.p = hit;
+            h.n = Point(0.0, 0.0, 1.0);
+            return true;
+          }
+        }
+      }
+      
+      // when no ray hits the "unit" plane
       return false;
     }
     
