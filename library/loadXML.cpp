@@ -223,9 +223,12 @@ void loadNode(Node *n, XMLElement *e, int level){
         TriObj *triObj = new TriObj;
         
         // try to load OBJ file
-        if(!triObj->load(name)){
+        string objFile = "objects/";
+        string tmp(name);
+        objFile += tmp;
+        if(!triObj->load(objFile.c_str())){
           if(print)
-            printf(" -- ERROR: Cannot load file \"%s.\"", name);
+            printf(" -- ERROR: Cannot load file \"%s.\"", objFile.c_str());
           delete triObj;
         
         // add the OBJ file
