@@ -25,7 +25,7 @@ using namespace std;
 
 
 // scene to load (project #) & whether to debug
-const char* xml = "scenes/prj4.xml";
+const char* xml = "scenes/prj5.xml";
 bool printXML = false;
 bool zBuffer = false;
 
@@ -144,6 +144,7 @@ void rayTracing(int i){
     
     // color the pixel image
     img[pixel] = c;
+    
     // re-assign next pixel (naive, but works)
     pixel += numThreads;
   }

@@ -218,7 +218,7 @@ void loadNode(Node *n, XMLElement *e, int level){
     }else if(compare(type, "obj")){
       Object *obj = objList.find(name);
       
-      // no object on list, so load it a triangular mesh
+      // no object on list, so load it as a triangular mesh
       if(obj == NULL){
         TriObj *triObj = new TriObj;
         
