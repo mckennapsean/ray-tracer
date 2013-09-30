@@ -206,29 +206,31 @@ class TriObj: public Object, private cyTriMesh{
           // compute the area of the triangular face
           Point b = V(F(faceID).v[1]);
           Point c = V(F(faceID).v[2]);
-          float area = ((b - a) ^ (c - a)).Length() / 2.0;
+          float area = ((b - a) ^ (c - a)).Length();
           
           // compute smaller areas of the face, relative to the full area
           // aka, computation of the barycentric coordinates
-          float alpha = ((b - a) ^ (hit - a)).Length() / 2.0 / area;
-          if(alpha > -getBias()){
-            float beta = ((hit - a) ^ (c - a)).Length() / 2.0 / area;
-            if(beta > -getBias()){
+          float alpha = ((b - a) ^ (hit - a)).Length() / area;
+          if(alpha > -getBias() && alpha < 1.0 + getBias()){
+            float beta = ((hit - a) ^ (c - a)).Length() / area;
+            if(beta > -getBias() && beta < 1.0 + getBias()){
               if(alpha + beta < 1.0 + getBias()){
                 
                 // interpolate the normal based on barycentric coordinates
-                Point bc = Point(1.0 - alpha - beta, beta, alpha);
-                
-                // detect back face hits
-                if(r.dir % n < 0.0)
-                  h.front = false;
+                Point bc = Point(1.0 - alpha - beta, alpha, beta);
                 
                 // distance to hit
                 h.z = t;
                 
-                // set hit point, normal, and return hit info
+                // set hit point, normal
                 h.p = GetPoint(faceID, bc);
                 h.n = GetNormal(faceID, bc);
+                
+                // detect back face hits
+                if(r.dir % h.n < 0.0)
+                  h.front = false;
+                
+                // return hit info
                 return true;
               }
             }
