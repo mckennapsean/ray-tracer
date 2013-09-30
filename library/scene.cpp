@@ -171,6 +171,14 @@ class BoundingBox{
       float maxY = (maxP.y - r.pos.y) / r.dir.y;
       float maxZ = (maxP.z - r.pos.z) / r.dir.z;
       
+      // make sure proper values are set to min/max
+      if(minX > maxX)
+        swap(minX, maxX);
+      if(minY > maxY)
+        swap(minY, maxY);
+      if(minZ > maxZ)
+        swap(minZ, maxZ);
+      
       // might need to check for division by zero?
       
       // calculate min & max intersection distances along ray direction
