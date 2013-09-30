@@ -26,6 +26,7 @@
 #include "cyCodeBase/cyColor.h"
 using namespace std;
 typedef cyPoint3f Point;
+typedef cyPoint2f Point2;
 typedef cyMatrix3f Matrix;
 typedef cyColor Color;
 typedef cyColorA ColorA;

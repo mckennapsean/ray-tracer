@@ -20,6 +20,7 @@
 #include <thread>
 #include <fstream>
 #include <string>
+#include <cmath>
 #include "library/loadXML.cpp"
 #include "library/scene.cpp"
 using namespace std;
