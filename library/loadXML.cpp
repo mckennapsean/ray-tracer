@@ -225,7 +225,7 @@ void loadNode(Node *n, XMLElement *e, int level){
         // try to load OBJ file
         string objFile = "objects/";
         string tmp(name);
-        objFile += tmp;
+        objFile += tmp + ".txt";
         if(!triObj->load(objFile.c_str())){
           if(print)
             printf(" -- ERROR: Cannot load file \"%s.\"", objFile.c_str());
