@@ -194,8 +194,40 @@ class TriObj: public Object, private cyTriMesh{
       if(r.dir % n > getBias() || r.dir % n < -getBias()){
         
         // compute distance along ray direction to plane
-        Point a = V(faceID);
+        Point a = V(F(faceID).v[0]);
         float t = -((r.pos - a) % n) / (r.dir % n);
+        
+        // only accept hits in front of ray (with some bias) & closer hits
+        if(t > getBias() && t < h.z){
+          
+          // compute hit point
+          Point hit = r.pos + t * r.dir;
+          
+          // compute the area of the triangular face
+          Point b = V(F(faceID).v[1]);
+          Point c = V(F(faceID).v[2]);
+          float area = ((b - a) ^ (c - a)).Length() / 2.0;
+          
+          // compute smaller areas of the face, relative to the full area
+          float alpha = ((b - a) ^ (hit - a)).Length() / 2.0 / area;
+          if(alpha > -getBias() && alpha < 1.0 + getBias()){
+            float beta = ((hit - a) ^ (c - a)).Length() / 2.0 / area;
+            if(beta > -getBias() && beta < 1.0 + getBias()){
+              if(alpha + beta < 1.0 + getBias()){
+                
+                // detect back face hits
+                if(r.dir % n < 0.0)
+                  h.front = false;
+                
+                // we have a hit on the triangular face
+                h.z = t;
+                h.p = hit;
+                h.n = n;
+                return true;
+              }
+            }
+          }
+        }
       }
       
       // when no ray hits the triangular face
