@@ -125,6 +125,10 @@ class Plane: public Object{
           // only allow a hit to occur if on the "unit" plane
           if(hit.x >= -1.0 && hit.y >= -1.0 && hit.x <= 1.0 && hit.y <= 1.0){
             
+            // detect back face hits
+            if(r.pos.z < 0.0)
+              h.front = false;
+            
             // distance to hit
             h.z = t;
             
