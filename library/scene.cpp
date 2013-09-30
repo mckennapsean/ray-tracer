@@ -163,35 +163,66 @@ class BoundingBox{
       if(isInside(r.pos))
         return true;
       
-      // calculate min & max intersection values for box
-      float minX = (minP.x - r.pos.x) / r.dir.x;
-      float minY = (minP.y - r.pos.y) / r.dir.y;
-      float minZ = (minP.z - r.pos.z) / r.dir.z;
-      float maxX = (maxP.x - r.pos.x) / r.dir.x;
-      float maxY = (maxP.y - r.pos.y) / r.dir.y;
-      float maxZ = (maxP.z - r.pos.z) / r.dir.z;
+      // calculate min & max intersection values for x & y
+      // checking for division by zero
+      float minX, minY, maxX, maxY;
+      if(r.dir.x == 0.0){
+        minX = -FLOAT_MAX;
+        maxX = FLOAT_MAX;
+      }else{
+        minX = (minP.x - r.pos.x) / r.dir.x;
+        maxX = (maxP.x - r.pos.x) / r.dir.x;
+      }if(r.dir.y == 0.0){
+        minY = -FLOAT_MAX;
+        maxY = FLOAT_MAX;
+      }else{
+        minY = (minP.y - r.pos.y) / r.dir.y;
+        maxY = (maxP.y - r.pos.y) / r.dir.y;
+      }
       
       // make sure proper values are set to min/max
       if(minX > maxX)
         swap(minX, maxX);
       if(minY > maxY)
         swap(minY, maxY);
-      if(minZ > maxZ)
-        swap(minZ, maxZ);
       
-      // might need to check for division by zero?
-      
-      // calculate min & max intersection distances along ray direction
-      float minT = max(max(minX, minY), minZ);
-      float maxT = min(min(maxX, maxY), maxZ);
-      
-      // ray intersection if and only if ray enters before leaving
-      if(minT <= maxT){
+      // make sure we have a valid intersection so far
+      if(minX <= maxY && minY <= maxX){
         
-        // make sure all hits are along the positive ray direction
-        // and no hits can occur closer than previous hits
-        if(minT > 0.0 && minT < t)
-          return true;
+        // store min/max distances for x & y
+        float minT = max(minX, minY);
+        float maxT = min(maxX, maxY);
+        
+        // calculate min & max intersection values for z
+        float minZ, maxZ;
+        if(r.dir.z == 0.0){
+          minZ = -FLOAT_MAX;
+          maxZ = FLOAT_MAX;
+        }else{
+          minZ = (minP.z - r.pos.z) / r.dir.z;
+          maxZ = (maxP.z - r.pos.z) / r.dir.z;
+        }
+        
+        // make sure proper values are set to min/max
+        if(minZ > maxZ)
+          swap(minZ, maxZ);
+        
+        // make sure we still have a valid intersection
+        if(minT <= maxZ && minZ <= maxT){
+          
+          // store min/max distances (now with z)
+          minT = max(minT, minZ);
+          maxT = min(maxT, maxZ);
+          
+          // ray intersection if and only if ray enters before leaving
+          if(minT <= maxT){
+            
+            // make sure all hits are along positive ray direction
+            // and no hits can occur closer than previous hits
+            if(minT > 0.0 && minT < t)
+              return true;
+          }
+        }
       }
       
       // when no ray hits the bounding box
