@@ -159,7 +159,7 @@ class TriObj: public Object, private cyTriMesh{
     bool intersectRay(Ray &r, HitInfo &h, int face = HIT_FRONT){
       
       // check each triangular face for ray intersection
-      for(int i = 0; i < this->NF(); i++){
+      for(int i = 0; i < NF(); i++){
         bool triang = intersectTriangle(r, h, face, i);
         if(triang)
           return triang;
@@ -189,7 +189,16 @@ class TriObj: public Object, private cyTriMesh{
     // intersect a ray with a single triangle
     bool intersectTriangle(Ray &r, HitInfo &h, int face, int faceID){
       
-      // to be implemented
+      // ignore rays nearly parallel to surface
+      Point n = VN(faceID);
+      if(r.dir % n > getBias() || r.dir % n < -getBias()){
+        
+        // compute distance along ray direction to plane
+        Point a = V(faceID);
+        float t = -((r.pos - a) % n) / (r.dir % n);
+      }
+      
+      // when no ray hits the triangular face
       return false;
     }
 };
