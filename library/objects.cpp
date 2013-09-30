@@ -217,7 +217,7 @@ class TriObj: public Object, private cyTriMesh{
               if(alpha + beta < 1.0 + getBias()){
                 
                 // interpolate the normal based on barycentric coordinates
-                Point bc = Point(1.0 - alpha - beta, alpha, beta);
+                Point bc = Point(1.0 - alpha - beta, beta, alpha);
                 
                 // distance to hit
                 h.z = t;
