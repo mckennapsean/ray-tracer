@@ -125,7 +125,7 @@ class BlinnMaterial: public Material{
       }
       
       // add refraction color (front and back face hits)
-      if(refraction.Grey() != 0.0){
+      if(bounceCount > 0 && refraction.Grey() != 0.0){
         
         // create refracted vector
         Ray *refract = new Ray();
@@ -374,7 +374,7 @@ class PhongMaterial: public Material{
       }
       
       // add refraction color (front and back face hits)
-      if(refraction.Grey() != 0.0){
+      if(bounceCount > 0 && refraction.Grey() != 0.0){
         
         // create refracted vector
         Ray *refract = new Ray();
