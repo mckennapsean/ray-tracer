@@ -209,11 +209,14 @@ class TriObj: public Object, private cyTriMesh{
           float area = ((b - a) ^ (c - a)).Length();
           
           // compute smaller areas of the face, relative to the full area
+          // ensure that we are only calculating positive areas
           // aka, computation of the barycentric coordinates
-          float alpha = ((b - a) ^ (hit - a)).Length() / area;
-          if(alpha > -getBias() && alpha < 1.0 + getBias()){
-            float beta = ((hit - a) ^ (c - a)).Length() / area;
-            if(beta > -getBias() && beta < 1.0 + getBias()){
+          Point alphaVector = (b - a) ^ (hit - a);
+          if(alphaVector % n > -getBias()){
+            float alpha = alphaVector.Length() / area;
+            Point betaVector = (hit - a) ^ (c - a);
+            if(betaVector % n > -getBias()){
+              float beta = betaVector.Length() / area;
               if(alpha + beta < 1.0 + getBias()){
                 
                 // interpolate the normal based on barycentric coordinates
