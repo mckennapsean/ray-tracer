@@ -152,10 +152,41 @@ class BoundingBox{
       return true;
     }
     
-    // returns true only for a ray intersecting the bounding box, if the parameter of the hit is less than some maxT
-    bool intersectRay(Ray &r, float maxT){
+    // returns true only for a ray intersecting the bounding box, if the parameter of the hit is less than some maximum distance away (t)
+    bool intersectRay(Ray &r, float t){
       
-      // to be implemented
+      // no intersection if we have no bounding box
+      if(isEmpty())
+        return false;
+      
+      // intersection must occur if ray originates inside the bounding box
+      if(isInside(r.pos))
+        return true;
+      
+      // calculate min & max intersection values for box
+      float minX = (minP.x - r.pos.x) / r.dir.x;
+      float minY = (minP.y - r.pos.y) / r.dir.y;
+      float minZ = (minP.z - r.pos.z) / r.dir.z;
+      float maxX = (maxP.x - r.pos.x) / r.dir.x;
+      float maxY = (maxP.y - r.pos.y) / r.dir.y;
+      float maxZ = (maxP.z - r.pos.z) / r.dir.z;
+      
+      // might need to check for division by zero?
+      
+      // calculate min & max intersection distances along ray direction
+      float minT = max(max(minX, minY), minZ);
+      float maxT = min(min(maxX, maxY), maxZ);
+      
+      // ray intersection if and only if ray enters before leaving
+      if(minT <= maxT){
+        
+        // make sure all hits are along the positive ray direction
+        // and no hits can occur closer than previous hits
+        if(minT > 0.0 && minT < t)
+          return true;
+      }
+      
+      // when no ray hits the bounding box
       return false;
     }
 };
@@ -907,8 +938,12 @@ bool traceRayToNode(Ray r, HitInfo &h, Node &n){
   if(obj){
     hit.setNode(&n);
     
-    // check if object is hit
-    objectHit = obj->intersectRay(ray, hit);
+    // check the object's bounding box, should we bother sending a ray?
+    if(obj->getBoundBox().intersectRay(ray, h.z)){
+      
+      // check if object is hit
+      objectHit = obj->intersectRay(ray, hit);
+    }
   }
   
   // check if hit was closer than previous hits
@@ -921,23 +956,28 @@ bool traceRayToNode(Ray r, HitInfo &h, Node &n){
       objectHit = false; 
   }
   
-  // loop on child nodes
-  int j = 0;
-  int numChild = n.getNumChild();
-  while(j < numChild){
+  // check the child bounding boxes, should we bother sending a ray?
+  if(n.getChildBoundBox().intersectRay(ray, h.z)){
     
-    // grab child node
-    Node *child = n.getChild(j);
-    
-    // recursively check this child's descendants for hit info
-    bool childHit = traceRayToNode(ray, h, *child);
-    
-    // if child is hit, make sure we pass that on
-    if(childHit)
-      objectHit = true;
-    
-    // loop through all children
-    j++;
+    // loop on child nodes
+    int j = 0;
+    int numChild = n.getNumChild();
+    while(j < numChild){
+      
+      // grab child node
+      Node *child = n.getChild(j);
+      
+      
+      // recursively check this child's descendants for hit info
+      bool childHit = traceRayToNode(ray, h, *child);
+      
+      // if child is hit, make sure we pass that on
+      if(childHit)
+        objectHit = true;
+      
+      // loop through all children
+      j++;
+    }
   }
   
   // if object (or a descendant) was hit, transform from model space (to world space)
