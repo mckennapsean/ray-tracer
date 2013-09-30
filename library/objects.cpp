@@ -154,7 +154,14 @@ class TriObj: public Object, private cyTriMesh{
     // intersect a ray against the triangular mesh
     bool intersectRay(Ray &r, HitInfo &h, int face = HIT_FRONT){
       
-      // to be implemented
+      // check each triangular face for ray intersection
+      for(int i = 0; i < this->NF(); i++){
+        bool triang = intersectTriangle(r, h, face, i);
+        if(triang)
+          return triang;
+      }
+      
+      // no faces were hit
       return false;
     }
     
