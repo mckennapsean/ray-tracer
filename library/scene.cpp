@@ -67,7 +67,7 @@ class Ray{
 };
 
 
-// Bounding Box definition (for 
+// Bounding Box definition (for rendering only when necessary)
 class BoundingBox{
   public:
     
