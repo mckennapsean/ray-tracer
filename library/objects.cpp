@@ -272,7 +272,10 @@ class TriObj: public Object, private cyTriMesh{
       }else{
       
       // ignore rays nearly parallel to surface
-      Point n = VN(faceID);
+      Point a = V(F(faceID).v[0]);
+      Point b = V(F(faceID).v[1]);
+      Point c = V(F(faceID).v[2]);
+      Point n = (b - a) ^ (c - a);
       if(r.dir % n > getBias() || r.dir % n < -getBias()){
         
         // compute distance along ray direction to plane
@@ -284,10 +287,6 @@ class TriObj: public Object, private cyTriMesh{
           
           // compute hit point
           Point hit = r.pos + t * r.dir;
-          
-          // grab vertex points
-          Point b = V(F(faceID).v[1]);
-          Point c = V(F(faceID).v[2]);
           
           // simplify problem into 2D by removing the greatest normal component
           Point2 a2;
@@ -334,7 +333,7 @@ class TriObj: public Object, private cyTriMesh{
                 h.n = GetNormal(faceID, bc);
                 
                 // detect back face hits
-                if(r.dir % h.n < 0.0)
+                if(r.dir % h.n > 0.0)
                   h.front = false;
                 
                 // return hit info
