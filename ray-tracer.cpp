@@ -134,7 +134,7 @@ void rayTracing(int i){
       // if there is a material, shade the pixel
       // 16-passes for reflections and refractions
       if(m)
-        c = Color24(m->shade(*ray, h, lights, 16));
+        c = Color24(m->shade(*ray, h, lights, 5));
       
       // otherwise color it white (as a hit)
       else
