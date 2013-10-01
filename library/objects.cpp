@@ -186,58 +186,61 @@ class TriObj: public Object, private cyTriMesh{
     
   private:
     
-    // intersect a ray with a single triangle
+    // intersect a ray with a single triangle (Moller-Trumbore algorithm)
     bool intersectTriangle(Ray &r, HitInfo &h, int face, int faceID){
       
       // ignore rays nearly parallel to surface
       Point n = VN(faceID);
       if(abs(r.dir % n) > getBias()){
         
-        // compute distance along ray direction to plane
+        // grab vertex points
         Point a = V(F(faceID).v[0]);
-        float t = -((r.pos - a) % n) / (r.dir % n);
+        Point b = V(F(faceID).v[1]);
+        Point c = V(F(faceID).v[2]);
         
-        // only accept hits in front of ray (with some bias) & closer hits
-        if(t > getBias() && t < h.z){
+        // compute edge vectors
+        Point e1 = b - a;
+        Point e2 = c - a;
+        
+        // calculate first vector, P
+        Point P = r.dir ^ e2;
+        
+        // calculate the determinant of the matrix equation
+        float determ = e1 % P;
+        
+        // only continue for valid determinant ranges
+        if(abs(determ) > getBias()){
           
-          // compute hit point
-          Point hit = r.pos + t * r.dir;
+          // calculate second vector, T
+          Point T = r.pos - a;
           
-          // grab vertex points
-          Point b = V(F(faceID).v[1]);
-          Point c = V(F(faceID).v[2]);
+          // calculate a barycentric component (u)
+          float u = T % P;
           
-          // compute edge vectors
-          Point e1 = b - a;
-          Point e2 = c - a;
-          
-          // calculate the skew of the triangle from the viewing direction
-          Point dirN = r.dir ^ e2;
-          float skew = dirN % e1;
-          
-          // only continue for valid skew ranges
-          if(abs(skew) > getBias()){
+          // only allow valid barycentric values
+          if(u > -getBias() && u < determ * (1.0 + getBias())){
             
-            // vector from ray to first vertex
-            Point posA = r.pos - a;
+            // calculate a normal of the ray with an edge vector
+            Point Q = T ^ e1;
             
-            // calculate a barycentric component
-            float beta = (dirN % posA) / skew;
+            // calculate a barycentric component (v)
+            float v = r.dir % Q;
             
             // only allow valid barycentric values
-            if(beta > -getBias() && beta < 1.0 + getBias()){
+            if(v > -getBias() && v + u < determ * (1.0 + getBias())){
               
-              // calculate a normal of the ray with an edge vector
-              Point posAN = posA ^ e1;
+              // update barycentric coordinates
+              v /= determ;
+              u /= determ;
               
-              // calculate a barycentric component
-              float alpha = (r.dir % posAN) / skew;
+              // compute the barycentric coordinates for interpolating values
+              Point bc = Point(1.0 - u - v, u, v);
               
-              // only allow valid barycentric values
-              if(alpha > -getBias() && alpha + beta < 1.0 + getBias()){
-                
-                // interpolate the normal based on barycentric coordinates
-                Point bc = Point(1.0 - alpha - beta, beta, alpha);
+              // calculate the distance to hit the triangle
+              float t = (e2 % Q) / determ;
+              
+              // only allow valid distances to hit
+              if(t > getBias() && t < h.z){
                 
                 // distance to hit
                 h.z = t;
@@ -247,7 +250,7 @@ class TriObj: public Object, private cyTriMesh{
                 h.n = GetNormal(faceID, bc);
                 
                 // detect back face hits
-                if(r.dir % h.n < 0.0)
+                if(determ < 0.0)
                   h.front = false;
                 
                 // return hit info
