@@ -189,73 +189,68 @@ class TriObj: public Object, private cyTriMesh{
     // intersect a ray with a single triangle (Moller-Trumbore algorithm)
     bool intersectTriangle(Ray &r, HitInfo &h, int face, int faceID){
       
-      // ignore rays nearly parallel to surface
-      Point n = VN(faceID);
-      if(abs(r.dir % n) > getBias()){
+      // grab vertex points
+      Point a = V(F(faceID).v[0]);
+      Point b = V(F(faceID).v[1]);
+      Point c = V(F(faceID).v[2]);
+      
+      // compute edge vectors
+      Point e1 = b - a;
+      Point e2 = c - a;
+      
+      // calculate first vector, P
+      Point P = r.dir ^ e2;
+      
+      // calculate the determinant of the matrix equation
+      float determ = e1 % P;
+      
+      // only continue for valid determinant ranges
+      if(abs(determ) > getBias()){
         
-        // grab vertex points
-        Point a = V(F(faceID).v[0]);
-        Point b = V(F(faceID).v[1]);
-        Point c = V(F(faceID).v[2]);
+        // calculate second vector, T
+        Point T = r.pos - a;
         
-        // compute edge vectors
-        Point e1 = b - a;
-        Point e2 = c - a;
+        // calculate a barycentric component (u)
+        float u = T % P;
         
-        // calculate first vector, P
-        Point P = r.dir ^ e2;
-        
-        // calculate the determinant of the matrix equation
-        float determ = e1 % P;
-        
-        // only continue for valid determinant ranges
-        if(abs(determ) > getBias()){
+        // only allow valid barycentric values
+        if(u > -getBias() && u < determ * (1.0 + getBias())){
           
-          // calculate second vector, T
-          Point T = r.pos - a;
+          // calculate a normal of the ray with an edge vector
+          Point Q = T ^ e1;
           
-          // calculate a barycentric component (u)
-          float u = T % P;
+          // calculate a barycentric component (v)
+          float v = r.dir % Q;
           
           // only allow valid barycentric values
-          if(u > -getBias() && u < determ * (1.0 + getBias())){
+          if(v > -getBias() && v + u < determ * (1.0 + getBias())){
             
-            // calculate a normal of the ray with an edge vector
-            Point Q = T ^ e1;
+            // update barycentric coordinates
+            v /= determ;
+            u /= determ;
             
-            // calculate a barycentric component (v)
-            float v = r.dir % Q;
+            // compute the barycentric coordinates for interpolating values
+            Point bc = Point(1.0 - u - v, u, v);
             
-            // only allow valid barycentric values
-            if(v > -getBias() && v + u < determ * (1.0 + getBias())){
+            // calculate the distance to hit the triangle
+            float t = (e2 % Q) / determ;
+            
+            // only allow valid distances to hit
+            if(t > getBias() && t < h.z){
               
-              // update barycentric coordinates
-              v /= determ;
-              u /= determ;
+              // distance to hit
+              h.z = t;
               
-              // compute the barycentric coordinates for interpolating values
-              Point bc = Point(1.0 - u - v, u, v);
+              // set hit point, normal
+              h.p = GetPoint(faceID, bc);
+              h.n = GetNormal(faceID, bc);
               
-              // calculate the distance to hit the triangle
-              float t = (e2 % Q) / determ;
+              // detect back face hits
+              if(determ < 0.0)
+                h.front = false;
               
-              // only allow valid distances to hit
-              if(t > getBias() && t < h.z){
-                
-                // distance to hit
-                h.z = t;
-                
-                // set hit point, normal
-                h.p = GetPoint(faceID, bc);
-                h.n = GetNormal(faceID, bc);
-                
-                // detect back face hits
-                if(determ < 0.0)
-                  h.front = false;
-                
-                // return hit info
-                return true;
-              }
+              // return hit info
+              return true;
             }
           }
         }
