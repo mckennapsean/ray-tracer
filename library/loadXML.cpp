@@ -383,8 +383,8 @@ void loadMaterial(XMLElement *e){
           if(print)
             printf("  specular %f %f %f\n", c.r, c.g, c.b);
         
-        // load shininess value
-        }else if(compare(child->Value(), "shininess")){
+        // load shininess value (from glossiness value)
+        }else if(compare(child->Value(), "glossiness")){
           readFloat(child, f);
           m->setShininess(f);
           

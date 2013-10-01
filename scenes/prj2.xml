@@ -19,12 +19,12 @@
     <material type="blinn" name="mtl1">
       <diffuse  r="0.8" g="0.2" b="0.2"/>
       <specular r="1.0" g="1.0" b="1.0" value="0.7"/>
-      <shininess value="20"/>
+      <glossiness value="20"/>
     </material>
     <material type="blinn" name="mtl2">
       <diffuse  r="0.1" g="0.1" b="0.9"/>
       <specular r="0.9" g="0.9" b="1.0" value="0.8"/>
-      <shininess value="10"/>
+      <glossiness value="10"/>
     </material>
  
     <!-- Lights -->
