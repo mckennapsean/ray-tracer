@@ -194,6 +194,10 @@ class TriObj: public Object, private cyTriMesh{
     // intersect a ray with a single triangle (Moller-Trumbore algorithm)
     bool intersectTriangle(Ray &r, HitInfo &h, int face, int faceID){
       
+      bool mt = false;
+      
+      if(mt){
+      
       // grab vertex points
       Point a = V(F(faceID).v[0]);
       Point b = V(F(faceID).v[1]);
@@ -263,5 +267,87 @@ class TriObj: public Object, private cyTriMesh{
       
       // when no ray hits the triangular face
       return false;
+      
+      // normal ray tracing
+      }else{
+      
+      // ignore rays nearly parallel to surface
+      Point n = VN(faceID);
+      if(r.dir % n > getBias() || r.dir % n < -getBias()){
+        
+        // compute distance along ray direction to plane
+        Point a = V(F(faceID).v[0]);
+        float t = -((r.pos - a) % n) / (r.dir % n);
+        
+        // only accept hits in front of ray (with some bias) & closer hits
+        if(t > getBias() && t < h.z){
+          
+          // compute hit point
+          Point hit = r.pos + t * r.dir;
+          
+          // grab vertex points
+          Point b = V(F(faceID).v[1]);
+          Point c = V(F(faceID).v[2]);
+          
+          // simplify problem into 2D by removing the greatest normal component
+          Point2 a2;
+          Point2 b2;
+          Point2 c2;
+          Point2 hit2;
+          if(abs(n.x) > abs(n.y) && abs(n.x) > abs(n.z)){
+            a2 = Point2(a.y, a.z);
+            b2 = Point2(b.y, b.z);
+            c2 = Point2(c.y, c.z);
+            hit2 = Point2(hit.y, hit.z);
+          }else if(abs(n.y) > abs(n.x) && abs(n.y) > abs(n.z)){
+            a2 = Point2(a.x, a.z);
+            b2 = Point2(b.x, b.z);
+            c2 = Point2(c.x, c.z);
+            hit2 = Point2(hit.x, hit.z);
+          }else{
+            a2 = Point2(a.x, a.y);
+            b2 = Point2(b.x, b.y);
+            c2 = Point2(c.x, c.y);
+            hit2 = Point2(hit.x, hit.y);
+          }
+          
+          // compute the area of the triangular face (in 2D)
+          float area = (b2 - a2) ^ (c2 - a2);
+          
+          // compute smaller areas of the face, relative to the full area, in 2D
+          // ensure that we are only calculating positive areas
+          // aka, computation of the barycentric coordinates
+          float alpha = ((b2 - a2) ^ (hit2 - a2)) / area;
+          if(alpha > -getBias() && alpha < 1.0 + getBias()){
+            float beta = ((hit2 - a2) ^ (c2 - a2)) / area;
+            if(beta > -getBias() && beta < 1.0 + getBias()){
+              if(alpha + beta < 1.0 + getBias()){
+                
+                // interpolate the normal based on barycentric coordinates
+                Point bc = Point(1.0 - alpha - beta, beta, alpha);
+                
+                // distance to hit
+                h.z = t;
+                
+                // set hit point, normal
+                h.p = GetPoint(faceID, bc);
+                h.n = GetNormal(faceID, bc);
+                
+                // detect back face hits
+                if(r.dir % h.n < 0.0)
+                  h.front = false;
+                
+                // return hit info
+                return true;
+              }
+            }
+          }
+        }
+      }
+      
+      // when no ray hits the triangular face
+      return false;
+      
+      }
     }
 };
