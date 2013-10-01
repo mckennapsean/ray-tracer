@@ -158,15 +158,20 @@ class TriObj: public Object, private cyTriMesh{
     // intersect a ray against the triangular mesh
     bool intersectRay(Ray &r, HitInfo &h, int face = HIT_FRONT){
       
+      // final boolean to return, if we hit any triangular face
+      bool triang = false;
+      
       // check each triangular face for ray intersection
       for(int i = 0; i < NF(); i++){
-        bool triang = intersectTriangle(r, h, face, i);
-        if(triang)
-          return triang;
+        bool face = intersectTriangle(r, h, face, i);
+        
+        // only update the main boolean if we haven't hit anything yet
+        if(!triang && face)
+          triang = true;
       }
       
-      // no faces were hit
-      return false;
+      // check all triangular faces before returning hit info
+      return triang;
     }
     
     // get triangular mesh bounding box
