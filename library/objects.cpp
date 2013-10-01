@@ -222,19 +222,19 @@ class TriObj: public Object, private cyTriMesh{
             Point posA = r.pos - a;
             
             // calculate a barycentric component
-            float alpha = (dirN % posA) / skew;
+            float beta = (dirN % posA) / skew;
             
             // only allow valid barycentric values
-            if(alpha > -getBias() && alpha < 1.0 + getBias()){
+            if(beta > -getBias() && beta < 1.0 + getBias()){
               
               // calculate a normal of the ray with an edge vector
               Point posAN = posA ^ e1;
               
               // calculate a barycentric component
-              float beta = (r.dir % posAN) / skew;
+              float alpha = (r.dir % posAN) / skew;
               
               // only allow valid barycentric values
-              if(beta > -getBias() && alpha + beta < 1.0 + getBias()){
+              if(alpha > -getBias() && alpha + beta < 1.0 + getBias()){
                 
                 // interpolate the normal based on barycentric coordinates
                 Point bc = Point(1.0 - alpha - beta, beta, alpha);
