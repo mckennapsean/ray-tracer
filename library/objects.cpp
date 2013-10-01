@@ -191,7 +191,7 @@ class TriObj: public Object, private cyTriMesh{
       
       // ignore rays nearly parallel to surface
       Point n = VN(faceID);
-      if(r.dir % n > getBias() || r.dir % n < -getBias()){
+      if(abs(r.dir % n) > getBias()){
         
         // compute distance along ray direction to plane
         Point a = V(F(faceID).v[0]);
@@ -207,39 +207,34 @@ class TriObj: public Object, private cyTriMesh{
           Point b = V(F(faceID).v[1]);
           Point c = V(F(faceID).v[2]);
           
-          // simplify problem into 2D by removing the greatest normal component
-          Point2 a2;
-          Point2 b2;
-          Point2 c2;
-          Point2 hit2;
-          if(abs(n.x) > abs(n.y) && abs(n.x) > abs(n.z)){
-            a2 = Point2(a.y, a.z);
-            b2 = Point2(b.y, b.z);
-            c2 = Point2(c.y, c.z);
-            hit2 = Point2(hit.y, hit.z);
-          }else if(abs(n.y) > abs(n.x) && abs(n.y) > abs(n.z)){
-            a2 = Point2(a.x, a.z);
-            b2 = Point2(b.x, b.z);
-            c2 = Point2(c.x, c.z);
-            hit2 = Point2(hit.x, hit.z);
-          }else{
-            a2 = Point2(a.x, a.y);
-            b2 = Point2(b.x, b.y);
-            c2 = Point2(c.x, c.y);
-            hit2 = Point2(hit.x, hit.y);
-          }
+          // compute edge vectors
+          Point e1 = b - a;
+          Point e2 = c - a;
           
-          // compute the area of the triangular face (in 2D)
-          float area = (b2 - a2) ^ (c2 - a2);
+          // calculate the skew of the triangle from the viewing direction
+          Point dirN = r.dir ^ e2;
+          float skew = dirN % e1;
           
-          // compute smaller areas of the face, relative to the full area, in 2D
-          // ensure that we are only calculating positive areas
-          // aka, computation of the barycentric coordinates
-          float alpha = ((b2 - a2) ^ (hit2 - a2)) / area;
-          if(alpha > -getBias() && alpha < 1.0 + getBias()){
-            float beta = ((hit2 - a2) ^ (c2 - a2)) / area;
-            if(beta > -getBias() && beta < 1.0 + getBias()){
-              if(alpha + beta < 1.0 + getBias()){
+          // only continue for valid skew ranges
+          if(abs(skew) > getBias()){
+            
+            // vector from ray to first vertex
+            Point posA = r.pos - a;
+            
+            // calculate a barycentric component
+            float alpha = (dirN % posA) / skew;
+            
+            // only allow valid barycentric values
+            if(alpha > -getBias() && alpha < 1.0 + getBias()){
+              
+              // calculate a normal of the ray with an edge vector
+              Point posAN = posA ^ e1;
+              
+              // calculate a barycentric component
+              float beta = (r.dir % posAN) / skew;
+              
+              // only allow valid barycentric values
+              if(beta > -getBias() && alpha + beta < 1.0 + getBias()){
                 
                 // interpolate the normal based on barycentric coordinates
                 Point bc = Point(1.0 - alpha - beta, beta, alpha);
