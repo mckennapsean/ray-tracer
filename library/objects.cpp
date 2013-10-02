@@ -268,15 +268,16 @@ class TriObj: public Object, private cyTriMesh{
       // normal ray tracing
       }else{
       
-      // ignore rays nearly parallel to surface
+      // grab face vertices and compute face normal
       Point a = V(F(faceID).v[0]);
       Point b = V(F(faceID).v[1]);
       Point c = V(F(faceID).v[2]);
       Point n = (b - a) ^ (c - a);
+      
+      // ignore rays nearly parallel to surface
       if(r.dir % n > getBias() || r.dir % n < -getBias()){
         
         // compute distance along ray direction to plane
-        Point a = V(F(faceID).v[0]);
         float t = -((r.pos - a) % n) / (r.dir % n);
         
         // only accept hits in front of ray (with some bias) & closer hits
@@ -313,29 +314,31 @@ class TriObj: public Object, private cyTriMesh{
           // compute smaller areas of the face, relative to the full area, in 2D
           // ensure that we are only calculating positive areas
           // aka, computation of the barycentric coordinates
-          float alpha = ((b2 - a2) ^ (hit2 - a2)) / area;
-          if(alpha > -getBias() && alpha < 1.0 + getBias()){
-            float beta = ((hit2 - a2) ^ (c2 - a2)) / area;
-            if(beta > -getBias() && beta < 1.0 + getBias()){
-              if(alpha + beta < 1.0 + getBias()){
-                
-                // interpolate the normal based on barycentric coordinates
-                Point bc = Point(1.0 - alpha - beta, beta, alpha);
-                
-                // distance to hit
-                h.z = t;
-                
-                // set hit point, normal
-                h.p = GetPoint(faceID, bc);
-                h.n = GetNormal(faceID, bc);
-                
-                // detect back face hits
-                if(r.dir % h.n > 0.0)
-                  h.front = false;
-                
-                // return hit info
-                return true;
-              }
+          float alpha = ((b2 - a2) ^ (hit2 - a2));
+          if(alpha > -getBias() && alpha < area * (1.0 + getBias())){
+            float beta = ((hit2 - a2) ^ (c2 - a2));
+            if(beta > -getBias() && alpha + beta < area * (1.0 + getBias())){
+              
+              // scale alpha and beta to the area
+              alpha /= area;
+              beta /= area;
+              
+              // interpolate the normal based on barycentric coordinates
+              Point bc = Point(1.0 - alpha - beta, beta, alpha);
+              
+              // distance to hit
+              h.z = t;
+              
+              // set hit point, normal
+              h.p = GetPoint(faceID, bc);
+              h.n = GetNormal(faceID, bc);
+              
+              // detect back face hits
+              if(r.dir % h.n > 0.0)
+                h.front = false;
+              
+              // return hit info
+              return true;
             }
           }
         }
@@ -343,7 +346,6 @@ class TriObj: public Object, private cyTriMesh{
       
       // when no ray hits the triangular face
       return false;
-      
       }
     }
     
