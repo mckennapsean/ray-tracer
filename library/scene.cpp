@@ -691,9 +691,9 @@ class Node: public ItemBase, public Transformation{
           childBox += childObj->getBoundBox();
         
         // transform the bounding box space
-        Matrix childTM = child[i]->getTransform();
-        for(int j = 0; j < 8; j++)
-          childBoundBox += childTM * childBox.corner(j);
+        if(!childBox.isEmpty())
+          for(int j = 0; j < 8; j++)
+            childBoundBox += child[i]->transformFrom(childBox.corner(j));
       }
       
       // return the computed child node bounding box
