@@ -159,19 +159,10 @@ class TriObj: public Object, private cyTriMesh{
     // intersect a ray against the triangular mesh
     bool intersectRay(Ray &r, HitInfo &h, int face = HIT_FRONT){
       
-      // final boolean to return, if we hit any triangular face
-      bool triang = false;
+      // check our BVH for triangular faces, update hit info
+      bool triang = traceBVHNode(r, h, face, bvh.GetRootNodeID());
       
-      // check each triangular face for ray intersection
-      for(int i = 0; i < NF(); i++){
-        bool face = intersectTriangle(r, h, face, i);
-        
-        // only update the main boolean if we haven't hit anything yet
-        if(!triang && face)
-          triang = true;
-      }
-      
-      // check all triangular faces before returning hit info
+      // return hit info from intersecting rays in the BVH faces
       return triang;
     }
     
@@ -274,7 +265,46 @@ class TriObj: public Object, private cyTriMesh{
     // cast a ray into a BVH node, seeing which triangular faces may get hit
     bool traceBVHNode(Ray &r, HitInfo &h, int face, int nodeID){
       
-      // to be implemented
-      return true;
+      // grab node's bounding box
+      BoundingBox b = BoundingBox(bvh.GetNodeBounds(nodeID));
+      
+      // does ray hit the node bounding box?
+      bool hit = b.intersectRay(r, h.z);
+      
+      // recurse through child nodes if we hit node
+      if(hit){
+        
+        // only recursively call function if not at a leaf node
+        if(!bvh.IsLeafNode(nodeID)){
+          
+          // keep traversing the BVH hierarchy for hits
+          int c1 = bvh.GetFirstChildNode(nodeID);
+          int c2 = bvh.GetSecondChildNode(nodeID);
+          bool hit1 = traceBVHNode(r, h, face, c1);
+          bool hit2 = traceBVHNode(r, h, face, c2);
+          
+          // if we get no hit
+          if(!hit1 && !hit2)
+            hit = false;
+        
+        // for leaf nodes, trace ray into each triangular face
+        }else{
+          
+          // get triangular faces of the hit BVH node
+          const unsigned int* faces = bvh.GetNodeElements(nodeID);
+          int size = bvh.GetNodeElementCount(nodeID);
+          
+          // trace the ray into each triangular face, tracking hits
+          hit = false;
+          for(int i = 0; i < size; i++){
+            bool hit1 = intersectTriangle(r, h, face, faces[i]);
+            if(!hit && hit1)
+              hit = true;
+          }
+        }
+      }
+      
+      // return if we hit a face within this node
+      return hit;
     }
 };

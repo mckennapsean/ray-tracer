@@ -86,6 +86,10 @@ class BoundingBox{
       minP = Point(minX, minY, minZ);
       maxP = Point(maxX, maxY, maxZ);
     }
+    BoundingBox(const float *dim){
+      minP = dim;
+      maxP = &dim[3];
+    }
     BoundingBox(float *dim){
       minP = dim;
       maxP = &dim[3];
