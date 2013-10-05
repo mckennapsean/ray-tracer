@@ -16,8 +16,9 @@
 // object sub-classes (e.g. sphere, plane, triangular mesh OBJ)
 
 
-// import triangular mesh class
+// import triangular mesh & BVH storage class
 #include "cyCodeBase/cyTriMesh.h"
+#include "cyCodeBase/cyBVH.h"
 
 
 // namespace
@@ -181,15 +182,20 @@ class TriObj: public Object, private cyTriMesh{
     
     // when loading a triangular mesh, get its bounding box
     bool load(const char *file){
+      bvh.Clear();
       if(!LoadFromFileObj(file))
         return false;
       if(!HasNormals())
         ComputeNormals();
       ComputeBoundingBox();
+      bvh.SetMesh(this,4);
       return true;
     }
     
   private:
+    
+    // add BVH for each triangular mesh
+    cyBVHTriMesh bvh;
     
     // intersect a ray with a single triangle (Moller-Trumbore algorithm)
     bool intersectTriangle(Ray &r, HitInfo &h, int face, int faceID){
@@ -263,5 +269,12 @@ class TriObj: public Object, private cyTriMesh{
       
       // when no ray hits the triangular face
       return false;
+    }
+    
+    // cast a ray into a BVH node, seeing which triangular faces may get hit
+    bool traceBVHNode(Ray &r, HitInfo &h, int face, int nodeID){
+      
+      // to be implemented
+      return true;
     }
 };
