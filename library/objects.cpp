@@ -311,17 +311,12 @@ class TriObj: public Object, private cyTriMesh{
           // compute the area of the triangular face (in 2D)
           float area = (b2 - a2) ^ (c2 - a2);
           
-          // compute smaller areas of the face, relative to the full area, in 2D
-          // ensure that we are only calculating positive areas
+          // compute smaller areas of the face, in 2D
           // aka, computation of the barycentric coordinates
-          float alpha = ((b2 - a2) ^ (hit2 - a2));
-          if(alpha > -getBias() && alpha < area * (1.0 + getBias())){
-            float beta = ((hit2 - a2) ^ (c2 - a2));
-            if(beta > -getBias() && alpha + beta < area * (1.0 + getBias())){
-              
-              // scale alpha and beta to the area
-              alpha /= area;
-              beta /= area;
+          float alpha = ((b2 - a2) ^ (hit2 - a2)) / area;
+          if(alpha > -getBias() && alpha < 1.0 + getBias()){
+            float beta = ((hit2 - a2) ^ (c2 - a2)) / area;
+            if(beta > -getBias() && alpha + beta < 1.0 + getBias()){
               
               // interpolate the normal based on barycentric coordinates
               Point bc = Point(1.0 - alpha - beta, beta, alpha);
