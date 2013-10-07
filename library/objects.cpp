@@ -328,10 +328,6 @@ class TriObj: public Object, private cyTriMesh{
               h.p = GetPoint(faceID, bc);
               h.n = GetNormal(faceID, bc);
               
-              // detect back face hits
-              if(r.dir % h.n > 0.0)
-                h.front = false;
-              
               // return hit info
               return true;
             }
