@@ -191,7 +191,7 @@ class TriObj: public Object, private cyTriMesh{
     // intersect a ray with a single triangle (Moller-Trumbore algorithm)
     bool intersectTriangle(Ray &r, HitInfo &h, int face, int faceID){
       
-      bool mt = false;
+      bool mt = true;
       
       if(mt){
       
