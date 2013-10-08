@@ -286,7 +286,7 @@ class ItemBase{
   private:
     
     // name of the item
-    char *name;
+    string name;
   
   public:
     
@@ -302,20 +302,16 @@ class ItemBase{
     }
     
     // retrive the name of the item
-    const char* getName() const{
+    string getName() const{
       return name ? name: "";
     }
     
     // declare a name for the item (or leave NULL)
-    void setName(const char *newName){
+    void setName(string newName){
       if(name)
         delete[] name;
       if(newName){
-        int n = strlen(newName);
-        name = new char[n + 1];
-        for(int i = 0; i < n; i++)
-          name[i] = newName[i];
-        name[n] = '\0';
+        name = newName;
       }else{
         name = NULL;
       }
@@ -352,15 +348,15 @@ template <class T> class ItemFileList{
     }
     
     // add an element to this class
-    void append(T* item, const char *name){
+    void append(T* item, string name){
       list.push_back(new FileInfo(item, name));
     }
     
     // search entire list for a specific object
-    T* find(const char *name){
+    T* find(string name){
       int n = list.size();
       for(int i = 0; i < n; i++)
-        if(list[i] && strcmp(name, list[i]->getName()) == 0)
+        if(list[i] && name.compare(list[i]->getName()) == 0)
           return list[i]->getObj();
         return NULL;
     }
@@ -380,7 +376,7 @@ template <class T> class ItemFileList{
         FileInfo(){
           item = NULL;
         }
-        FileInfo(T *i, const char *name){
+        FileInfo(T *i, string name){
           item = i;
           setName(name);
         }
@@ -569,10 +565,10 @@ class Material: public ItemBase{
 // MaterialList definition (stores all materials, searchable)
 class MaterialList: public ItemList<Material> {
   public:
-    Material* find(const char *name){
+    Material* find(string name){
       int n = size();
       for(int i = 0; i < n; i++)
-        if(at(i) && strcmp(name, at(i)->getName()) == 0)
+        if(at(i) && name.compare(at(i)->getName()) == 0)
           return at(i);
       return NULL;
     }
@@ -744,7 +740,7 @@ class Node: public ItemBase, public Transformation{
 // NodeMaterial definition (connecting a node and material together)
 struct NodeMaterial{
   Node *node;
-  const char *materialName;
+  string materialName;
 };
 vector<NodeMaterial> nodeMaterialList;
 
@@ -913,19 +909,19 @@ class Render{
     }
     
     // save the rendered image to a file
-    bool save(const char *file){
+    bool save(string file){
       return outputImage(file, 3);
     }
     
     // save the rendered z-buffer image to a file
-    bool saveZBuffer(const char *file){
+    bool saveZBuffer(string file){
       return outputImage(file, 1);
     }
   
   private:
     
     // write out an image file
-    bool outputImage(const char *file, int components){
+    bool outputImage(string file, int components){
       ofstream f;
       f.open(file);
       

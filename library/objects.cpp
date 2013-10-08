@@ -172,9 +172,9 @@ class TriObj: public Object, private cyTriMesh{
     }
     
     // when loading a triangular mesh, get its bounding box
-    bool load(const char *file){
+    bool load(string file){
       bvh.Clear();
-      if(!LoadFromFileObj(file))
+      if(!LoadFromFileObj(file.c_str()))
         return false;
       if(!HasNormals())
         ComputeNormals();
