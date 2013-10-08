@@ -26,13 +26,13 @@
 using namespace std;
 
 
-// scene to load (project #) & whether to debug
-const char* xml = "scenes/prj6.xml";
+// scene to load (project #) & debug options
+string xml = "scenes/prj6.xml";
 bool printXML = false;
 bool zBuffer = false;
 
 
-// for ray tracing
+// variables for ray tracing
 int w;
 int h;
 int size;
@@ -40,7 +40,7 @@ Color24* img;
 float* zImg;
 
 
-// for threading
+// setup threading
 static const int numThreads = 8;
 void rayTracing(int i);
 

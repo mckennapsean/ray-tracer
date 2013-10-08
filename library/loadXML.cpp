@@ -45,10 +45,6 @@ Render render;
 bool print;
 
 
-// compare two strings and return boolean
-#define compare(a,b) (strcmp(a, b) == 0)
-
-
 // functions for loading scene
 void loadScene(XMLElement *e);
 void loadNode(Node *n, XMLElement *e, int level = 0);
@@ -57,40 +53,40 @@ void loadMaterial(XMLElement *e);
 void loadLight(XMLElement *e);
 void readVector(XMLElement *element, Point &v);
 void readColor(XMLElement *e, Color &c);
-void readFloat(XMLElement *element, float &f, const char *name = "value");
+void readFloat(XMLElement *element, float &f, string name = "value");
 
 
 // begin loading scene from file
-int loadScene(const char *file, bool p = false){
+int loadScene(string file, bool p = false){
   
   // load debug mode
   print = p;
   
   // make sure file exists
-  XMLDocument doc(file);
-  if(doc.LoadFile(file)){
-    printf("Failed to load the file '%s'\n", file);
+  XMLDocument doc(file.c_str());
+  if(doc.LoadFile(file.c_str())){
+    cout << "Failed to load the file'" << file << "'" << endl;
     exit(EXIT_FAILURE);
   }
   
   // make sure file has XML tag
   XMLElement *xml = doc.FirstChildElement("xml");
   if(!xml){
-    printf("No 'xml' tag found.\n");
+    cout << "No 'xml' tag found." << endl;
     exit(EXIT_FAILURE);
   }
   
   // make sure file has a scene tag
   XMLElement *scene = xml->FirstChildElement("scene");
   if(!scene){
-    printf("No 'scene' tag found.\n");
+    cout << "No 'scene' tag found." << endl;
     exit(EXIT_FAILURE);
   }
   
   // make sure file has a camera tag
   XMLElement *cam = xml->FirstChildElement("camera");
   if(!cam){
-    printf("No 'camera' tag found.\n");
+    cout << "No 'camera' tag found.") << endl;
     exit(EXIT_FAILURE);
   }
   
@@ -127,17 +123,18 @@ int loadScene(const char *file, bool p = false){
   while(camChild){
     
     // load all camera values
-    if(compare(camChild->Value(), "position"))
+    string val(camChild->Value());
+    if(val == "position")
       readVector(camChild, camera.pos);
-    if(compare(camChild->Value(), "target"))
+    if(val == "target")
       readVector(camChild, camera.dir);
-    if(compare(camChild->Value(), "up"))
+    if(val == "up")
       readVector(camChild, camera.up);
-    if(compare(camChild->Value(), "fov"))
+    if(val == "fov")
       readFloat(camChild, camera.fov);
-    if(compare(camChild->Value(), "width"))
+    if(val == "width")
       camChild->QueryIntAttribute("value", &camera.imgWidth);
-    if(compare(camChild->Value(), "height"))
+    if(val == "height")
       camChild->QueryIntAttribute("value", &camera.imgHeight);
     camChild = camChild->NextSiblingElement();
   }
@@ -156,7 +153,7 @@ int loadScene(const char *file, bool p = false){
 // coordinate print level for debugging scene input
 void printIndent(int level){
   for(int i = 0; i < level; i++)
-    printf("  ");
+    cout << "  ";
 }
 
 
@@ -164,11 +161,12 @@ void printIndent(int level){
 void loadScene(XMLElement *e){
   for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
     
-    if(compare(child->Value(), "object"))
+    string val(child->Value());
+    if(val == "object")
       loadNode(&rootNode, child);
-    else if(compare(child->Value(), "material"))
+    else if(val == "material")
       loadMaterial(child);
-    else if(compare(child->Value(), "light"))
+    else if(val == "light")
       loadLight(child);
   }
 }
@@ -182,40 +180,40 @@ void loadNode(Node *n, XMLElement *e, int level){
   n->appendChild(node);
   
   // get the name of the parent node
-  const char* name = e->Attribute("name");
+  string name(e->Attribute("name"));
   node->setName(name);
   
   // print out object name
   if(print){
     printIndent(level);
-    printf("Object [");
+    cout << "Object [";
     if(name)
-      printf("%s", name);
-    printf("]");
+      cout << name;
+    cout << "]";
   }
   
   // get the type of the parent node
-  const char* type = e->Attribute("type");
+  string type(e->Attribute("type"));
   if(type){
     
     // for sphere
-    if(compare(type, "sphere")){
+    if(type == "sphere"){
       node->setObject(&*aSphere);
       
       // print out object type
       if(print)
-        printf(" - Sphere");
+        cout << " - Sphere";
     
     // for plane
-    }else if(compare(type, "plane")){
+    }else if(type == "plane"){
       node->setObject(&*aPlane);
       
       // print out object type
       if(print)
-        printf(" - Plane");
+        cout << " - Plane";
     
     // for object (composed of triangles)
-    }else if(compare(type, "obj")){
+    }else if(type == "obj"){
       Object *obj = objList.find(name);
       
       // no object on list, so load it as a triangular mesh
@@ -223,12 +221,10 @@ void loadNode(Node *n, XMLElement *e, int level){
         TriObj *triObj = new TriObj;
         
         // try to load OBJ file
-        string objFile = "objects/";
-        string tmp(name);
-        objFile += tmp + ".txt";
+        string objFile = "objects/" + name + ".txt";
         if(!triObj->load(objFile)){
           if(print)
-            printf(" -- ERROR: Cannot load file \"%s.\"", objFile.c_str());
+            cout << " -- ERROR: Cannot load file \"" << objFile << ".\"";
           delete triObj;
         
         // add the OBJ file
@@ -246,17 +242,17 @@ void loadNode(Node *n, XMLElement *e, int level){
       
       // print out object type
       if(print)
-        printf(" - UNKNOWN TYPE");
+        cout << " - UNKNOWN TYPE";
     }
   }
   
   // get the material type of the parent node
-  const char* materialName = e->Attribute("material");
-  if(materialName){
+  string materialName(e->Attribute("material"));
+  if(materialName != ""){
     
     // print out object material
     if(print)
-      printf(" <%s>", materialName);
+      cout << " <" << materialName << ">";
     
     // load and save object material
     NodeMaterial nm;
@@ -265,11 +261,12 @@ void loadNode(Node *n, XMLElement *e, int level){
     nodeMaterialList.push_back(nm);
   }
   if(print)
-    printf("\n");
+    cout << endl;
   
   // recursively loop through remaining objects
   for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
-    if(compare(child->Value(), "object"))
+    string val(child->Value());
+    if(val == "object")
       loadNode(node, child, level + 1);
   }
   
@@ -285,7 +282,8 @@ void loadTransform(Transformation *t, XMLElement *e, int level){
   for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
     
     // check if child is a scaling term
-    if(compare(child->Value(), "scale")){
+    string val(child->Value());
+    if(val == "scale"){
       float v = 1.0;
       Point s(1, 1, 1);
       readFloat(child, v);
@@ -296,11 +294,11 @@ void loadTransform(Transformation *t, XMLElement *e, int level){
       // print out scaling term
       if(print){
         printIndent(level + 1);
-        printf("scale %f %f %f\n", s.x, s.y, s.z);
+        cout << "scale " << s.x << " " << s.y << " " << s.z << endl;
       }
       
     // check if child is a rotation term
-    }else if(compare(child->Value(), "rotate")){
+    }else if(val == "rotate"){
       Point r(0, 0, 0);
       readVector(child, r);
       r.Normalize();
@@ -311,11 +309,11 @@ void loadTransform(Transformation *t, XMLElement *e, int level){
       // print out rotation term
       if(print){
         printIndent(level + 1);
-        printf("rotate %f degrees around %f %f %f\n", a, r.x, r.y, r.z);
+        cout << "rotate " << a << " degrees around " << r.x << " " << r.y << " " << r.z << endl;
       }
     
     // check if child is a translation term
-    }else if(compare(child->Value(), "translate")){
+    }else if(val == "translate"){
       Point p(0, 0, 0);
       readVector(child, p);
       t->translate(p);
@@ -323,7 +321,7 @@ void loadTransform(Transformation *t, XMLElement *e, int level){
       // print out translation term
       if(print){
         printIndent(level + 1);
-        printf("translate %f %f %f\n", p.x, p.y, p.z);
+        cout << "translate " << p.x << " " << p.y << " " << p.z << endl;
       }
     }
   }
@@ -337,26 +335,22 @@ void loadMaterial(XMLElement *e){
   Material *mat = NULL;
   
   // get & print material name
-  const char* name = e->Attribute("name");
-  if(print){
-    printf("Material [");
-    if(name)
-      printf("%s", name);
-    printf("]");
-  }
+  string name(e->Attribute("name"));
+  if(print)
+    cout << "Material [" << name << "]";
   
   // get material type
-  const char* type = e->Attribute("type");
-  if(type){
+  string type(e->Attribute("type"));
+  if(type != ""){
     
     // blinn-phong material type
-    if(compare(type, "blinn")){
+    if(type == "blinn"){
       BlinnMaterial *m = new BlinnMaterial();
       mat = m;
       
       // print out material type
       if(print)
-        printf(" - Blinn\n");
+        cout << " - Blinn" << endl;
       
       // check children for material properties
       for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
@@ -366,43 +360,44 @@ void loadMaterial(XMLElement *e){
         float f = 1.0;
         
         // load diffuse color
-        if(compare(child->Value(), "diffuse")){
+        string val(child->Value());
+        if(val == "diffuse"){
           readColor(child, c);
           m->setDiffuse(c);
           
           // print out diffuse color
           if(print)
-            printf("  diffuse %f %f %f\n", c.r, c.g, c.b);
+            cout << "  diffuse " << c.r << " " << c.g << " " << c.b << endl;
         
         // load specular color
-        }else if(compare(child->Value(), "specular")){
+        }else if(val == "specular"){
           readColor(child, c);
           m->setSpecular(c);
           
           //print out specular color
           if(print)
-            printf("  specular %f %f %f\n", c.r, c.g, c.b);
+            cout << "  specular " << c.r << " " << c.g << " " << c.b << endl;
         
         // load shininess value (from glossiness value)
-        }else if(compare(child->Value(), "glossiness")){
+        }else if(val == "glossiness"){
           readFloat(child, f);
           m->setShininess(f);
           
           // print out shininess value
           if(print)
-            printf("  shininess %f\n", f);
+            cout << "  shininess " << f << endl;
         
         // load reflection color
-        }else if(compare(child->Value(), "reflection")){
+        }else if(val == "reflection"){
           readColor(child, c);
           m->setReflection(c);
           
           // print out reflection color
           if(print)
-            printf("  reflection %f %f %f\n", c.r, c.g, c.b);
+            cout << "  reflection " << c.r << " " << c.g << " " << c.b << endl;
         
         // load refraction color and index
-        }else if(compare(child->Value(), "refraction")){
+        }else if(val == "refraction"){
           readColor(child, c);
           m->setRefraction(c);
           readFloat(child, f, "index");
@@ -410,27 +405,27 @@ void loadMaterial(XMLElement *e){
           
           // print out refraction color and index
           if(print)
-            printf("  refraction %f %f %f (index %f)\n", c.r, c.g, c.b, f);
+            cout << "  refraction " << c.r << " " << c.g << " " << c.b << " (index " << f << ")" << endl;
         
         // load absorption color
-        }else if(compare(child->Value(), "absorption")){
+        }else if(val == "absorption"){
           readColor(child, c);
           m->setAbsorption(c);
           
           // print out absorption color
           if(print)
-            printf("  absorption %f %f %f\n", c.r, c.g, c.b);
+            cout << "  absorption " << c.r << " " << c.g << " " << c.b << endl;
         }
       }
     
     // phong material type
-    }else if(compare(type, "phong")){
+    }else if(type == "phong"){
       PhongMaterial *m = new PhongMaterial();
       mat = m;
       
       // print out material type
       if(print)
-        printf(" - Phong\n");
+        cout << " - Phong" << endl;
       
       // check children for material properties
       for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
@@ -440,43 +435,44 @@ void loadMaterial(XMLElement *e){
         float f = 1.0;
         
         // load diffuse color
-        if(compare(child->Value(), "diffuse")){
+        string val(child->Value());
+        if(val == "diffuse"){
           readColor(child, c);
           m->setDiffuse(c);
           
           // print out diffuse color
           if(print)
-            printf("  diffuse %f %f %f\n", c.r, c.g, c.b);
+            cout << "  diffuse " << c.r << " " << c.g << " " << c.b << endl;
         
         // load specular color
-        }else if(compare(child->Value(), "specular")){
+        }else if(val == "specular"){
           readColor(child, c);
           m->setSpecular(c);
           
           //print out specular color
           if(print)
-            printf("  specular %f %f %f\n", c.r, c.g, c.b);
+            cout << "  specular " << c.r << " " << c.g << " " << c.b << endl;
         
         // load shininess value
-        }else if(compare(child->Value(), "shininess")){
+        }else if(val == "glossiness"){
           readFloat(child, f);
           m->setShininess(f);
           
           // print out shininess value
           if(print)
-            printf("  shininess %f\n", f);
+            cout << "  shininess " << f << endl;
         
         // load reflection color
-        }else if(compare(child->Value(), "reflection")){
+        }else if(val == "reflection"){
           readColor(child, c);
           m->setReflection(c);
           
           // print out reflection color
           if(print)
-            printf("  reflection %f %f %f\n", c.r, c.g, c.b);
+            cout << "  reflection " << c.r << " " << c.g << " " << c.b << endl;
         
         // load refraction color and index
-        }else if(compare(child->Value(), "refraction")){
+        }else if(val == "refraction"){
           readColor(child, c);
           m->setRefraction(c);
           readFloat(child, f, "index");
@@ -484,16 +480,16 @@ void loadMaterial(XMLElement *e){
           
           // print out refraction color and index
           if(print)
-            printf("  refraction %f %f %f (index %f)\n", c.r, c.g, c.b, f);
+            cout << "  refraction " << c.r << " " << c.g << " " << c.b << " (index " << f << ")" << endl;
         
         // load absorption color
-        }else if(compare(child->Value(), "absorption")){
+        }else if(val == "absorption"){
           readColor(child, c);
           m->setAbsorption(c);
           
           // print out absorption color
           if(print)
-            printf("  absorption %f %f %f\n", c.r, c.g, c.b);
+            cout << "  absorption " << c.r << " " << c.g << " " << c.b << endl;
         }
       }
     
@@ -502,7 +498,7 @@ void loadMaterial(XMLElement *e){
       
       // print out material type
       if(print)
-        printf(" - UNKNOWN MATERIAL\n");
+        cout << " - UNKNOWN MATERIAL" << endl;
     }
   }
   
@@ -521,115 +517,114 @@ void loadLight(XMLElement *e){
   Light *light = NULL;
   
   // get & print light name
-  const char* name = e->Attribute("name");
-  if(print){
-    printf("Light [");
-    if(name)
-      printf("%s", name);
-    printf("]");
-  }
+  string name(e->Attribute("name"));
+  if(print)
+    cout << "Light [" << name << "]";
   
   // get light type
-  const char* type = e->Attribute("type");
-  if(type){
+  string type(e->Attribute("type"));
+  if(type != ""){
     
     // ambient light type
-    if(compare(type, "ambient")){
+    if(type == "ambient"){
       AmbientLight *l = new AmbientLight();
       light = l;
       
       // print out light type
       if(print)
-        printf(" - Ambient\n");
+        cout << " - Ambient" << endl;
       
       // check children for light properties
       for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
         
         // load intensity (color) of light (for all lights)
-        if(compare(child->Value(), "intensity")){
+        string val(child->Value());
+        if(val == "intensity"){
           Color c(1, 1, 1);
           readColor(child, c);
           l->setIntensity(c);
           
           // print out light intensity color
           if(print)
-            printf("  intensity %f %f %f\n", c.r, c.g, c.b);
+            cout << "  intensity " << c.r << " " << c.g << " " << c.b << endl;
         }
       }
     
     
     // direct light type
-    }else if(compare(type, "direct")){
+    }else if(type == "direct"){
       DirectLight *l = new DirectLight();
       light = l;
       
       // print out light type
       if(print)
-        printf(" - Direct\n");
+        cout << " - Direct" << endl;
       
       // check children for light properties
       for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
         
         // load intensity (color) of light (for all lights)
-        if(compare(child->Value(), "intensity")){
+        string val(child->Value());
+        if(val == "intensity"){
           Color c(1, 1, 1);
           readColor(child, c);
           l->setIntensity(c);
           
           // print out light intensity color
           if(print)
-            printf("  intensity %f %f %f\n", c.r, c.g, c.b);
+            cout << "  intensity " << c.r << " " << c.g << " " << c.b << endl;
         
         // load direction of light
-        }else if(compare(child->Value(), "direction")){
+        }else if(val == "direction"){
           Point v(1, 1, 1);
           readVector(child, v);
           l->setDirection(v);
           
           // print out light direction
           if(print)
-            printf("  direction %f %f %f\n", v.x, v.y, v.z);
+            cout << "  direction " << v.x << " " << v.y << " " << v.z << endl;
         }
       }
     
     // point light type
-    }else if(compare(type, "point")){
+    }else if(type == "point"){
       PointLight *l = new PointLight();
       light = l;
       
       // print out light type
       if(print)
-        printf(" - Point\n");
+        cout << " - Point" << endl;
       
       // check children for light properties
       for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
         
         // load intensity (color) of light (for all lights)
-        if(compare(child->Value(), "intensity")){
+        string val(child->Value());
+        if(val == "intensity"){
           Color c(1, 1, 1);
           readColor(child, c);
           l->setIntensity(c);
           
           // print out light intensity color
           if(print)
-            printf("  intensity %f %f %f\n", c.r, c.g, c.b);
+            cout << "  intensity " << c.r << " " << c.g << " " << c.b << endl;
         
         // load position of light
-        }else if(compare(child->Value(), "position")){
+        }else if(val == "position"){
           Point v(0, 0, 0);
           readVector(child, v);
           l->setPosition(v);
           
           // print out position of light
           if(print)
-            printf("  position %f %f %f\n", v.x, v.y, v.z);
+            cout << "  position " << v.x << " " << v.y << " " << v.z << endl;
         }
       }
     
     // unknown light type
     }else{
       if(print)
-        printf(" - UNKNOWN LIGHT\n");
+        cout << " - UNKNOWN LIGHT" << endl;
     }
   }
   
@@ -679,8 +674,8 @@ void readColor(XMLElement *e, Color &c){
 
 
 // read in a float from an XML element
-void readFloat(XMLElement *element, float &f, const char *name){
+void readFloat(XMLElement *element, float &f, string name){
   double d = (double) f;
-  element->QueryDoubleAttribute(name, &d);
+  element->QueryDoubleAttribute(name.c_str(), &d);
   f = (float) d;
 }
