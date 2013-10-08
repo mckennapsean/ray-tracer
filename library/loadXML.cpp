@@ -86,7 +86,7 @@ int loadScene(string file, bool p = false){
   // make sure file has a camera tag
   XMLElement *cam = xml->FirstChildElement("camera");
   if(!cam){
-    cout << "No 'camera' tag found.") << endl;
+    cout << "No 'camera' tag found." << endl;
     exit(EXIT_FAILURE);
   }
   
@@ -186,15 +186,12 @@ void loadNode(Node *n, XMLElement *e, int level){
   // print out object name
   if(print){
     printIndent(level);
-    cout << "Object [";
-    if(name)
-      cout << name;
-    cout << "]";
+    cout << "Object [" << name << "]";
   }
   
   // get the type of the parent node
   string type(e->Attribute("type"));
-  if(type){
+  if(type != ""){
     
     // for sphere
     if(type == "sphere"){

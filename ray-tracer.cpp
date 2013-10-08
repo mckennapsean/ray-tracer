@@ -19,6 +19,7 @@
 // libraries, namespace
 #include <thread>
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <cmath>
 #include "library/loadXML.cpp"
