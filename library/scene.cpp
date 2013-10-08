@@ -292,29 +292,20 @@ class ItemBase{
     
     // item constructor
     ItemBase(){
-      name = NULL;
+      name = "";
     }
     
     // item deconstructor
-    virtual ~ItemBase(){
-      if(name)
-        delete[] name;
-    }
+    virtual ~ItemBase(){}
     
     // retrive the name of the item
-    string getName() const{
-      return name ? name: "";
+    string getName(){
+      return name;
     }
     
-    // declare a name for the item (or leave NULL)
+    // declare a name for the item
     void setName(string newName){
-      if(name)
-        delete[] name;
-      if(newName){
-        name = newName;
-      }else{
-        name = NULL;
-      }
+      name = newName;
     }
 };
 
