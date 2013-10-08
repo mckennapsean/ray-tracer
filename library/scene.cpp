@@ -347,7 +347,7 @@ template <class T> class ItemFileList{
     T* find(string name){
       int n = list.size();
       for(int i = 0; i < n; i++)
-        if(list[i] && name.compare(list[i]->getName()) == 0)
+        if(list[i] && name == list[i]->getName())
           return list[i]->getObj();
         return NULL;
     }
@@ -559,7 +559,7 @@ class MaterialList: public ItemList<Material> {
     Material* find(string name){
       int n = size();
       for(int i = 0; i < n; i++)
-        if(at(i) && name.compare(at(i)->getName()) == 0)
+        if(at(i) && name == at(i)->getName())
           return at(i);
       return NULL;
     }
@@ -607,7 +607,7 @@ class Node: public ItemBase, public Transformation{
       obj = NULL;
       matl = NULL;
       childBoundBox.init();
-      setName(NULL);
+      setName("");
       initTransform();
     }
     
