@@ -190,8 +190,9 @@ void loadNode(Node *n, XMLElement *e, int level){
   }
   
   // get the type of the parent node
-  string type(e->Attribute("type"));
-  if(type != ""){
+  const char* c = e->Attribute("type");
+  if(c){
+    string type(c);
     
     // for sphere
     if(type == "sphere"){
@@ -244,8 +245,9 @@ void loadNode(Node *n, XMLElement *e, int level){
   }
   
   // get the material type of the parent node
-  string materialName(e->Attribute("material"));
-  if(materialName != ""){
+  const char* m = e->Attribute("material");
+  if(m){
+    string materialName(m);
     
     // print out object material
     if(print)
@@ -337,8 +339,9 @@ void loadMaterial(XMLElement *e){
     cout << "Material [" << name << "]";
   
   // get material type
-  string type(e->Attribute("type"));
-  if(type != ""){
+  const char* c = e->Attribute("type");
+  if(c){
+    string type(c);
     
     // blinn-phong material type
     if(type == "blinn"){
@@ -519,8 +522,9 @@ void loadLight(XMLElement *e){
     cout << "Light [" << name << "]";
   
   // get light type
-  string type(e->Attribute("type"));
-  if(type != ""){
+  const char* c = e->Attribute("type");
+  if(c){
+    string type(c);
     
     // ambient light type
     if(type == "ambient"){
