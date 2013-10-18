@@ -22,6 +22,7 @@
 #include "objects.cpp"
 #include "lights.cpp"
 #include "materials.cpp"
+#include "texture.cpp"
 #include "tinyxml2/tinyxml2.cpp"
 using namespace scene;
 using namespace tinyxml2;
@@ -32,8 +33,11 @@ Node rootNode;
 Camera camera;
 Object *aSphere;
 Object *aPlane;
+TexturedColor background;
+TexturedColor environment;
 MaterialList materials;
 LightList lights;
+TextureList textures;
 ObjFileList objList;
 
 
@@ -51,9 +55,10 @@ void loadNode(Node *n, XMLElement *e, int level = 0);
 void loadTransform(Transformation *t, XMLElement *e, int level);
 void loadMaterial(XMLElement *e);
 void loadLight(XMLElement *e);
-void readVector(XMLElement *element, Point &v);
+TextureMap* loadTexture(XMLElement *e);
+void readVector(XMLElement *e, Point &v);
 void readColor(XMLElement *e, Color &c);
-void readFloat(XMLElement *element, float &f, string name = "value");
+void readFloat(XMLElement *e, float &f, string name = "value");
 
 
 // begin loading scene from file
@@ -95,6 +100,7 @@ int loadScene(string file, bool p = false){
   rootNode.init();
   materials.deleteAll();
   lights.deleteAll();
+  textures.clear();
   objList.clear();
   
   // load object types once
@@ -162,7 +168,21 @@ void loadScene(XMLElement *e){
   for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
     
     string val(child->Value());
-    if(val == "object")
+    if(val == "background"){
+      Color c(1.0, 1.0, 1.0);
+      readColor(child, c);
+      background.setColor(c);
+      if(print)
+        cout << "Background " << c.r << " " << c.g << " " << c.b << endl;
+      background.setTexture(loadTexture(child));
+    }else if(val == "environment"){
+      Color c(1.0, 1.0, 1.0);
+      readColor(child, c);
+      environment.setColor(c);
+      if(print)
+        cout << "Environment " << c.r << " " << c.g << " " << c.b << endl;
+      environment.setTexture(loadTexture(child));
+    }else if(val == "object")
       loadNode(&rootNode, child);
     else if(val == "material")
       loadMaterial(child);
@@ -364,6 +384,7 @@ void loadMaterial(XMLElement *e){
         if(val == "diffuse"){
           readColor(child, c);
           m->setDiffuse(c);
+          m->setDiffuseTexture(loadTexture(child));
           
           // print out diffuse color
           if(print)
@@ -373,6 +394,7 @@ void loadMaterial(XMLElement *e){
         }else if(val == "specular"){
           readColor(child, c);
           m->setSpecular(c);
+          m->setSpecularTexture(loadTexture(child));
           
           //print out specular color
           if(print)
@@ -391,6 +413,7 @@ void loadMaterial(XMLElement *e){
         }else if(val == "reflection"){
           readColor(child, c);
           m->setReflection(c);
+          m->setReflectionTexture(loadTexture(child));
           
           // print out reflection color
           if(print)
@@ -402,6 +425,7 @@ void loadMaterial(XMLElement *e){
           m->setRefraction(c);
           readFloat(child, f, "index");
           m->setRefractionIndex(f);
+          m->setRefractionTexture(loadTexture(child));
           
           // print out refraction color and index
           if(print)
@@ -637,16 +661,101 @@ void loadLight(XMLElement *e){
 }
 
 
+// load in texture for this element
+TextureMap* loadTexture(XMLElement *e){
+  
+  // set texture name
+  string name(e->Attribute("texture"));
+  
+  // catch unset texture
+  if(name == "")
+    return NULL;
+  
+  // initialize texture
+  Texture *tex = NULL;
+  
+  // procedural texture (only checkerboard)
+  if(name == "checkerboard"){
+    TextureChecker *t = new TextureChecker();
+    tex = t;
+    
+    // print out procedural texture
+    if(print)
+      cout << "      " << "Texture: Checker Board" << endl;
+    
+    // loop through checkerboard colors
+    for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
+      
+      // check checkerboard colors
+      string cName(child->Value());
+      if(cName == "color1"){
+        Color c(0.0, 0.0, 0.0);
+        readColor(child, c);
+        t->setColor1(c);
+        if(print)
+          cout << "      " << "color1 " << c.r << " " << c.g << " " << c.b << endl;
+      }else if(cName == "color2"){
+        Color c(0.0, 0.0, 0.0);
+        readColor(child, c);
+        t->setColor2(c);
+        if(print)
+          cout << "      " << "color2 " << c.r << " " << c.g << " " << c.b << endl;
+      }
+    }
+    
+    // add child to texture list
+    textures.append(tex, name);
+  
+    // otherwise, load a texture file
+  }else{
+    
+    // print out texture file
+    if(print)
+      cout << "      " << "Texture: File \"" << name << "\"" << endl;
+    
+    // get the texture if it exists, else create it!
+    tex = textures.find(name);
+    if(tex == NULL){
+      TexturedFile *f = new TextureFile();
+      
+      // set texture file variables
+      tex = f;
+      f->setName(name);
+      
+      // try to load file
+      if(!f->load()){
+        cout << " -- " << "Error loading file!";
+        delete tex;
+        tex = NULL);
+        
+      // successful load texture
+      }else{
+        textures.append(tex, name);
+      }
+    }
+    
+    // contineu printing on the next line
+    if(print)
+      cout << endl;
+  }
+  
+  // set the texture map to the texture
+  TextureMap *m = new TextureMap(tex);
+  loadTransform(map, e, 1.0);
+  return m;
+}
+
+
 // read in a vector from an XML element
-void readVector(XMLElement *element, Point &v){
+void readVector(XMLElement *e, Point &v){
   
   // set vector values
   double x = (double) v.x;
   double y = (double) v.y;
   double z = (double) v.z;
-  element->QueryDoubleAttribute("x", &x);
-  element->QueryDoubleAttribute("y", &y);
-  element->QueryDoubleAttribute("z", &z);
+  e->QueryDoubleAttribute("x", &x);
+  e->QueryDoubleAttribute("y", &y);
+  e->QueryDoubleAttribute("z", &z);
   v.x = (float) x;
   v.y = (float) y;
   v.z = (float) z;
@@ -675,8 +784,8 @@ void readColor(XMLElement *e, Color &c){
 
 
 // read in a float from an XML element
-void readFloat(XMLElement *element, float &f, string name){
+void readFloat(XMLElement *e, float &f, string name){
   double d = (double) f;
-  element->QueryDoubleAttribute(name.c_str(), &d);
+  e->QueryDoubleAttribute(name.c_str(), &d);
   f = (float) d;
 }
