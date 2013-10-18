@@ -28,7 +28,7 @@ using namespace std;
 
 
 // scene to load (project #) & debug options
-string xml = "scenes/prj6.xml";
+string xml = "scenes/prj7.xml";
 bool printXML = false;
 bool zBuffer = false;
 

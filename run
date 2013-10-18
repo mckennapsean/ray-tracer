@@ -27,6 +27,7 @@ then
   cp -r library/ ray-tracer/library/
   cp -r scenes/ ray-tracer/scenes/
   cp -r objects/ ray-tracer/objects/
+  cp -r textures/ ray-tracer/textures/
   cp LICENSE ray-tracer/
   cp README.md ray-tracer/
   cp ray-tracer.cpp ray-tracer/
