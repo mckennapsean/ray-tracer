@@ -37,7 +37,7 @@ class Sphere: public Object{
     
     // intsersect a ray against the unit sphere
     // ray must be transformed into model space, first
-    bool intersectRay(Ray &r, HitInfo &h, int face=HIT_FRONT){
+    bool intersectRay(Cone &r, HitInfo &h, int face=HIT_FRONT){
       
       // pre-compute values for quadratic solution
       Point pos = r.pos - center;
@@ -109,7 +109,7 @@ class Plane: public Object{
   public:
     
     // intersect a ray against the "unit" plane
-    bool intersectRay(Ray &r, HitInfo &h, int face = HIT_FRONT){
+    bool intersectRay(Cone &r, HitInfo &h, int face = HIT_FRONT){
       
       // only compute for rays not parallel to the unit plane
       if(r.dir.z > getBias() || r.dir.z < getBias()){
@@ -157,7 +157,7 @@ class TriObj: public Object, private cyTriMesh{
   public:
     
     // intersect a ray against the triangular mesh
-    bool intersectRay(Ray &r, HitInfo &h, int face = HIT_FRONT){
+    bool intersectRay(Cone &r, HitInfo &h, int face = HIT_FRONT){
       
       // check our BVH for triangular faces, update hit info
       bool triang = traceBVHNode(r, h, face, bvh.GetRootNodeID());
@@ -189,7 +189,7 @@ class TriObj: public Object, private cyTriMesh{
     cyBVHTriMesh bvh;
     
     // intersect a ray with a single triangle (Moller-Trumbore algorithm)
-    bool intersectTriangle(Ray &r, HitInfo &h, int face, int faceID){
+    bool intersectTriangle(Cone &r, HitInfo &h, int face, int faceID){
       
       // grab vertex points
       Point a = V(F(faceID).v[0]);
@@ -263,7 +263,7 @@ class TriObj: public Object, private cyTriMesh{
     }
     
     // cast a ray into a BVH node, seeing which triangular faces may get hit
-    bool traceBVHNode(Ray &r, HitInfo &h, int face, int nodeID){
+    bool traceBVHNode(Cone &r, HitInfo &h, int face, int nodeID){
       
       // grab node's bounding box
       BoundingBox b = BoundingBox(bvh.GetNodeBounds(nodeID));

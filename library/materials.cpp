@@ -37,7 +37,7 @@ class BlinnMaterial: public Material{
     }
     
     // shading function (blinn-phong)
-    Color shade(Ray &r, HitInfo &h, LightList &lights, int bounceCount = 1){
+    Color shade(Cone &r, HitInfo &h, LightList &lights, int bounceCount = 1){
       
       // initialize color at pixel
       Color c;
@@ -218,12 +218,12 @@ class BlinnMaterial: public Material{
     
     // set the diffuse color of the material
     void setDiffuse(Color c){
-      diffuse = c;
+      diffuse.setColor(c);
     }
     
     // set the specular color of the material
     void setSpecular(Color c){
-      specular = c;
+      specular.setColor(c);
     }
     
     // set the shininess factor of the material
@@ -233,12 +233,12 @@ class BlinnMaterial: public Material{
     
     // set the reflection color of the material
     void setReflection(Color c){
-      reflection = c;
+      reflection.setColor(c);
     }
     
     // set the refraction color of the material
     void setRefraction(Color c){
-      refraction = c;
+      refraction.setColor(c);
     }
     
     // set the absorption color of the material
@@ -251,16 +251,36 @@ class BlinnMaterial: public Material{
       index = f;
     }
     
+    // set the diffuse texture for the material
+    void setDiffuseTexture(TextureMap *map){
+      diffuse.setTexture(map);
+    }
+    
+    // set the specular texture for the material
+    void setSpecularTexture(TextureMap *map){
+      specular.setTexture(map);
+    }
+    
+    // set the reflection texture for the material
+    void setReflectionTexture(TextureMap *map){
+      reflection.setTexture(map);
+    }
+    
+    // set the refraction texture for the material
+    void setRefractionTexture(TextureMap *map){
+      refraction.setTexture(map);
+    }
+    
   private:
     
     // colors for shading
-    Color diffuse, specular;
+    TexturedColor diffuse, specular;
     
     // shininess factor for shading
     float shininess;
     
     // colors for reflection, refraction
-    Color reflection, refraction;
+    TexturedColor reflection, refraction;
     
     // index of refraction
     float index;
@@ -287,7 +307,7 @@ class PhongMaterial: public Material{
     }
     
     // shading function (phong)
-    Color shade(Ray &r, HitInfo &h, LightList &lights, int bounceCount = 1){
+    Color shade(Cone &r, HitInfo &h, LightList &lights, int bounceCount = 1){
       
       // initialize color at pixel
       Color c;
@@ -468,12 +488,12 @@ class PhongMaterial: public Material{
     
     // set the diffuse color of the material
     void setDiffuse(Color c){
-      diffuse = c;
+      diffuse.setColor(c);
     }
     
     // set the specular color of the material
     void setSpecular(Color c){
-      specular = c;
+      specular.setColor(c);
     }
     
     // set the shininess factor of the material
@@ -483,12 +503,12 @@ class PhongMaterial: public Material{
     
     // set the reflection color of the material
     void setReflection(Color c){
-      reflection = c;
+      reflection.setColor(c);
     }
     
     // set the refraction color of the material
     void setRefraction(Color c){
-      refraction = c;
+      refraction.setColor(c);
     }
     
     // set the absorption color of the material
@@ -501,16 +521,36 @@ class PhongMaterial: public Material{
       index = f;
     }
     
+    // set the diffuse texture for the material
+    void setDiffuseTexture(TextureMap *map){
+      diffuse.setTexture(map);
+    }
+    
+    // set the specular texture for the material
+    void setSpecularTexture(TextureMap *map){
+      specular.setTexture(map);
+    }
+    
+    // set the reflection texture for the material
+    void setReflectionTexture(TextureMap *map){
+      reflection.setTexture(map);
+    }
+    
+    // set the refraction texture for the material
+    void setRefractionTexture(TextureMap *map){
+      refraction.setTexture(map);
+    }
+    
   private:
     
     // colors for shading
-    Color diffuse, specular;
+    TexturedColor diffuse, specular;
     
     // shininess factor for shading
     float shininess;
     
     // colors for reflection, refraction
-    Color reflection, refraction;
+    TexturedColor reflection, refraction;
     
     // index of refraction
     float index;
