@@ -716,7 +716,7 @@ TextureMap* loadTexture(XMLElement *e){
     // get the texture if it exists, else create it!
     tex = textures.find(name);
     if(tex == NULL){
-      TexturedFile *f = new TextureFile();
+      TextureFile *f = new TextureFile();
       
       // set texture file variables
       tex = f;
@@ -726,7 +726,7 @@ TextureMap* loadTexture(XMLElement *e){
       if(!f->load()){
         cout << " -- " << "Error loading file!";
         delete tex;
-        tex = NULL);
+        tex = NULL;
         
       // successful load texture
       }else{
@@ -741,7 +741,7 @@ TextureMap* loadTexture(XMLElement *e){
   
   // set the texture map to the texture
   TextureMap *m = new TextureMap(tex);
-  loadTransform(map, e, 1.0);
+  loadTransform(m, e, 1.0);
   return m;
 }
 

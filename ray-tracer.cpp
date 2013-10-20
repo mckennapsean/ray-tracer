@@ -108,7 +108,7 @@ void rayTracing(int i){
     
     // transform ray into world space
     Point rayDir = cameraRay(pX, pY);
-    Ray *ray = new Ray();
+    Cone *ray = new Cone();
     ray->pos = camera.pos;
     ray->dir = c->transformFrom(rayDir);
     
