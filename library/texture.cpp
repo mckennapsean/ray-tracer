@@ -16,6 +16,7 @@
 // texture class (for loading textures & procedural textures)
 
 
+#include <stdio.h>
 // namespace
 using namespace scene;
 
@@ -25,7 +26,7 @@ class TextureFile: public Texture{
   private:
     
     // variables
-    std:vector<Color24> data;
+    std::vector<Color24> data;
     int width;
     int height;
     
@@ -94,7 +95,7 @@ class TextureFile: public Texture{
       height = 0;
       
       // open PPM file as a texture
-      FILE *f = fopen(getName(), "rb");
+      FILE *f = fopen(getName().c_str(), "rb");
       
       // test if we have a succesful PPM image file
       if(!f)
@@ -161,6 +162,14 @@ class TextureChecker: public Texture{
     TextureChecker(){
       color1 = Color(0.0, 0.0, 0.0);
       color2 = Color(1.0, 1.0, 1.0);
+    }
+    
+    // set texture checker colors
+    void setColor1(Color c){
+      color1 = c;
+    }
+    void setColor2(Color c){
+      color2 = c;
     }
     
     // sample a texture for a color
