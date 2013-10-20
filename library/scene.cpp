@@ -87,11 +87,11 @@ class Cone: public Ray{
       tan = t;
       radius = r;
     }
-    Cone(Ray &r, float t = 0.0, float r = 0.0){
+    Cone(Ray &r, float t = 0.0, float rad = 0.0){
       pos = r.pos;
       dir = r.dir;
       tan = t;
-      radius = r;
+      radius = rad;
     }
     Cone(Cone &c){
       pos = c.pos;
@@ -108,13 +108,13 @@ class Cone: public Ray{
     // returns the major & minor axes of an ellipse for for some given value
     void ellipseAt(float t, Point &n, Point &major, Point &minor){
       float r = radiusAt(t);
-      Point d = dir.getNormalized();
-      Point T = (d ^ N).GetNormalized();
+      Point d = dir.GetNormalized();
+      Point T = (d ^ n).GetNormalized();
       minor = r * T;
-      float c = fabs(d % N);
+      float c = fabs(d % n);
       if(c < 0.01)
         c = 0.01;
-      major = (r / c) * (T ^ N).GetNormalized();
+      major = (r / c) * (T ^ n).GetNormalized();
     }
 };
 
@@ -633,7 +633,7 @@ class Texture: public ItemBase{
     virtual Color sample(Point &uvw) = 0;
     
     // evaluate the color using derivatives recursively
-    virtual Color sample(Point &uvw, Point duvw[2], bool elliptic = true){
+    Color sample(Point &uvw, Point duvw[2], bool elliptic = true){
       
       // begin sampling the texture
       Color c = sample(uvw);

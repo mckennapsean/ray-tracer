@@ -164,7 +164,7 @@ class TextureChecker: public Texture{
     }
     
     // sample a texture for a color
-    Color sample(&uvw){
+    Color sample(Point &uvw){
       
       // clamp position into texture space
       Point u = tileClamp(uvw);
