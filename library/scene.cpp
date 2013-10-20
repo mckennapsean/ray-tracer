@@ -81,19 +81,19 @@ class Cone: public Ray{
     
     // cone ray constructor
     Cone(){}
-    Cone(Point &p, Point &d, float t = 0.0, float r = 0.0){
+    Cone(Point p, Point &d, float t = 0.0, float r = 0.0){
       pos = p;
       dir = d;
       tan = t;
       radius = r;
     }
-    Cone(Ray &r, float t = 0.0, float rad = 0.0){
+    Cone(Ray r, float t = 0.0, float rad = 0.0){
       pos = r.pos;
       dir = r.dir;
       tan = t;
       radius = rad;
     }
-    Cone(Cone &c){
+    Cone(const Cone &c){
       pos = c.pos;
       dir = c.dir;
       tan = c.tan;
@@ -676,7 +676,8 @@ class Texture: public ItemBase{
         }
         
         // continue re-sampling the texture
-        c += sample(uvw + x * duvw[0] + y * duvw[1]);
+        Point p = uvw + x * duvw[0] + y * duvw[1];
+        c += sample(p);
       }
       
       // return the sampled texture color
@@ -731,7 +732,14 @@ class TextureMap: public Transformation{
     
     // sample texture (with and without derivatives)
     virtual Color sample(Point &uvw){
-      return texture ? texture->sample(transformTo(uvw)): Color(0.0, 0.0, 0.0);
+      Color c;
+      if(texture){
+        Point p = transformTo(uvw);
+        Color q = texture->sample(p);
+        c.Set(q.r, q.g, q.b);
+      }else
+        c.Set(0.0, 0.0, 0.0);
+      return c;
     }
     virtual Color sample(Point &uvw, Point duvw[2], bool elliptic = true){
       if(texture == NULL)
@@ -758,17 +766,17 @@ class TexturedColor{
     
     // constructors
     TexturedColor(){
-      color = Color(0.0, 0.0, 0.0);
+      color->Set(0.0, 0.0, 0.0);
       map = NULL;
     }
     TexturedColor(float r, float g, float b){
-      color = Color(r, g, b);
+      color->Set(r, g, b);
       map = NULL;
     }
     
     // set color
     void setColor(Color &c){
-      color = c;
+      color->Set(c.r, c.g, c.b);
     }
     
     // set texture map
@@ -778,7 +786,7 @@ class TexturedColor{
     
     // get the current color
     Color getColor(){
-      return color;
+      return *color;
     }
     
     // get the current texture map
@@ -788,10 +796,10 @@ class TexturedColor{
     
     // sample texture (with and without derivatives)
     Color sample(Point &uvw){
-      return map ? color * map->sample(uvw): color;
+      return map ? *color * map->sample(uvw): *color;
     }
     Color sample(Point &uvw, Point duvw[2], bool elliptic = true){
-      return map ? color * map->sample(uvw, duvw, elliptic): color;
+      return map ? *color * map->sample(uvw, duvw, elliptic): *color;
     }
     
     // return the appropriate color of the texture for environment mapping
@@ -799,7 +807,8 @@ class TexturedColor{
       float z = asinf(-dir.z) / float(M_PI) + 0.5;
       float x = dir.x / (fabs(dir.x) + fabs(dir.y));
       float y = dir.y / (fabs(dir.x) + fabs(dir.y));
-      return sample(Point(0.5, 0.5, 0.0) + z * (x * Point(0.5, 0.5, 0.0) + y * Point(-0.5, 0.5, 0.0)));
+      Point p = Point(0.5, 0.5, 0.0) + z * (x * Point(0.5, 0.5, 0.0) + y * Point(-0.5, 0.5, 0.0));
+      return sample(p);
     }
 };
 
@@ -951,7 +960,7 @@ class Node: public ItemBase, public Transformation{
     }
     
     // transformation of rays to model (local) space
-    Cone toModelSpace(Ray &ray){
+    Cone toModelSpace(Cone &ray){
       Cone r;
       r.pos = transformTo(ray.pos);
       r.dir = transformTo(ray.pos + ray.dir) - r.pos;
@@ -1193,7 +1202,7 @@ void setSpecularGeometry(bool b){
 
 
 // recursively go through node & descendants, find the closest ray hit info
-bool traceRayToNode(Ray r, HitInfo &h, Node &n){
+bool traceRayToNode(Cone r, HitInfo &h, Node &n){
   
   // if object gets hit and hit first
   bool objectHit;
@@ -1202,7 +1211,7 @@ bool traceRayToNode(Ray r, HitInfo &h, Node &n){
   Object *obj = n.getObject();
   
   // transform ray into model space (or local space)
-  Ray ray = n.toModelSpace(r);
+  Cone ray = n.toModelSpace(r);
   
   // make hit info for node object (if exists)
   HitInfo hit = HitInfo();
@@ -1260,7 +1269,7 @@ bool traceRayToNode(Ray r, HitInfo &h, Node &n){
 }
 
 // main ray tracing function, recursively traverses scene for ray hits
-bool traceRay(Ray r, HitInfo &h){
+bool traceRay(Cone r, HitInfo &h){
   return traceRayToNode(r, h, *scene);
 }
 
