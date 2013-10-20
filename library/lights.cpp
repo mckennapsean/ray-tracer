@@ -27,7 +27,7 @@ class GenericLight: public Light{
   public:
     
     // calculate a shadow for any light (never call from ambient!)
-    float shadow(Ray ray, float z = FLOAT_MAX){
+    float shadow(Cone ray, float z = FLOAT_MAX){
       
       // set initial hit info
       HitInfo h = HitInfo();
@@ -93,7 +93,7 @@ class DirectLight: public GenericLight{
     
     // get color of direct light (check for shadows)
     Color illuminate(Point p){
-      Ray r = Ray();
+      Cone r = Cone();
       r.pos = p;
       r.dir = -dir;
       return shadow(r) * intensity;
@@ -136,7 +136,7 @@ class PointLight: public GenericLight{
     
     // get color of point light (check for shadows)
     Color illuminate(Point p){
-      Ray r = Ray();
+      Cone r = Cone();
       r.pos = p;
       r.dir = position - p;
       return shadow(r, 1.0) * intensity;

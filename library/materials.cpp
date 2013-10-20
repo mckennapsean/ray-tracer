@@ -27,11 +27,11 @@ class BlinnMaterial: public Material{
   
     // constructor
     BlinnMaterial(){
-      diffuse.Set(0.5, 0.5, 0.5);
-      specular.Set(0.7, 0.7, 0.7);
+      diffuse.setColor(0.5, 0.5, 0.5);
+      specular.setColor(0.7, 0.7, 0.7);
       shininess = 20.0;
-      reflection.Set(0.0, 0.0, 0.0);
-      refraction.Set(0.0, 0.0, 0.0);
+      reflection.setColor(0.0, 0.0, 0.0);
+      refraction.setColor(0.0, 0.0, 0.0);
       absorption.Set(0.0, 0.0, 0.0);
       index = 1.0;
     }
@@ -55,7 +55,7 @@ class BlinnMaterial: public Material{
           if(light->isAmbient()){
             
             // add ambient lighting term
-            c += diffuse * light->illuminate(h.p);
+            c += diffuse.getColor() * light->illuminate(h.p);
           
           // otherwise, add diffuse and specular components from light
           }else{
@@ -84,7 +84,7 @@ class BlinnMaterial: public Material{
             
             // add specular and diffuse lighting terms (only if positive)
             if(geom > 0)
-              c += light->illuminate(h.p) * geom * (diffuse + s * specular);
+              c += light->illuminate(h.p) * geom * (diffuse.getColor() + s * specular.getColor());
           }
         }
       }
@@ -92,10 +92,10 @@ class BlinnMaterial: public Material{
       // calculate and add reflection color (till out of bounces)
       Color reflectionShade;
       reflectionShade.Set(0.0, 0.0, 0.0);
-      if(bounceCount > 0 && (reflection.Grey() != 0.0 || refraction.Grey() != 0.0)){
+      if(bounceCount > 0 && (reflection.getColor().Grey() != 0.0 || refraction.getColor().Grey() != 0.0)){
         
         // create reflected vector
-        Ray *reflect = new Ray();
+        Cone *reflect = new Cone();
         reflect->pos = h.p;
         reflect->dir = 2 * (h.n % -r.dir) * h.n + r.dir;
         
@@ -120,15 +120,15 @@ class BlinnMaterial: public Material{
           
           // only add reflection color for front hits
           if(h.front)
-            c += reflection * reflectionShade;
+            c += reflection.getColor() * reflectionShade;
         }
       }
       
       // add refraction color (front and back face hits)
-      if(bounceCount > 0 && refraction.Grey() != 0.0){
+      if(bounceCount > 0 && refraction.getColor().Grey() != 0.0){
         
         // create refracted vector
-        Ray *refract = new Ray();
+        Cone *refract = new Cone();
         refract->pos = h.p;
         
         // variables for refraction calculation
@@ -194,7 +194,7 @@ class BlinnMaterial: public Material{
             float t = 1.0 - r;
             
             // compute total refraction color
-            Color refractionColor = refraction * (t * refractionShade + r * reflectionShade);
+            Color refractionColor = refraction.getColor() * (t * refractionShade + r * reflectionShade);
             
             // attenuate refraction color by absorption
             if(!refractHI.front){
@@ -209,7 +209,7 @@ class BlinnMaterial: public Material{
         
         // for total internal reflection
         }else
-          c += refraction * reflectionShade;
+          c += refraction.getColor() * reflectionShade;
       }
       
       // return final shaded color
@@ -297,11 +297,11 @@ class PhongMaterial: public Material{
   
     // constructor
     PhongMaterial(){
-      diffuse.Set(0.5, 0.5, 0.5);
-      specular.Set(0.7, 0.7, 0.7);
+      diffuse.setColor(0.5, 0.5, 0.5);
+      specular.setColor(0.7, 0.7, 0.7);
       shininess = 20.0;
-      reflection.Set(0.0, 0.0, 0.0);
-      refraction.Set(0.0, 0.0, 0.0);
+      reflection.setColor(0.0, 0.0, 0.0);
+      refraction.setColor(0.0, 0.0, 0.0);
       absorption.Set(0.0, 0.0, 0.0);
       index = 1.0;
     }
@@ -324,7 +324,7 @@ class PhongMaterial: public Material{
         if(light->isAmbient()){
           
           // add ambient lighting term
-          c += diffuse * light->illuminate(h.p);
+          c += diffuse.getColor() * light->illuminate(h.p);
         
         // otherwise, add diffuse and specular components from light
         }else{
@@ -353,7 +353,7 @@ class PhongMaterial: public Material{
           
           // add specular and diffuse lighting terms (only if positive)
           if(geom > 0)
-            c += light->illuminate(h.p) * geom * (diffuse + s * specular);
+            c += light->illuminate(h.p) * geom * (diffuse.getColor() + s * specular.getColor());
         }
       }
       
@@ -361,10 +361,10 @@ class PhongMaterial: public Material{
       // calculate and add reflection color (till out of bounces)
       Color reflectionShade;
       reflectionShade.Set(0.0, 0.0, 0.0);
-      if(bounceCount > 0 && (reflection.Grey() != 0.0 || refraction.Grey() != 0.0)){
+      if(bounceCount > 0 && (reflection.getColor().Grey() != 0.0 || refraction.getColor().Grey() != 0.0)){
         
         // create reflected vector
-        Ray *reflect = new Ray();
+        Cone *reflect = new Cone();
         reflect->pos = h.p;
         reflect->dir = 2 * (h.n % -r.dir) * h.n + r.dir;
         
@@ -389,15 +389,15 @@ class PhongMaterial: public Material{
           
           // only add reflection color for front hits
           if(h.front)
-            c += reflection * reflectionShade;
+            c += reflection.getColor() * reflectionShade;
         }
       }
       
       // add refraction color (front and back face hits)
-      if(bounceCount > 0 && refraction.Grey() != 0.0){
+      if(bounceCount > 0 && refraction.getColor().Grey() != 0.0){
         
         // create refracted vector
-        Ray *refract = new Ray();
+        Cone *refract = new Cone();
         refract->pos = h.p;
         
         // variables for refraction calculation
@@ -463,7 +463,7 @@ class PhongMaterial: public Material{
             float t = 1.0 - r;
             
             // compute total refraction color
-            Color refractionColor = refraction * (t * refractionShade + r * reflectionShade);
+            Color refractionColor = refraction.getColor() * (t * refractionShade + r * reflectionShade);
             
             // attenuate refraction color by absorption
             if(!refractHI.front){
@@ -478,7 +478,7 @@ class PhongMaterial: public Material{
         
         // for total internal reflection
         }else
-          c += refraction * reflectionShade;
+          c += refraction.getColor() * reflectionShade;
       }
       
       // return final shaded color

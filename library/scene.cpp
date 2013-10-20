@@ -775,6 +775,9 @@ class TexturedColor{
     }
     
     // set color
+    void setColor(float r, float g, float b){
+      color->Set(r, g, b);
+    }
     void setColor(Color &c){
       color->Set(c.r, c.g, c.b);
     }
