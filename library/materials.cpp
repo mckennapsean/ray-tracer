@@ -339,10 +339,10 @@ class PhongMaterial: public Material{
       c.Set(0.0, 0.0, 0.0);
       
       // update texture colors from texture
-      Color diff = diffuse.sample(h.p);
-      Color spec = specular.sample(h.p);
-      Color refl = reflection.sample(h.p);
-      Color refr = refraction.sample(h.p);
+      Color diff = diffuse.sample(h.uvw, h.duvw);
+      Color spec = specular.sample(h.uvw, h.duvw);
+      Color refl = reflection.sample(h.uvw, h.duvw);
+      Color refr = refraction.sample(h.uvw, h.duvw);
       
       // add shading from each light
       int numLights = lights.size();
