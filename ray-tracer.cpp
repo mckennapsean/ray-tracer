@@ -31,6 +31,7 @@ using namespace std;
 string xml = "scenes/prj7.xml";
 bool printXML = false;
 bool zBuffer = false;
+int bounceCount = 5;
 
 
 // variables for ray tracing
@@ -135,7 +136,7 @@ void rayTracing(int i){
       // if there is a material, shade the pixel
       // 16-passes for reflections and refractions
       if(m)
-        c = Color24(m->shade(*ray, h, lights, 5));
+        c = Color24(m->shade(*ray, h, lights, bounceCount));
       
       // otherwise color it white (as a hit)
       else
