@@ -14,6 +14,7 @@
 //
 
 // texture class (for loading textures & procedural textures)
+// originally adapted from code provided by Cem Yuksel
 
 
 #include <stdio.h>
