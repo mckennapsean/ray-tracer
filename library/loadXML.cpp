@@ -372,6 +372,9 @@ void loadMaterial(XMLElement *e){
       if(print)
         cout << " - Blinn" << endl;
       
+      // pass on environment texture
+      m->setEnvironmentTexture(environment);
+      
       // check children for material properties
       for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
         
@@ -450,6 +453,9 @@ void loadMaterial(XMLElement *e){
       // print out material type
       if(print)
         cout << " - Phong" << endl;
+      
+      // pass on environment texture
+      m->setEnvironmentTexture(environment);
       
       // check children for material properties
       for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){

@@ -128,6 +128,11 @@ class BlinnMaterial: public Material{
           // only add reflection color for front hits
           if(h.front)
             c += refl * reflectionShade;
+        
+        // ray hits environment texture
+        }else{
+          Color env = environment.sampleEnvironment(reflect->dir);
+          c += env;
         }
       }
       
@@ -212,6 +217,11 @@ class BlinnMaterial: public Material{
             
             // add refraction color
             c += refractionColor;
+          
+          // ray hits environment texture
+          }else{
+            Color env = environment.sampleEnvironment(refract->dir);
+            c += env;
           }
         
         // for total internal reflection
@@ -278,6 +288,11 @@ class BlinnMaterial: public Material{
       refraction.setTexture(map);
     }
     
+    // set the environment texture
+    void setEnvironmentTexture(TexturedColor c){
+      environment = c;
+    }
+    
   private:
     
     // colors for shading
@@ -294,6 +309,9 @@ class BlinnMaterial: public Material{
     
     // color for absorption
     Color absorption;
+    
+    // environment texture color
+    TexturedColor environment;
 };
 
 
@@ -370,7 +388,6 @@ class PhongMaterial: public Material{
         }
       }
       
-      
       // calculate and add reflection color (till out of bounces)
       Color reflectionShade;
       reflectionShade.Set(0.0, 0.0, 0.0);
@@ -403,6 +420,11 @@ class PhongMaterial: public Material{
           // only add reflection color for front hits
           if(h.front)
             c += refl * reflectionShade;
+        
+        // ray hits environment texture
+        }else{
+          Color env = environment.sampleEnvironment(reflect->dir);
+          c += env;
         }
       }
       
@@ -487,6 +509,11 @@ class PhongMaterial: public Material{
             
             // add refraction color
             c += refractionColor;
+          
+          // ray hits environment texture
+          }else{
+            Color env = environment.sampleEnvironment(refract->dir);
+            c += env;
           }
         
         // for total internal reflection
@@ -497,7 +524,6 @@ class PhongMaterial: public Material{
       // return final shaded color
       return c;
     }
-    
     
     // set the diffuse color of the material
     void setDiffuse(Color c){
@@ -554,6 +580,11 @@ class PhongMaterial: public Material{
       refraction.setTexture(map);
     }
     
+    // set the environment texture
+    void setEnvironmentTexture(TexturedColor c){
+      environment = c;
+    }
+    
   private:
     
     // colors for shading
@@ -570,4 +601,7 @@ class PhongMaterial: public Material{
     
     // color for absorption
     Color absorption;
+    
+    // environment texture color
+    TexturedColor environment;
 };
