@@ -766,11 +766,11 @@ class TexturedColor{
     
     // constructors
     TexturedColor(){
-      color->Set(0.0, 0.0, 0.0);
+      color = new Color(0.0, 0.0, 0.0);
       map = NULL;
     }
     TexturedColor(float r, float g, float b){
-      color->Set(r, g, b);
+      color = new Color(r, g, b);
       map = NULL;
     }
     
