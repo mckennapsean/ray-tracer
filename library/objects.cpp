@@ -243,9 +243,10 @@ class TriObj: public Object, private cyTriMesh{
               // distance to hit
               h.z = t;
               
-              // set hit point, normal
+              // set hit point, normal, texture coordinate
               h.p = GetPoint(faceID, bc);
               h.n = GetNormal(faceID, bc);
+              h.uvw = GetTexCoord(faceID, bc);
               
               // detect back face hits
               if(determ < 0.0)
