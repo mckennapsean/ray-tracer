@@ -1221,12 +1221,8 @@ bool traceRayToNode(Cone r, HitInfo &h, Node &n){
   if(obj){
     hit.setNode(&n);
     
-    // check the object's bounding box, should we bother sending a ray?
-    if(obj->getBoundBox().intersectRay(ray, h.z)){
-      
-      // check if object is hit
-      objectHit = obj->intersectRay(ray, hit);
-    }
+    // check if object is hit
+    objectHit = obj->intersectRay(ray, hit);
   }
   
   // check if hit was closer than previous hits
