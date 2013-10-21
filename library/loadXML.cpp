@@ -683,7 +683,7 @@ TextureMap* loadTexture(XMLElement *e){
       
       // print out procedural texture
       if(print)
-        cout << "      " << "Texture: Checker Board" << endl;
+        cout << "  " << "Texture: Checker Board" << endl;
       
       // loop through checkerboard colors
       for(XMLElement *child = e->FirstChildElement(); child != NULL; child   = child->NextSiblingElement()){
@@ -695,13 +695,13 @@ TextureMap* loadTexture(XMLElement *e){
           readColor(child, c);
           t->setColor1(c);
           if(print)
-            cout << "      " << "color1 " << c.r << " " << c.g << " " << c.b   << endl;
+            cout << "  " << "color1 " << c.r << " " << c.g << " " << c.b   << endl;
         }else if(cName == "color2"){
           Color c(0.0, 0.0, 0.0);
           readColor(child, c);
           t->setColor2(c);
           if(print)
-            cout << "      " << "color2 " << c.r << " " << c.g << " " << c.b   << endl;
+            cout << "  " << "color2 " << c.r << " " << c.g << " " << c.b   << endl;
         }
       }
       
@@ -716,7 +716,7 @@ TextureMap* loadTexture(XMLElement *e){
       
       // print out texture file
       if(print)
-        cout << "      " << "Texture: File \"" << name << "\"" << endl;
+        cout << "  " << "Texture: File \"" << name << "\"" << endl;
       
       // get the texture if it exists, else create it!
       tex = textures.find(name);
@@ -729,7 +729,7 @@ TextureMap* loadTexture(XMLElement *e){
         
         // try to load file
         if(!f->load()){
-          cout << " -- " << "Error loading file!";
+          cout << " -- " << "Error loading file!" << endl;
           delete tex;
           tex = NULL;
           
@@ -738,15 +738,11 @@ TextureMap* loadTexture(XMLElement *e){
           textures.append(tex, name);
         }
       }
-      
-      // contineu printing on the next line
-      if(print)
-        cout << endl;
     }
     
     // set the texture map to the texture
     TextureMap *m = new TextureMap(tex);
-    loadTransform(m, e, 1.0);
+    loadTransform(m, e, 0);
     return m;
   
   // catch no texture
