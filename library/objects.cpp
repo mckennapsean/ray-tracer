@@ -140,7 +140,7 @@ class Plane: public Object{
             // distance to hit
             h.z = t;
             
-            // set hit point, normal, and texture coordinate, and 
+            // set hit point, normal, texture coordinate
             h.p = hit;
             h.n = Point(0.0, 0.0, 1.0);
             h.uvw = getTexCoord(hit);
@@ -270,6 +270,13 @@ class TriObj: public Object, private cyTriMesh{
               h.p = GetPoint(faceID, bc);
               h.n = GetNormal(faceID, bc);
               h.uvw = GetTexCoord(faceID, bc);
+              
+              // calculate texture coordinate derivatives (approximate)
+              Point minor;
+              Point major;
+              r.ellipseAt(h.z, h.n, major, minor);
+              h.duvw[0] = minor;
+              h.duvw[1] = minor;
               
               // detect back face hits
               if(determ < 0.0)
