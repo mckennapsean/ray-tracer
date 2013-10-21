@@ -140,10 +140,19 @@ class Plane: public Object{
             // distance to hit
             h.z = t;
             
-            // set hit point, normal, texture coordinate, and return hit info
+            // set hit point, normal, and texture coordinate, and 
             h.p = hit;
             h.n = Point(0.0, 0.0, 1.0);
             h.uvw = getTexCoord(hit);
+            
+            // calculate texture coordinate derivatives (approximate)
+            Point minor;
+            Point major;
+            r.ellipseAt(h.z, h.n, major, minor);
+            h.duvw[0] = major;
+            h.duvw[1] = major;
+            
+            // return hit
             return true;
           }
         }

@@ -44,10 +44,10 @@ class BlinnMaterial: public Material{
       c.Set(0.0, 0.0, 0.0);
       
       // update texture colors from texture
-      Color diff = diffuse.sample(h.uvw);
-      Color spec = specular.sample(h.uvw);
-      Color refl = reflection.sample(h.uvw);
-      Color refr = refraction.sample(h.uvw);
+      Color diff = diffuse.sample(h.uvw, h.duvw);
+      Color spec = specular.sample(h.uvw, h.duvw);
+      Color refl = reflection.sample(h.uvw, h.duvw);
+      Color refr = refraction.sample(h.uvw, h.duvw);
       
       // add shading from each light (front hit only)
       if(h.front){

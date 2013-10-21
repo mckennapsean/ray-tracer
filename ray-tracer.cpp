@@ -49,6 +49,7 @@ void rayTracing(int i);
 
 // for camera ray generation
 void cameraRayVars();
+float imageDistance = 1.0;
 Point *imageTopLeftV;
 Point *dXV;
 Point *dYV;
@@ -112,6 +113,8 @@ void rayTracing(int i){
     Cone *ray = new Cone();
     ray->pos = camera.pos;
     ray->dir = c->transformFrom(rayDir);
+    ray->radius = 0.0;
+    ray->tan = dXV->x / (2.0 * imageDistance);
     
     // traverse through scene DOM
     // transform rays into model space
@@ -162,7 +165,6 @@ void rayTracing(int i){
 void cameraRayVars(){
   float fov = camera.fov * M_PI / 180.0;
   float aspectRatio = (float) w / (float) h;
-  float imageDistance = 1.0;
   float imageTipY = imageDistance * tan(fov / 2.0);
   float imageTipX = imageTipY * aspectRatio;
   float dX = (2.0 * imageTipX) / (float) w;

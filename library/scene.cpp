@@ -1227,11 +1227,14 @@ bool traceRayToNode(Cone r, HitInfo &h, Node &n){
   
   // check if hit was closer than previous hits
   if(objectHit){
-    if(hit.z < h.z)
+    if(hit.z < h.z){
       h = hit;
+      
+      // update cone's radius
+      ray.radius = ray.radiusAt(h.z);
     
     // if hit is not closer, don't count as hit
-    else
+    }else
       objectHit = false; 
   }
   
