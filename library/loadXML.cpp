@@ -665,84 +665,93 @@ void loadLight(XMLElement *e){
 TextureMap* loadTexture(XMLElement *e){
   
   // set texture name
-  string name(e->Attribute("texture"));
-  
-  // catch unset texture
-  if(name == "")
-    return NULL;
-  
-  // initialize texture
-  Texture *tex = NULL;
-  
-  // procedural texture (only checkerboard)
-  if(name == "checkerboard"){
-    TextureChecker *t = new TextureChecker();
-    tex = t;
+  const char* t = e->Attribute("texture");
+  if(t){
+    string name(t);
     
-    // print out procedural texture
-    if(print)
-      cout << "      " << "Texture: Checker Board" << endl;
+    // catch unset texture
+    if(name == "")
+      return NULL;
     
-    // loop through checkerboard colors
-    for(XMLElement *child = e->FirstChildElement(); child != NULL; child = child->NextSiblingElement()){
+    // initialize texture
+    Texture *tex = NULL;
+    
+    // procedural texture (only checkerboard)
+    if(name == "checkerboard"){
+      TextureChecker *t = new TextureChecker();
+      tex = t;
       
-      // check checkerboard colors
-      string cName(child->Value());
-      if(cName == "color1"){
-        Color c(0.0, 0.0, 0.0);
-        readColor(child, c);
-        t->setColor1(c);
-        if(print)
-          cout << "      " << "color1 " << c.r << " " << c.g << " " << c.b << endl;
-      }else if(cName == "color2"){
-        Color c(0.0, 0.0, 0.0);
-        readColor(child, c);
-        t->setColor2(c);
-        if(print)
-          cout << "      " << "color2 " << c.r << " " << c.g << " " << c.b << endl;
-      }
-    }
-    
-    // add child to texture list
-    textures.append(tex, name);
-  
-    // otherwise, load a texture file
-  }else{
-    
-    // print out texture file
-    if(print)
-      cout << "      " << "Texture: File \"" << name << "\"" << endl;
-    
-    // get the texture if it exists, else create it!
-    tex = textures.find(name);
-    if(tex == NULL){
-      TextureFile *f = new TextureFile();
+      // print out procedural texture
+      if(print)
+        cout << "      " << "Texture: Checker Board" << endl;
       
-      // set texture file variables
-      tex = f;
-      f->setName(name);
-      
-      // try to load file
-      if(!f->load()){
-        cout << " -- " << "Error loading file!";
-        delete tex;
-        tex = NULL;
+      // loop through checkerboard colors
+      for(XMLElement *child = e->FirstChildElement(); child != NULL; child   = child->NextSiblingElement()){
         
-      // successful load texture
-      }else{
-        textures.append(tex, name);
+        // check checkerboard colors
+        string cName(child->Value());
+        if(cName == "color1"){
+          Color c(0.0, 0.0, 0.0);
+          readColor(child, c);
+          t->setColor1(c);
+          if(print)
+            cout << "      " << "color1 " << c.r << " " << c.g << " " << c.b   << endl;
+        }else if(cName == "color2"){
+          Color c(0.0, 0.0, 0.0);
+          readColor(child, c);
+          t->setColor2(c);
+          if(print)
+            cout << "      " << "color2 " << c.r << " " << c.g << " " << c.b   << endl;
+        }
       }
+      
+      // add child to texture list
+      textures.append(tex, name);
+    
+      // otherwise, load a texture file
+    }else{
+      
+      // update with texture folder
+      name = "textures/" + name;
+      
+      // print out texture file
+      if(print)
+        cout << "      " << "Texture: File \"" << name << "\"" << endl;
+      
+      // get the texture if it exists, else create it!
+      tex = textures.find(name);
+      if(tex == NULL){
+        TextureFile *f = new TextureFile();
+        
+        // set texture file variables
+        tex = f;
+        f->setName(name);
+        
+        // try to load file
+        if(!f->load()){
+          cout << " -- " << "Error loading file!";
+          delete tex;
+          tex = NULL;
+          
+        // successful load texture
+        }else{
+          textures.append(tex, name);
+        }
+      }
+      
+      // contineu printing on the next line
+      if(print)
+        cout << endl;
     }
     
-    // contineu printing on the next line
-    if(print)
-      cout << endl;
-  }
+    // set the texture map to the texture
+    TextureMap *m = new TextureMap(tex);
+    loadTransform(m, e, 1.0);
+    return m;
   
-  // set the texture map to the texture
-  TextureMap *m = new TextureMap(tex);
-  loadTransform(m, e, 1.0);
-  return m;
+  // catch no texture
+  }else
+    return NULL;
 }
 
 
