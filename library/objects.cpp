@@ -63,9 +63,10 @@ class Sphere: public Object{
         if(z1 > getBias()){
           h.z = z1;
           
-          // compute surface intersection and normal
+          // compute surface intersection, normal, and texture coordinates
           h.p = r.pos + z1 * r.dir;
           h.n = h.p.GetNormalized();
+          h.uvw = getTexCoord(h.p);
           
           // return true, ray is hit
           return true;
@@ -74,9 +75,10 @@ class Sphere: public Object{
         }else if(z2 > getBias()){
           h.z = z2;
           
-          // compute surface intersection and normal
+          // compute surface intersection, normal, and texture coordinates
           h.p = r.pos + z2 * r.dir;
           h.n = h.p.GetNormalized();
+          h.uvw = getTexCoord(h.p);
           
           // return true, ray is hit
           return true;
@@ -101,6 +103,11 @@ class Sphere: public Object{
     // sphere center and its radius
     Point center;
     float radius;
+    
+    // get texture coordinates (spherical coordinates)
+    Point getTexCoord(Point p){
+      return Point(atan(p.x / p.y) / (2.0 * M_PI), acos(p.z / radius) / M_PI, 0.0);
+    }
 };
 
 
