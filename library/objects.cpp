@@ -133,9 +133,10 @@ class Plane: public Object{
             // distance to hit
             h.z = t;
             
-            // set hit point, normal, and return hit info
+            // set hit point, normal, texture coordinate, and return hit info
             h.p = hit;
             h.n = Point(0.0, 0.0, 1.0);
+            h.uvw = getTexCoord(hit);
             return true;
           }
         }
@@ -148,6 +149,12 @@ class Plane: public Object{
     // get plane bounding box
     BoundingBox getBoundBox(){
       return BoundingBox(-1.0, -1.0, 0.0, 1.0, 1.0, 0.0);
+    }
+  
+  // get the texture coordinate on the unit plane
+  private:
+    Point getTexCoord(Point p){
+      return (p + 1.0) / 2.0;
     }
 };
 
