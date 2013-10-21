@@ -69,7 +69,7 @@ int main(){
   // set variables for ray tracing
   w = render.getWidth();
   h = render.getHeight();
-  size = render.getSize(); 
+  size = render.getSize();
   img = render.getRender();
   zImg = render.getZBuffer();
   
@@ -116,19 +116,19 @@ void rayTracing(int i){
     // traverse through scene DOM
     // transform rays into model space
     // detect ray intersections and get back HitInfo
-    HitInfo h = HitInfo();
-    bool hit = traceRay(*ray, h);
+    HitInfo hi = HitInfo();
+    bool hit = traceRay(*ray, hi);
     
     // update z-buffer, if necessary
     if(zBuffer)
-      zImg[pixel] = h.z;
+      zImg[pixel] = hi.z;
     
     // color for the pixel
     Color24 c;
     
     // if hit, get the node's material
     if(hit){
-      Node *n = h.node;
+      Node *n = hi.node;
       Material *m;
       if(n)
         m = n->getMaterial();
@@ -136,15 +136,18 @@ void rayTracing(int i){
       // if there is a material, shade the pixel
       // 16-passes for reflections and refractions
       if(m)
-        c = Color24(m->shade(*ray, h, lights, bounceCount));
+        c = Color24(m->shade(*ray, hi, lights, bounceCount));
       
       // otherwise color it white (as a hit)
       else
         c.Set(237, 237, 237);
     
-    // if we hit nothing
-    }else
-      c.Set(0.0, 0.0, 0.0);
+    // if we hit nothing, draw the background
+    }else{
+      Point p = Point((float) pX / w, (float) pY / h, 0.0);
+      Color b = background.sample(p);
+      c = b;
+    }
     
     // color the pixel image
     img[pixel] = c;
