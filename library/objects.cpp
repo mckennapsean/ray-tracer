@@ -289,8 +289,8 @@ class TriObj: public Object, private cyTriMesh{
               Point minor;
               Point major;
               r.ellipseAt(h.z, h.n, major, minor);
-              h.duvw[0] = minor;
-              h.duvw[1] = minor;
+              h.duvw[0] = minor / 2.0;
+              h.duvw[1] = minor / 2.0;
               
               // detect back face hits
               if(determ < 0.0)
