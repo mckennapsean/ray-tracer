@@ -105,7 +105,9 @@ class BlinnMaterial: public Material{
         Cone *reflect = new Cone();
         reflect->pos = h.p;
         reflect->dir = 2 * (h.n % -r.dir) * h.n + r.dir;
-        reflect->radius = r.radius;
+        
+        // update cones for texture filtering
+        reflect->radius = r.radiusAt(h.z);
         reflect->tan = r.tan;
         
         // create and store reflected hit info
@@ -144,7 +146,9 @@ class BlinnMaterial: public Material{
         // create refracted vector
         Cone *refract = new Cone();
         refract->pos = h.p;
-        refract->radius = r.radius;
+        
+        // update cones for texture filtering
+        refract->radius = r.radiusAt(h.z);
         refract->tan = r.tan;
         
         // variables for refraction calculation
@@ -401,7 +405,9 @@ class PhongMaterial: public Material{
         Cone *reflect = new Cone();
         reflect->pos = h.p;
         reflect->dir = 2 * (h.n % -r.dir) * h.n + r.dir;
-        reflect->radius = r.radius;
+        
+        // update cones for texture filtering
+        reflect->radius = r.radiusAt(h.z);
         reflect->tan = r.tan;
         
         // create and store reflected hit info
@@ -440,7 +446,9 @@ class PhongMaterial: public Material{
         // create refracted vector
         Cone *refract = new Cone();
         refract->pos = h.p;
-        refract->radius = r.radius;
+        
+        // update cones for texture filtering
+        refract->radius = r.radiusAt(h.z);
         refract->tan = r.tan;
         
         // variables for refraction calculation
