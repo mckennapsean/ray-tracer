@@ -9,3 +9,4 @@ Unless otherwise stated, all images are rendered on this machine:
     - **Graphics**: Intel HD Graphics 4000 (786 MB)
     - **Software**: OS X 10.8.4
     - **Threading**: 8 threads
+    - **Bounce Count**: 5 bounces
