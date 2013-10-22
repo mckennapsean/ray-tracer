@@ -163,8 +163,8 @@ class Plane: public Object{
             Point minor;
             Point major;
             r.ellipseAt(h.z, h.n, major, minor);
-            h.duvw[0] = major;
-            h.duvw[1] = major;
+            h.duvw[0] = minor * 2.0;
+            h.duvw[1] = major * 2.0;
             
             // return hit
             return true;
