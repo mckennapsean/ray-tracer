@@ -68,6 +68,13 @@ class Sphere: public Object{
           h.n = h.p.GetNormalized();
           h.uvw = getTexCoord(h.p);
           
+          // calculate texture coordinate derivatives (approximate)
+          Point minor;
+          Point major;
+          r.ellipseAt(h.z, h.n, major, minor);
+          h.duvw[0] = minor;
+          h.duvw[1] = major;
+          
           // return true, ray is hit
           return true;
         
@@ -79,6 +86,13 @@ class Sphere: public Object{
           h.p = r.pos + z2 * r.dir;
           h.n = h.p.GetNormalized();
           h.uvw = getTexCoord(h.p);
+          
+          // calculate texture coordinate derivatives (approximate)
+          Point minor;
+          Point major;
+          r.ellipseAt(h.z, h.n, major, minor);
+          h.duvw[0] = minor;
+          h.duvw[1] = major;
           
           // return true, ray is hit
           return true;
