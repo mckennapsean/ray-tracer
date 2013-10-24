@@ -120,7 +120,7 @@ class Sphere: public Object{
     
     // get texture coordinates (spherical coordinates)
     Point getTexCoord(Point p){
-      return Point(atan(p.x / p.y) / (2.0 * M_PI), acos(p.z / radius) / M_PI, 0.0);
+      return Point(atan(p.y / p.x) / (2.0 * M_PI), acos(p.z / radius) / M_PI, 0.0);
     }
 };
 
