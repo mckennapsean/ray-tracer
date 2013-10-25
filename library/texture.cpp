@@ -17,7 +17,6 @@
 // originally adapted from code provided by Cem Yuksel
 
 
-#include <stdio.h>
 // namespace
 using namespace scene;
 
@@ -27,55 +26,47 @@ class TextureFile: public Texture{
   private:
     
     // variables
-    std::vector<Color24> data;
+    vector<Color24> data;
     int width;
     int height;
     
-    // read a line from a file to detect end of line or end of file
-    int readLine(FILE *f, int size, char *b){
-      int i;
-      for(i = 0; i < size; i++){
-        b[i] = fgetc(f);
-        if(feof(f) || b[i] == '\n' || b[i] == '\r'){
-          b[i] = '\0';
-          return i + 1;
-        }
-      }
-      return i;
-    }
-    
-    // load a PPM image file into memory
-    bool loadPPM(FILE *f, int &w, int &h, std::vector<Color24> &data){
+    // load a PPM image file into the texture data
+    bool loadPPM(string file){
       
-      // variables
-      int bufferSize = 1024;
-      char buffer[bufferSize];
+      // first load in file (binary, too)
+      ifstream f(file, ios::in | ios::binary);
       
-      // read the header
-      readLine(f, bufferSize, buffer);
+      // begin reading header into a string
+      string s;
+      getline(f, s);
       
       // ensure we have a proper PPM file
-      if(buffer[0] != 'P' && buffer[1] != '6')
+      if(s.at(0) != 'P' && s.at(1) != '6')
         return false;
       
       // ignore comments in header
-      readLine(f, bufferSize, buffer);
-      while(buffer[0] == '#')
-        readLine(f, bufferSize, buffer);
+      getline(f, s);
+      while(s.at(0) == '#')
+        getline(f, s);
       
       // grab dimensions of PPM
-      sscanf(buffer, "%d %d", &width, &height);
+      stringstream ss(s);
+      ss >> width >> height;
       
-      // continue skipping comments
-      readLine(f, bufferSize, buffer);
-      while(buffer[0] == '#')
-        readLine(f, bufferSize, buffer);
+      // continue ignoring comments
+      getline(f, s);
+      while(s.at(0) == '#')
+        getline(f, s);
       
       // load in data for PPM image
-      data.resize(width * height);
-      fread(data.data(), sizeof(Color24), width * height, f);
+      int t = width * height;
+      data.resize(t);
+      f.read((char*) data.data(), t * sizeof(Color24));
       
-      // return a succesful load from file
+      // close stream
+      f.close();
+      
+      // return a successful load from file
       return true;
     }
   
@@ -95,18 +86,8 @@ class TextureFile: public Texture{
       width = 0;
       height = 0;
       
-      // open PPM file as a texture
-      FILE *f = fopen(getName().c_str(), "rb");
-      
-      // test if we have a succesful PPM image file
-      if(!f)
-        return false;
-      bool success = false;
-      success = loadPPM(f, width, height, data);
-      
-      // close PPM file
-      fclose(f);
-      return success;
+      // load file, if we have a succesful PPM image file
+      return loadPPM(getName());
     }
     
     // sample a texture for a color
