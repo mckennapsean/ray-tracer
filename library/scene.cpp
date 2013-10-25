@@ -111,7 +111,7 @@ class Cone: public Ray{
       Point d = dir.GetNormalized();
       Point T = (d ^ n).GetNormalized();
       minor = r * T;
-      float c = fabs(d % n);
+      float c = abs(d % n);
       if(c < 0.01)
         c = 0.01;
       major = (r / c) * (T ^ n).GetNormalized();
@@ -663,7 +663,7 @@ class Texture: public ItemBase{
         
         // elliptic texture sampling (cone)
         if(elliptic){
-          float r = sqrtf(x) * 0.5;
+          float r = sqrt(x) * 0.5;
           x = r * sinf(y * (float) M_PI * 2.0);
           y = r * cosf(y * (float) M_PI * 2.0);
         
@@ -799,17 +799,23 @@ class TexturedColor{
     
     // sample texture (with and without derivatives)
     Color sample(Point &uvw){
-      return map ? *color * map->sample(uvw): *color;
+      if(map)
+        return *color * map->sample(uvw);
+      else
+        return *color;
     }
     Color sample(Point &uvw, Point duvw[2], bool elliptic = true){
-      return map ? *color * map->sample(uvw, duvw, elliptic): *color;
+      if(map)
+        return *color * map->sample(uvw, duvw, elliptic);
+      else
+        return *color;
     }
     
     // return the appropriate color of the texture for environment mapping
     Color sampleEnvironment(Point &dir){
       float z = asinf(-dir.z) / float(M_PI) + 0.5;
-      float x = dir.x / (fabs(dir.x) + fabs(dir.y));
-      float y = dir.y / (fabs(dir.x) + fabs(dir.y));
+      float x = dir.x / (abs(dir.x) + abs(dir.y));
+      float y = dir.y / (abs(dir.x) + abs(dir.y));
       Point p = Point(0.5, 0.5, 0.0) + z * (x * Point(0.5, 0.5, 0.0) + y * Point(-0.5, 0.5, 0.0));
       return sample(p);
     }
