@@ -38,7 +38,7 @@ typedef unsigned char uchar;
 #define min(a, b) ((a) < (b) ? (a):(b))
 #define max(a, b) ((a) > (b) ? (a):(b))
 #define FLOAT_MAX 1.0e30f
-#define TEXTURE_SAMPLE_COUNT 128
+#define TEXTURE_SAMPLE_COUNT 32
 
 
 // declare namespace

@@ -29,14 +29,14 @@ using namespace std;
 
 
 // scene to load (project #), variables to set, & debug options
-string xml = "scenes/prj7.xml";
+string xml = "scenes/prj8.xml";
 bool printXML = false;
 bool zBuffer = false;
-bool sampleCount = false;
+bool sampleCount = true;
 int bounceCount = 5;
 int sampleMin = 4;
-int sampleMax = 8;
-float varThreshold = 0.1;
+int sampleMax = 32;
+float varThreshold = 1.0;
 
 
 // variables for ray tracing
@@ -79,6 +79,7 @@ int main(){
   size = render.getSize();
   img = render.getRender();
   zImg = render.getZBuffer();
+  sampleImg = render.getSample();
   
   // set variables for generating camera rays
   cameraRayVars();
@@ -92,11 +93,15 @@ int main(){
   for(int i = 0; i < numThreads; i++)
     t[i].join();
   
-  // output ray-traced image & z-buffer (if set)
+  // output ray-traced image & z-buffer & sample count image (if set)
   render.save("images/image.ppm");
   if(zBuffer){
     render.computeZImage();
     render.saveZImage("images/imageZ.ppm");
+  }
+  if(sampleCount){
+    render.computeSampleImage();
+    render.saveSampleImage("images/imageSample.ppm");
   }
 }
 
@@ -127,7 +132,6 @@ void rayTracing(int i){
     float var = varThreshold;
     
     // compute multi-adaptive sampling for each pixel (anti-aliasing)
-    // while(s < sampleMin){
     while(s < sampleMin || (s != sampleMax && (rVar > var || gVar > var || bVar > var))){
       
       // grab Halton sequence to shift point by
@@ -196,6 +200,10 @@ void rayTracing(int i){
     // update the z-buffer image, if necessary
     if(zBuffer)
       zImg[pixel] = zAvg;
+    
+    // update the sample count image, if necessary
+    if(sampleCount)
+      sampleImg[pixel] = s;
     
     // re-assign next pixel (naive, but works)
     pixel += numThreads;
