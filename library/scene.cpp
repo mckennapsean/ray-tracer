@@ -65,6 +65,16 @@ float Halton(int index, int base){
 }
 
 
+// modify Halton sequence to values between -0.5 to 0.5, cenetered at 0.0
+float centerHalton(float val){
+  
+  // wrap larger Halton values
+  if(val > 0.5)
+    val -= 1.0;
+  return val;
+}
+
+
 // Ray definition (position & direction)
 class Ray{
   public:
