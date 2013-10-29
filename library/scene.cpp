@@ -48,8 +48,7 @@ namespace scene{
 
 
 // Halton sequence generator, with an index (how deep) & a base
-// TODO: inline may make it faster?
-inline float Halton(int index, int base){
+float Halton(int index, int base){
   
   // initial value
   float r = 0.0;
