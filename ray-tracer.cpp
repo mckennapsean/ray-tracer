@@ -32,7 +32,7 @@ using namespace std;
 string xml = "scenes/prj8.xml";
 bool printXML = false;
 bool zBuffer = false;
-bool sampleCount = true;
+bool sampleCount = false;
 int bounceCount = 5;
 int sampleMin = 4;
 int sampleMax = 32;
@@ -125,10 +125,10 @@ void rayTracing(int i){
     // color values to store across samples
     Color24 col;
     Color24 colAvg;
-    float zAvg;
-    float rVar;
-    float gVar;
-    float bVar;
+    float zAvg = 0;
+    float rVar = 0;
+    float gVar = 0;
+    float bVar = 0;
     float var = varThreshold;
     
     // compute multi-adaptive sampling for each pixel (anti-aliasing)
@@ -164,7 +164,7 @@ void rayTracing(int i){
           m = n->getMaterial();
         
         // if there is a material, shade the pixel
-        // 16-passes for reflections and refractions
+        // 5-passes for reflections and refractions
         if(m)
           col = Color24(m->shade(*ray, hi, lights, bounceCount));
         
@@ -186,9 +186,9 @@ void rayTracing(int i){
       colAvg.Set(rAvg, gAvg, bAvg);
       
       // compute color variances
-      rVar = (rVar * s + pow(col.r - rAvg, 2.0)) / (float) (s + 1);
-      gVar = (gVar * s + pow(col.g - gAvg, 2.0)) / (float) (s + 1);
-      bVar = (bVar * s + pow(col.b - bAvg, 2.0)) / (float) (s + 1);
+      rVar = (rVar * s + (col.r - rAvg) * (col.r - rAvg)) / (float) (s + 1);
+      gVar = (gVar * s + (col.g - gAvg) * (col.g - gAvg)) / (float) (s + 1);
+      bVar = (bVar * s + (col.b - bAvg) * (col.b - bAvg)) / (float) (s + 1);
       
       // increment sample count
       s++;
