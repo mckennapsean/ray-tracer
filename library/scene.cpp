@@ -38,13 +38,32 @@ typedef unsigned char uchar;
 #define min(a, b) ((a) < (b) ? (a):(b))
 #define max(a, b) ((a) > (b) ? (a):(b))
 #define FLOAT_MAX 1.0e30f
-#define TEXTURE_SAMPLE_COUNT 32
+#define TEXTURE_SAMPLE_COUNT 128
 
 
 // declare namespace
 namespace scene{
   
   
+
+
+// Halton sequence generator, with an index (how deep) & a base
+// TODO: inline may make it faster?
+inline float Halton(int index, int base){
+  
+  // initial value
+  float r = 0.0;
+  
+  // iterate through (using the base number) to find the value in the sequence
+  float f = 1.0 / (float) base;
+  for(int i = index; i > 0; i /= base){
+    r += f * (i % base);
+    f /= (float) base;
+  }
+  
+  // return the Halton sequence value
+  return r;
+}
 
 
 // Ray definition (position & direction)
@@ -645,21 +664,9 @@ class Texture: public ItemBase{
       // continue the re-sampling the texture recursively
       for(int i = 0; i < TEXTURE_SAMPLE_COUNT; i++){
         
-        // set variables
-        float x = 0;
-        float y = 0;
-        float fx = 0.5;
-        float fy = 1.0 / 3.0;
-        
-        // Halton sequence, base 2 & 3
-        for(int ix = i; ix > 0; ix /= 2){
-          x += fx * (ix % 2);
-          fx /= 2;
-        }
-        for(int iy = i; iy > 0; iy /= 3){
-          y += fy * (iy % 3);
-          fy /= 3;
-        }
+        // grab values for Halton sequence, base 2 & 3, for texture sampling
+        float x = Halton(i, 2);
+        float y = Halton(i, 3);
         
         // elliptic texture sampling (cone)
         if(elliptic){
@@ -1037,7 +1044,9 @@ class Render{
   private:
     Color24 *render;
     float *z;
-    uchar *zbuffer;
+    uchar *zImage;
+    float *sample;
+    uchar *sampleImage;
     int width, height;
     int size;
     int rendered;
@@ -1048,7 +1057,9 @@ class Render{
     Render(){
       render = NULL;
       z = NULL;
-      zbuffer = NULL;
+      zImage = NULL;
+      sample = NULL;
+      sampleImage = NULL;
       width = 0;
       height = 0;
       size = 0;
@@ -1068,9 +1079,15 @@ class Render{
       z = new float[size];
       for(int i = 0; i < size; i++)
         z[i] = FLOAT_MAX;
-      if(zbuffer)
-        delete[] zbuffer;
-      zbuffer = NULL;
+      if(zImage)
+        delete[] zImage;
+      zImage = NULL;
+      if(sample)
+        delete[] sample;
+      sample = new float[size];
+      if(sampleImage)
+        delete[] sampleImage;
+      sampleImage = NULL;
       reset();
     }
     
@@ -1094,6 +1111,17 @@ class Render{
       return rendered;
     }
     
+    // getters: for zbuffer and sample count images
+    uchar* getZImage(){
+      return zImage;
+    }
+    float* getSample(){
+      return sample;
+    }
+    uchar* getSampleImage(){
+      return sampleImage;
+    }
+    
     // reset the total number of rendered pixels
     void reset(){
       rendered = 0;
@@ -1113,12 +1141,12 @@ class Render{
     }
     
     // calculate the z-buffer image
-    void computeZBuffer(){
+    void computeZImage(){
       
       // clear z-buffer image
-      if(zbuffer)
-        delete[] zbuffer;
-      zbuffer = new unsigned char[size];
+      if(zImage)
+        delete[] zImage;
+      zImage = new uchar[size];
       
       // find min, max z-values
       float minZ = FLOAT_MAX;
@@ -1142,7 +1170,7 @@ class Render{
         
         // background color
         if(z[i] == FLOAT_MAX)
-          zbuffer[i] = 0;
+          zImage[i] = 0;
         
         // for pixels with objects, map from white (close) to dark (far)
         else{
@@ -1152,9 +1180,48 @@ class Render{
             f = 0;
           if(c > mx)
             f = 2;
-          zbuffer[i] = c + offset;
+          zImage[i] = c + offset;
         }
       }
+    }
+    
+    // calculate the sample count image (how many samples per pixel)
+    int computeSampleImage(){
+      
+      // clear the sample image
+      if(sampleImage)
+        delete[] sampleImage;
+      sampleImage = new uchar[size];
+      
+      // find the minimum & maximum sample counts
+      float min = 255.0;
+      float max = 0.0;
+      for(int i = 0; i < size; i++){
+        if(min > sample[i])
+          min = sample[i];
+        if(max < sample[i])
+          max = sample[i];
+      }
+      
+      // for sampling that is non-adaptive
+      if(max == min){
+        for(int i = 0; i < size; i++)
+          sampleImage[i] = 0;
+      
+      // for adaptive sampling (get values between 0 and 255 for image)
+      }else{
+        for(int i = 0; i < size; i++){
+          int c = (255 * (sample[i] - min)) / (max - min);
+          if(c < 0)
+            c = 0;
+          if(c > 255)
+            c = 255;
+          sampleImage[i] = c;
+        }
+      }
+      
+      // return our maximum value (and if not zero, this worked!)
+      return max;
     }
     
     // save the rendered image to a file
@@ -1163,14 +1230,19 @@ class Render{
     }
     
     // save the rendered z-buffer image to a file
-    bool saveZBuffer(string file){
+    bool saveZImage(string file){
       return outputImage(file, 1);
+    }
+    
+    // save the sample count image to a file
+    bool saveSampleImage(string file){
+      return outputImage(file, 2);
     }
   
   private:
     
     // write out an image file
-    bool outputImage(string file, int components){
+    bool outputImage(string file, int c){
       ofstream f;
       f.open(file);
       
@@ -1185,13 +1257,18 @@ class Render{
       for(int i = 0; i < size; i++){
         
         // output the rendered color image
-        if(components == 3){
+        if(c == 3){
           uchar d[3] = {render[i].r, render[i].g, render[i].b};
           f.write(reinterpret_cast<char*>(d), sizeof(d));
           
         // output the z-buffer image
-        }else if(components == 1){
-          uchar d[3] = {zbuffer[i], zbuffer[i], zbuffer[i]};
+        }else if(c == 1){
+          uchar d[3] = {zImage[i], zImage[i], zImage[i]};
+          f.write(reinterpret_cast<char*>(d), sizeof(d));
+        
+        // output the sample count image
+        }else if(c == 2){
+          uchar d[3] = {sampleImage[i], sampleImage[i], sampleImage[i]};
           f.write(reinterpret_cast<char*>(d), sizeof(d));
         }
       }

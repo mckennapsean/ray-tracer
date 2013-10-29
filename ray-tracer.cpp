@@ -32,6 +32,7 @@ using namespace std;
 string xml = "scenes/prj7.xml";
 bool printXML = false;
 bool zBuffer = false;
+bool sampleCount = false;
 int bounceCount = 5;
 
 
@@ -41,6 +42,7 @@ int h;
 int size;
 Color24* img;
 float* zImg;
+float* sampleImg;
 
 
 // setup threading
@@ -90,8 +92,8 @@ int main(){
   // output ray-traced image & z-buffer (if set)
   render.save("images/image.ppm");
   if(zBuffer){
-    render.computeZBuffer();
-    render.saveZBuffer("images/imageZ.ppm");
+    render.computeZImage();
+    render.saveZImage("images/imageZ.ppm");
   }
 }
 
