@@ -28,12 +28,14 @@
 using namespace std;
 
 
-// scene to load (project #) & debug options
+// scene to load (project #), variables to set, & debug options
 string xml = "scenes/prj7.xml";
 bool printXML = false;
 bool zBuffer = false;
 bool sampleCount = false;
 int bounceCount = 5;
+int sampleMin = 8;
+int sampleMax = 64;
 
 
 // variables for ray tracing
@@ -46,7 +48,7 @@ float* sampleImg;
 
 
 // setup threading
-static const int numThreads = 8;
+static const int numThreads = 1;
 void rayTracing(int i);
 
 
@@ -58,7 +60,7 @@ Point *dXV;
 Point *dYV;
 Point firstPixel;
 Transformation* c;
-Point cameraRay(int pX, int pY);
+Point cameraRay(float pX, float pY);
 
 
 // ray tracer
@@ -107,56 +109,82 @@ void rayTracing(int i){
   // thread continuation condition
   while(pixel < size){
     
-    // establish pixel location
-    int pX = pixel % w;
-    int pY = pixel / w;
+    // number of samples
+    int s = 0;
     
-    // transform ray into world space
-    Point rayDir = cameraRay(pX, pY);
-    Cone *ray = new Cone();
-    ray->pos = camera.pos;
-    ray->dir = c->transformFrom(rayDir);
-    ray->radius = 0.0;
-    ray->tan = dXV->x / (2.0 * imageDistance);
+    // establish pixel location (center)
+    float pX = pixel % w;
+    float pY = pixel / w;
     
-    // traverse through scene DOM
-    // transform rays into model space
-    // detect ray intersections and get back HitInfo
-    HitInfo hi = HitInfo();
-    bool hit = traceRay(*ray, hi);
+    // color values to store across samples
+    Color24 col;
+    Color24 colAvg;
+    float zAvg;
     
-    // update z-buffer, if necessary
-    if(zBuffer)
-      zImg[pixel] = hi.z;
-    
-    // color for the pixel
-    Color24 c;
-    
-    // if hit, get the node's material
-    if(hit){
-      Node *n = hi.node;
-      Material *m;
-      if(n)
-        m = n->getMaterial();
+    // compute multi-adaptive sampling for each pixel (anti-aliasing)
+    while(s < sampleMin && s != sampleMax){
       
-      // if there is a material, shade the pixel
-      // 16-passes for reflections and refractions
-      if(m)
-        c = Color24(m->shade(*ray, hi, lights, bounceCount));
+      // grab Halton sequence to shift point by
+      float dpX = centerHalton(Halton(s, 3));
+      float dpY = centerHalton(Halton(s, 2));
       
-      // otherwise color it white (as a hit)
-      else
-        c.Set(237, 237, 237);
-    
-    // if we hit nothing, draw the background
-    }else{
-      Point p = Point((float) pX / w, (float) pY / h, 0.0);
-      Color b = background.sample(p);
-      c = b;
+      // transform ray into world space (offset by Halton seqeunce for sampling)
+      Point rayDir = cameraRay(pX + dpX, pY + dpY);
+      Cone *ray = new Cone();
+      ray->pos = camera.pos;
+      ray->dir = c->transformFrom(rayDir);
+      ray->radius = 0.0;
+      ray->tan = dXV->x / (2.0 * imageDistance);
+      
+      // traverse through scene DOM
+      // transform rays into model space
+      // detect ray intersections and get back HitInfo
+      HitInfo hi = HitInfo();
+      bool hit = traceRay(*ray, hi);
+      
+      // update z-buffer, if necessary
+      if(zBuffer)
+        zAvg = (zAvg * s + hi.z) / (float) (s + 1);
+      
+      // if hit, get the node's material
+      if(hit){
+        Node *n = hi.node;
+        Material *m;
+        if(n)
+          m = n->getMaterial();
+        
+        // if there is a material, shade the pixel
+        // 16-passes for reflections and refractions
+        if(m)
+          col = Color24(m->shade(*ray, hi, lights, bounceCount));
+        
+        // otherwise color it white (as a hit)
+        else
+          col.Set(237, 237, 237);
+      
+      // if we hit nothing, draw the background
+      }else{
+        Point p = Point((float) pX / w, (float) pY / h, 0.0);
+        Color b = background.sample(p);
+        col = b;
+      }
+      
+      // compute average color
+      float rAvg = (colAvg.r * s + col.r) / (float) (s + 1);
+      float gAvg = (colAvg.g * s + col.g) / (float) (s + 1);
+      float bAvg = (colAvg.b * s + col.b) / (float) (s + 1);
+      colAvg.Set(rAvg, gAvg, bAvg);
+      
+      // increment sample count
+      s++;
     }
     
     // color the pixel image
-    img[pixel] = c;
+    img[pixel] = colAvg;
+    
+    // update the z-buffer image, if necessary
+    if(zBuffer)
+      zImg[pixel] = zAvg;
     
     // re-assign next pixel (naive, but works)
     pixel += numThreads;
@@ -186,7 +214,7 @@ void cameraRayVars(){
 
 
 // compute camera rays
-Point cameraRay(int pX, int pY){
+Point cameraRay(float pX, float pY){
   Point ray = firstPixel + (*dXV * pX) + (*dYV * pY);
   ray.Normalize();
   return ray;
