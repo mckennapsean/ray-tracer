@@ -34,8 +34,9 @@ bool printXML = false;
 bool zBuffer = false;
 bool sampleCount = false;
 int bounceCount = 5;
-int sampleMin = 8;
-int sampleMax = 64;
+int sampleMin = 4;
+int sampleMax = 8;
+float varThreshold = 0.1;
 
 
 // variables for ray tracing
@@ -48,7 +49,7 @@ float* sampleImg;
 
 
 // setup threading
-static const int numThreads = 1;
+static const int numThreads = 8;
 void rayTracing(int i);
 
 
@@ -120,9 +121,14 @@ void rayTracing(int i){
     Color24 col;
     Color24 colAvg;
     float zAvg;
+    float rVar;
+    float gVar;
+    float bVar;
+    float var = varThreshold;
     
     // compute multi-adaptive sampling for each pixel (anti-aliasing)
-    while(s < sampleMin && s != sampleMax){
+    // while(s < sampleMin){
+    while(s < sampleMin || (s != sampleMax && (rVar > var || gVar > var || bVar > var))){
       
       // grab Halton sequence to shift point by
       float dpX = centerHalton(Halton(s, 3));
@@ -174,6 +180,11 @@ void rayTracing(int i){
       float gAvg = (colAvg.g * s + col.g) / (float) (s + 1);
       float bAvg = (colAvg.b * s + col.b) / (float) (s + 1);
       colAvg.Set(rAvg, gAvg, bAvg);
+      
+      // compute color variances
+      rVar = (rVar * s + pow(col.r - rAvg, 2.0)) / (float) (s + 1);
+      gVar = (gVar * s + pow(col.g - gAvg, 2.0)) / (float) (s + 1);
+      bVar = (bVar * s + pow(col.b - bAvg, 2.0)) / (float) (s + 1);
       
       // increment sample count
       s++;
