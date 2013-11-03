@@ -33,9 +33,9 @@ Details
 
 [*Specs*](specs.html)
 
-| *render time*  | minimum samples | maximum samples |
-| :------------- | --------------: | --------------: |
-| 1 min 24.470 s |               4 |              32 |
-| 2 min 11.372 s |              16 |              32 |
+| *render time*  | minimum samples | maximum samples | variance |
+| -------------: | --------------: | --------------: | -------: |
+|       26.107 s |               4 |              32 |    0.001 |
+| 1 min 33.490 s |               6 |              64 |   0.0001 |
 
 - - -
