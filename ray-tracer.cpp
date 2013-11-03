@@ -23,6 +23,7 @@
 #include <sstream>
 #include <string>
 #include <cmath>
+#include <random>
 #include "library/loadXML.cpp"
 #include "library/scene.cpp"
 using namespace std;
@@ -70,6 +71,8 @@ Point *dYV;
 Point firstPixel;
 Transformation* c;
 Point cameraRay(float pX, float pY);
+mt19937 rnd;
+uniform_real_distribution<float> dist(0.0, 1.0);
 
 
 // ray tracer
@@ -140,12 +143,21 @@ void rayTracing(int i){
     float var = varThreshold;
     float brightness = 0.0;
     
+    // random rotation of Halton sequence on circle of confusion
+    float dcR = dist(rnd) * 2.0 * M_PI;
+    
     // compute multi-adaptive sampling for each pixel (anti-aliasing)
     while(s < sampleMin || (s != sampleMax && (rVar * perR > var + brightness * var || gVar * perG > var + brightness * var || bVar * perB > var + brightness * var))){
       
-      // grab Halton sequence to shift point by
+      // grab Halton sequence to shift point by on image plane
       float dpX = centerHalton(Halton(s, 3));
       float dpY = centerHalton(Halton(s, 2));
+      
+      // grab Halton sequence to shift point along circle of confusion
+      float dcS = sqrt(Halton(s, 5));
+      
+      // grab Halton sequence to shift point around circle of confusion
+      float dcT = Halton(s, 7) * 2.0 * M_PI;
       
       // transform ray into world space (offset by Halton seqeunce for sampling)
       Point rayDir = cameraRay(pX + dpX, pY + dpY);
@@ -233,6 +245,7 @@ void rayTracing(int i){
 void cameraRayVars(){
   float fov = camera.fov * M_PI / 180.0;
   float aspectRatio = (float) w / (float) h;
+  imageDistance = camera.focalDist;
   float imageTipY = imageDistance * tan(fov / 2.0);
   float imageTipX = imageTipY * aspectRatio;
   float dX = (2.0 * imageTipX) / (float) w;
