@@ -53,6 +53,7 @@ float perR = 0.2126;
 float perG = 0.7152;
 float perB = 0.0722;
 float Ycutoff = pow(6.0 / 29.0, 3.0);
+float Yprecalc = (1.0 / 3.0) * pow(29.0 / 6.0, 2.0);
 
 
 // setup threading
@@ -204,7 +205,7 @@ void rayTracing(int i){
       if(Y13 > Ycutoff)
         Y13 = pow(Y13, 1.0 / 3.0);
       else
-        Y13 = (1.0 / 3.0) * pow(29.0 / 6.0, 2.0) * Y13 + (4.0 / 29.0);
+        Y13 = Yprecalc * Y13 + (4.0 / 29.0);
       brightness = (116.0 * Y13 - 16.0) / 100.0;
       
       // increment sample count
