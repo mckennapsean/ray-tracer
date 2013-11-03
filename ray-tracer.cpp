@@ -36,7 +36,7 @@ bool sampleCount = false;
 int bounceCount = 5;
 int sampleMin = 4;
 int sampleMax = 32;
-float varThreshold = 1.0;
+float varThreshold = 0.001;
 
 
 // variables for ray tracing
@@ -123,8 +123,9 @@ void rayTracing(int i){
     float pY = pixel / w;
     
     // color values to store across samples
-    Color24 col;
-    Color24 colAvg;
+    // Color24 col;
+    Color col;
+    Color colAvg;
     float zAvg = 0;
     float rVar = 0;
     float gVar = 0;
@@ -166,11 +167,12 @@ void rayTracing(int i){
         // if there is a material, shade the pixel
         // 5-passes for reflections and refractions
         if(m)
-          col = Color24(m->shade(*ray, hi, lights, bounceCount));
+          col = m->shade(*ray, hi, lights, bounceCount);
+          // col = Color24(m->shade(*ray, hi, lights, bounceCount));
         
         // otherwise color it white (as a hit)
         else
-          col.Set(237, 237, 237);
+          col.Set(0.929, 0.929, 0.929);
       
       // if we hit nothing, draw the background
       }else{
@@ -195,7 +197,7 @@ void rayTracing(int i){
     }
     
     // color the pixel image
-    img[pixel] = colAvg;
+    img[pixel] = Color24(colAvg);
     
     // update the z-buffer image, if necessary
     if(zBuffer)
