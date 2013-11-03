@@ -29,7 +29,7 @@ using namespace std;
 
 
 // scene to load (project #), variables to set, & debug options
-string xml = "scenes/prj8.xml";
+string xml = "scenes/prj9.xml";
 bool printXML = false;
 bool zBuffer = false;
 bool sampleCount = false;

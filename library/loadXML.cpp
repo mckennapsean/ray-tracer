@@ -199,8 +199,11 @@ void loadNode(Node *n, XMLElement *e, int level){
   Node *node = new Node();
   n->appendChild(node);
   
-  // get the name of the parent node
-  string name(e->Attribute("name"));
+  // get the name of the parent node (safely)
+  const char* na = e->Attribute("name");
+  string name = "";
+  if(na)
+    name = na;
   node->setName(name);
   
   // print out object name
