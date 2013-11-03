@@ -138,6 +138,10 @@ int loadScene(string file, bool p = false){
       readVector(camChild, camera.up);
     if(val == "fov")
       readFloat(camChild, camera.fov);
+    if(val == "focaldist")
+      readFloat(camChild, camera.focalDist);
+    if(val == "dof")
+      readFloat(camChild, camera.dof);
     if(val == "width")
       camChild->QueryIntAttribute("value", &camera.imgWidth);
     if(val == "height")

@@ -1023,7 +1023,7 @@ class Camera{
     
     // camera specifications
     Point pos, dir, up, cross;
-    float fov;
+    float fov, focalDist, dof;
     int imgWidth, imgHeight;
     
     // initialize camera
@@ -1032,6 +1032,8 @@ class Camera{
       dir.Set(0, 0, -1);
       up.Set(0, 1, 0);
       fov = 40;
+      focalDist = 1.0;
+      dof = 0.0;
       imgWidth = 200;
       imgHeight = 150;
     }
