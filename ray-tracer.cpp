@@ -36,7 +36,7 @@ bool sampleCount = false;
 int bounceCount = 5;
 int sampleMin = 4;
 int sampleMax = 32;
-float varThreshold = 0.002;
+float varThreshold = 0.001;
 
 
 // variables for ray tracing
@@ -46,6 +46,13 @@ int size;
 Color24* img;
 float* zImg;
 float* sampleImg;
+
+
+// variables for anti-aliasing brightness calculations (XYZ, Lab)
+float perR = 0.2126;
+float perG = 0.7152;
+float perB = 0.0722;
+float Ycutoff = pow(6.0 / 29.0, 3.0);
 
 
 // setup threading
@@ -123,17 +130,17 @@ void rayTracing(int i){
     float pY = pixel / w;
     
     // color values to store across samples
-    // Color24 col;
     Color col;
     Color colAvg;
-    float zAvg = 0;
-    float rVar = 0;
-    float gVar = 0;
-    float bVar = 0;
+    float zAvg = 0.0;
+    float rVar = 0.0;
+    float gVar = 0.0;
+    float bVar = 0.0;
     float var = varThreshold;
+    float brightness = 0.0;
     
     // compute multi-adaptive sampling for each pixel (anti-aliasing)
-    while(s < sampleMin || (s != sampleMax && (rVar * 0.80 > var || gVar > var || bVar * 0.50 > var))){
+    while(s < sampleMin || (s != sampleMax && (rVar * perR > var + brightness * var || gVar * perG > var + brightness * var || bVar * perB > var + brightness * var))){
       
       // grab Halton sequence to shift point by
       float dpX = centerHalton(Halton(s, 3));
@@ -168,7 +175,6 @@ void rayTracing(int i){
         // 5-passes for reflections and refractions
         if(m)
           col = m->shade(*ray, hi, lights, bounceCount);
-          // col = Color24(m->shade(*ray, hi, lights, bounceCount));
         
         // otherwise color it white (as a hit)
         else
@@ -191,6 +197,15 @@ void rayTracing(int i){
       rVar = (rVar * s + (col.r - rAvg) * (col.r - rAvg)) / (float) (s + 1);
       gVar = (gVar * s + (col.g - gAvg) * (col.g - gAvg)) / (float) (s + 1);
       bVar = (bVar * s + (col.b - bAvg) * (col.b - bAvg)) / (float) (s + 1);
+      
+      // calculate and update brightness average using XYZ and Lab space
+      float Y = perR * rAvg + perG * gAvg + perB * bAvg;
+      float Y13 = Y;
+      if(Y13 > Ycutoff)
+        Y13 = pow(Y13, 1.0 / 3.0);
+      else
+        Y13 = (1.0 / 3.0) * pow(29.0 / 6.0, 2.0) * Y13 + (4.0 / 29.0);
+      brightness = (116.0 * Y13 - 16.0) / 100.0;
       
       // increment sample count
       s++;
