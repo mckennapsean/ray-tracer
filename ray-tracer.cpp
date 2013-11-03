@@ -133,7 +133,7 @@ void rayTracing(int i){
     float var = varThreshold;
     
     // compute multi-adaptive sampling for each pixel (anti-aliasing)
-    while(s < sampleMin || (s != sampleMax && (rVar > var || gVar > var || bVar > var))){
+    while(s < sampleMin || (s != sampleMax && (rVar * 0.80 > var || gVar > var || bVar * 0.50 > var))){
       
       // grab Halton sequence to shift point by
       float dpX = centerHalton(Halton(s, 3));
