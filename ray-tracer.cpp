@@ -36,7 +36,7 @@ bool sampleCount = false;
 int bounceCount = 5;
 int sampleMin = 4;
 int sampleMax = 32;
-float varThreshold = 0.001;
+float varThreshold = 0.002;
 
 
 // variables for ray tracing
