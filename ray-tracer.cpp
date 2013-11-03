@@ -68,9 +68,11 @@ float imageDistance = 1.0;
 Point *imageTopLeftV;
 Point *dXV;
 Point *dYV;
+Point *dVx;
+Point *dVy;
 Point firstPixel;
 Transformation* c;
-Point cameraRay(float pX, float pY);
+Point cameraRay(float pX, float pY, Point offset);
 mt19937 rnd;
 uniform_real_distribution<float> dist(0.0, 1.0);
 
@@ -154,15 +156,18 @@ void rayTracing(int i){
       float dpY = centerHalton(Halton(s, 2));
       
       // grab Halton sequence to shift point along circle of confusion
-      float dcS = sqrt(Halton(s, 5));
+      float dcS = sqrt(Halton(s, 5)) * camera.dof;
       
       // grab Halton sequence to shift point around circle of confusion
       float dcT = Halton(s, 7) * 2.0 * M_PI;
       
+      // compute the offset for depth of field sampling
+      Point posOffset = (*dVx * cos(dcR + dcT) + *dVy * sin(dcR + dcT)) * dcS;
+      
       // transform ray into world space (offset by Halton seqeunce for sampling)
-      Point rayDir = cameraRay(pX + dpX, pY + dpY);
+      Point rayDir = cameraRay(pX + dpX, pY + dpY, posOffset);
       Cone *ray = new Cone();
-      ray->pos = camera.pos;
+      ray->pos = camera.pos + c->transformFrom(posOffset);
       ray->dir = c->transformFrom(rayDir);
       ray->radius = 0.0;
       ray->tan = dXV->x / (2.0 * imageDistance);
@@ -260,12 +265,16 @@ void cameraRayVars(){
   Matrix *rotate = new cyMatrix3f();
   rotate->Set(camera.cross, camera.up, -camera.dir);
   c->transform(*rotate);
+  
+  // get normalized rays on the focal plane
+  dVx = new Point(1.0, 0.0, 0.0);
+  dVy = new Point(0.0, 1.0, 0.0);
 }
 
 
-// compute camera rays
-Point cameraRay(float pX, float pY){
-  Point ray = firstPixel + (*dXV * pX) + (*dYV * pY);
+// compute camera ray direction
+Point cameraRay(float pX, float pY, Point offset){
+  Point ray = firstPixel + (*dXV * pX) + (*dYV * pY) - offset;
   ray.Normalize();
   return ray;
 }
