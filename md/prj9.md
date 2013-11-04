@@ -10,14 +10,13 @@ We now have the ability to use our circle of confusion to simulate depth of fiel
 Many Spheres
 ------------
 
+![](images/prj9/spheres-original.png)
+
 ![](images/prj9/spheres.png)
 
-- - -
-
-Many Spheres - Sample Count
----------------------------
-
 ![](images/prj9/spheresSample.png)
+
+![](images/prj9/spheresSample-original.png)
 
 - - -
 
@@ -27,6 +26,17 @@ Many Spheres - More Samples
 ![](images/prj9/spheres-h.png)
 
 ![](images/prj9/spheresSample-h.png)
+
+- - -
+
+Many Colors
+-----------
+
+![](images/prj9/colors-original.png)
+
+![](images/prj9/colors.png)
+
+![](images/prj9/colorsSample.png)
 
 - - -
 
@@ -44,11 +54,17 @@ Details
 
 [*Specs*](specs.html)
 
+Many Spheres:
+
 | *render time*  | minimum samples | maximum samples |
 | -------------: | --------------: | --------------: |
 |       49.136 s |               8 |              32 |
 | 1 min 45.240 s |              16 |              64 |
 
-| 7 min 50.853 s |              16 |              64 |
+Many Colors:
+
+| *render time*   | minimum samples | maximum samples | color variance |
+| --------------: | --------------: | --------------: | -------------: |
+| 19 min 08.591 s |              16 |             128 |         0.0001 |
 
 - - -
