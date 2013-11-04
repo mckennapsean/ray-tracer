@@ -163,6 +163,6 @@
     <width value="800"/>
     <height value="600"/>
     <focaldist value="70"/>
-    <dof value="0.0"/>
+    <dof value="1.0"/>
   </camera>
 </xml>
