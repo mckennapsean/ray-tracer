@@ -73,6 +73,9 @@ Point *dVy;
 Point firstPixel;
 Transformation* c;
 Point cameraRay(float pX, float pY, Point offset);
+
+
+// for camera offset to get depth of field
 mt19937 rnd;
 uniform_real_distribution<float> dist(0.0, 1.0);
 
@@ -156,10 +159,10 @@ void rayTracing(int i){
       float dpY = centerHalton(Halton(s, 2));
       
       // grab Halton sequence to shift point along circle of confusion
-      float dcS = sqrt(Halton(s, 5)) * camera.dof;
+      float dcS = sqrt(Halton(s, 2)) * camera.dof;
       
       // grab Halton sequence to shift point around circle of confusion
-      float dcT = Halton(s, 7) * 2.0 * M_PI;
+      float dcT = Halton(s, 3) * 2.0 * M_PI;
       
       // compute the offset for depth of field sampling
       Point posOffset = (*dVx * cos(dcR + dcT) + *dVy * sin(dcR + dcT)) * dcS;
