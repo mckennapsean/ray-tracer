@@ -1,0 +1,168 @@
+<xml>
+  <scene>
+    <background r="0" g="0" b="0">
+      <scale y="0.4"/>
+      <translate y="-0.1"/>
+    </background>
+    <environment value="0.7" texture="clouds.ppm"/>
+ 
+    <!-- Objects -->
+    <object type="plane" material="ground">
+      <scale value="500"/>
+      <rotate angle="-30" z="1"/>
+    </object>
+    <object type="obj" name="teapot" material="bricks">
+      <scale value="0.8"/>
+      <rotate angle="-160" z="1"/>
+      <translate x="1" y="1" z="0"/>
+    </object>
+    <object type="obj" name="teapot" material="reflective">
+      <scale value="0.4"/>
+      <rotate angle="-50" z="1"/>
+      <translate x="-7" y="-7" z="0"/>
+    </object>
+    <object type="sphere" material="reflective">
+      <scale value="10"/>
+      <translate x="30" y="50" z="10"/>
+    </object>
+    <object type="sphere" material="reflective">
+      <scale value="5"/>
+      <translate x="20" y="30" z="5"/>
+    </object>
+    <object type="sphere" material="checkerMtl1">
+      <scale value="5"/>
+      <translate x="-20" y="55" z="5"/>
+    </object>
+    <object type="sphere" material="checkerMtl2">
+      <scale value="5"/>
+      <translate x="-15" y="40" z="5"/>
+    </object>
+    <object type="sphere" material="checkerMtl3">
+      <scale value="5"/>
+      <translate x="-10" y="25" z="5"/>
+    </object>
+    <object type="sphere" material="checkerMtl4">
+      <scale value="5"/>
+      <translate x="-5" y="10" z="5"/>
+    </object>
+    <object type="sphere" material="refractiveRed2">
+      <scale value="4"/>
+      <translate x="5" y="-13" z="4"/>
+    </object>
+    <object type="sphere" material="refractiveRed1">
+      <scale value="3"/>
+      <translate x="7" y="-18" z="3"/>
+    </object>
+    <object type="sphere" material="refractive">
+      <scale value="2"/>
+      <translate x="8" y="-22" z="2"/>
+    </object>
+ 
+    <!-- Materials -->
+    <material type="blinn" name="ground">
+      <diffuse r="1" g="1" b="1" texture="checkerboard">
+        <color1 r="0.17" g="0.13" b="0.2"/>
+        <color2 r="0.87" g="0.83" b="0.9"/>
+        <scale value="0.01"/>
+      </diffuse>
+      <specular value="0.1"/>
+      <glossiness value="50"/>
+      <reflection value="0.5"/>
+    </material>
+    <material type="blinn" name="checkerMtl1">
+      <diffuse texture="checkerboard">
+        <color1 r="0.4" g="0.2" b="0.4" />
+        <color2 r="0.9" g="0.5" b="0.9" />
+        <scale x="0.25" y="0.4"/>
+      </diffuse>
+      <specular value="0.8"/>
+      <glossiness value="100"/>
+      <reflection value="0.5"/>
+    </material>
+    <material type="blinn" name="checkerMtl2">
+      <diffuse texture="checkerboard">
+        <color1 r="0.2" g="0.2" b="0.4" />
+        <color2 r="0.5" g="0.5" b="0.9" />
+        <scale x="0.25" y="0.4"/>
+      </diffuse>
+      <specular value="0.8"/>
+      <glossiness value="100"/>
+      <reflection value="0.5"/>
+    </material>
+    <material type="blinn" name="checkerMtl3">
+      <diffuse texture="checkerboard">
+        <color1 r="0.2" g="0.4" b="0.2" />
+        <color2 r="0.5" g="0.9" b="0.5" />
+        <scale x="0.25" y="0.4"/>
+      </diffuse>
+      <specular value="0.8"/>
+      <glossiness value="100"/>
+      <reflection value="0.5"/>
+    </material>
+    <material type="blinn" name="checkerMtl4">
+      <diffuse texture="checkerboard">
+        <color1 r="0.4" g="0.4" b="0.2" />
+        <color2 r="0.9" g="0.9" b="0.5" />
+        <scale x="0.25" y="0.4"/>
+      </diffuse>
+      <specular value="0.8"/>
+      <glossiness value="100"/>
+      <reflection value="0.5"/>
+    </material>
+    <material type="blinn" name="bricks">
+      <diffuse texture="bricks.ppm">
+      </diffuse>
+      <specular value="0.3"/>
+      <glossiness value="10"/>
+    </material>
+    <material type="blinn" name="refractiveRed2">
+      <diffuse  r="0.4" g="0.1" b="0.1"/>
+      <specular r="1.0" g="1.0" b="1.0" value="0.7"/>
+      <glossiness value="100"/>
+      <refraction index="1.52" value="1"/>
+    </material>
+    <material type="blinn" name="refractiveRed1">
+      <diffuse  r="0.2" g="0.05" b="0.05"/>
+      <specular r="1.0" g="1.0" b="1.0" value="0.7"/>
+      <glossiness value="100"/>
+      <refraction index="1.52" value="1"/>
+    </material>
+    <material type="blinn" name="refractive">
+      <diffuse value="0"/>
+      <specular value="0.7"/>
+      <glossiness value="100"/>
+      <refraction index="1.52" value="1"/>
+    </material>
+    <material type="blinn" name="reflective">
+      <diffuse value="0"/>
+      <specular value="0.8"/>
+      <glossiness value="100"/>
+      <reflection value="0.5"/>
+      <absorption r="0.01" g="0.001" b="0.0001"/>
+    </material>
+ 
+    <!-- Lights -->
+    <light type="ambient" name="ambientLight">
+      <intensity value="0.2"/>
+    </light>
+    <light type="direct" name="directLight">
+      <intensity value="0.6"/>
+      <direction x="-1" y="0.2" z="-1"/>
+    </light>
+    <light type="direct" name="directLight">
+      <intensity value="0.4"/>
+      <direction x="1" y="0.3" z="-1"/>
+    </light>
+  </scene>
+ 
+  <camera>
+    <position x="-10" y="-70" z="25"/>
+    <target x="-2" y="0" z="3"/>
+    <up x="0" y="0" z="1"/>
+    <fov value="20"/>
+    <width value="800"/>
+    <height value="600"/>
+    <focaldist value="70"/>
+    <dof value="0.0"/>
+  </camera>
+</xml>
