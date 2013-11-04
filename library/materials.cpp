@@ -224,7 +224,7 @@ class BlinnMaterial: public Material{
             }
             
             // add refraction color
-            c += refr * refractionColor;
+            c += refractionColor;
           
           // ray hits environment texture
           }else{
@@ -436,7 +436,7 @@ class PhongMaterial: public Material{
         // ray hits environment texture
         }else{
           Color env = environment.sampleEnvironment(reflect->dir);
-          c += env;
+          c += refl * env;
         }
       }
       
