@@ -136,12 +136,73 @@ class PointLight: public GenericLight{
     }
     
     // get color of point light (check for shadows)
-    // we will need to multiple shadow rays here
     Color illuminate(Point p){
-      Cone r = Cone();
-      r.pos = p;
-      r.dir = position - p;
-      return shadow(r, 1.0) * intensity;
+      if(size == 0.0){
+        Cone r = Cone();
+        r.pos = p;
+        r.dir = position - p;
+        return shadow(r, 1.0) * intensity;
+      
+      // otherwise, we have a spherical light, cast multiple shadow rays
+      }else{
+        
+        // to detect if we are in the penumbra
+        bool penumbra = false;
+        
+        // keep track of running shadow variables
+        int prev;
+        int count;
+        float mean = 0.0;
+        
+        // calculate random rotation for Halton sequence on our sphere of confusion
+        float rotate = dist(rnd) * 2.0 * M_PI;
+        
+        // cast our minmum number of shadow rays
+        for(count = 0; count < shadowMin; count++){
+          
+          // calculate (partially) randomized shadow ray
+          Cone r = getShadowRay(p, count, rotate);
+          
+          // cast shadow ray
+          int val = shadow(r, 1.0);
+          
+          // update our mean shadow value
+          mean = ((float) (mean * count + val)) / ((float) (count + 1));
+          
+          // check if we are in penumbra
+          if(mean != 0.0 && mean != 1.0)
+            penumbra = true;
+          
+          // // store initial shadow value
+          // if(count == 0)
+          //   prev = val;
+          
+          // // otherwise check if we are in the penumbra
+          // else
+          //   if(val != prev)
+          //     penumbra = true;
+        }
+        
+        // continue casting more shadow rays, if in penumbra
+        if(penumbra){
+          
+          // continue casting shadow rays
+          for(count = shadowMin; count < shadowMax; count++){
+            
+            // calculate (partially) randomized shadow ray
+            Cone r = getShadowRay(p, count, rotate);
+            
+            // cast shadow ray
+            int val = shadow(r, 1.0);
+            
+            // update our mean shadow value
+            mean = ((float) (mean * count + val)) / ((float) (count + 1));
+          }
+        }
+        
+        // return our final shaded intensity
+        return mean * intensity;
+      }
     }
     
     // get direction of point light (calculated)

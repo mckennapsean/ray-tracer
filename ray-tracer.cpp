@@ -29,7 +29,7 @@
 using namespace std;
 
 
-// scene to load (project #), variables to set, & debug options
+// scene to load (project #) + all ray tracing options & settings
 string xml = "scenes/prj10-1.xml";
 bool printXML = false;
 bool zBuffer = false;
@@ -37,7 +37,9 @@ bool sampleCount = false;
 int bounceCount = 5;
 int sampleMin = 4;
 int sampleMax = 32;
-float varThreshold = 0.001;
+float sampleThreshold = 0.001;
+int shadowMin = 4;
+int shadowMax = 32;
 
 
 // variables for ray tracing
@@ -145,7 +147,7 @@ void rayTracing(int i){
     float rVar = 0.0;
     float gVar = 0.0;
     float bVar = 0.0;
-    float var = varThreshold;
+    float var = sampleThreshold;
     float brightness = 0.0;
     
     // random rotation of Halton sequence on circle of confusion
