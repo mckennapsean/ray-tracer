@@ -427,7 +427,16 @@ void loadMaterial(XMLElement *e){
           
           // print out reflection color
           if(print)
-            cout << "  reflection " << c.r << " " << c.g << " " << c.b << endl;
+            cout << "  reflection " << c.r << " " << c.g << " " << c.b;
+          
+          // get reflection glossiness
+          f = 0;
+          readFloat(child, f, "glossiness");
+          m->setReflectionGlossiness(f);
+          if(f > 0 && print)
+            cout << " (glossiness " << f << ")";
+          if(print)
+            cout << endl;
         
         // load refraction color and index
         }else if(val == "refraction"){
@@ -440,6 +449,15 @@ void loadMaterial(XMLElement *e){
           // print out refraction color and index
           if(print)
             cout << "  refraction " << c.r << " " << c.g << " " << c.b << " (index " << f << ")" << endl;
+          
+          // get refraction glossiness
+          f = 0;
+          readFloat(child, f, "glossiness");
+          m->setRefractionGlossiness(f);
+          if(f > 0 && print)
+            cout << " (glossiness " << f << ")";
+          if(print)
+            cout << endl;
         
         // load absorption color
         }else if(val == "absorption"){
@@ -656,6 +674,14 @@ void loadLight(XMLElement *e){
           // print out position of light
           if(print)
             cout << "  position " << v.x << " " << v.y << " " << v.z << endl;
+        
+        // load size of light (not necessarily infinitely small anymore)
+        }else if(val == "size"){
+          float f = 0.0;
+          readFloat(child, f);
+          l->setSize(f);
+          if(print)
+            cout << "  size " << f << endl;
         }
       }
     

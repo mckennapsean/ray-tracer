@@ -34,6 +34,8 @@ class BlinnMaterial: public Material{
       refraction.setColor(0.0, 0.0, 0.0);
       absorption.Set(0.0, 0.0, 0.0);
       index = 1.0;
+      reflectionGlossiness = 0.0;
+      refractionGlossiness = 0.0;
     }
     
     // shading function (blinn-phong)
@@ -301,6 +303,16 @@ class BlinnMaterial: public Material{
       environment = c;
     }
     
+    // set the reflection glossiness
+    void setReflectionGlossiness(float gloss){
+      reflectionGlossiness = gloss;
+    }
+    
+    // set the refraction glossiness
+    void setRefractionGlossiness(float gloss){
+      refractionGlossiness = gloss;
+    }
+    
   private:
     
     // colors for shading
@@ -320,6 +332,9 @@ class BlinnMaterial: public Material{
     
     // environment texture color
     TexturedColor environment;
+    
+    // glossiness for reflections & refractions
+    float reflectionGlossiness, refractionGlossiness;
 };
 
 
@@ -337,6 +352,8 @@ class PhongMaterial: public Material{
       refraction.setColor(0.0, 0.0, 0.0);
       absorption.Set(0.0, 0.0, 0.0);
       index = 1.0;
+      reflectionGlossiness = 0.0;
+      refractionGlossiness = 0.0;
     }
     
     // shading function (phong)
@@ -601,6 +618,16 @@ class PhongMaterial: public Material{
       environment = c;
     }
     
+    // set the reflection glossiness
+    void setReflectionGlossiness(float gloss){
+      reflectionGlossiness = gloss;
+    }
+    
+    // set the refraction glossiness
+    void setRefractionGlossiness(float gloss){
+      refractionGlossiness = gloss;
+    }
+    
   private:
     
     // colors for shading
@@ -620,4 +647,7 @@ class PhongMaterial: public Material{
     
     // environment texture color
     TexturedColor environment;
+    
+    // glossiness for reflections & refractions
+    float reflectionGlossiness, refractionGlossiness;
 };

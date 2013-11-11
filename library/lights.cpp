@@ -132,9 +132,11 @@ class PointLight: public GenericLight{
     PointLight(){
       intensity.Set(0, 0, 0);
       position.Set(0, 0, 0);
+      size = 0.0;
     }
     
     // get color of point light (check for shadows)
+    // we will need to multiple shadow rays here
     Color illuminate(Point p){
       Cone r = Cone();
       r.pos = p;
@@ -157,6 +159,11 @@ class PointLight: public GenericLight{
       position = pos;
     }
     
+    // set the size of the point light (now a sphere)
+    void setSize(float s){
+      size = s;
+    }
+    
   private:
     
     // intensity (or color) of light
@@ -164,5 +171,8 @@ class PointLight: public GenericLight{
     
     // location of light
     Point position;
+    
+    // size of point light (sphere if not zero)
+    float size;
 };
 }
