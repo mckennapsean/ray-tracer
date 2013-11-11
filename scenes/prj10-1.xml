@@ -31,7 +31,7 @@
       <scale value="6"/>
       <translate x="14" y="0" z="6"/>
     </object>
-    <object type="obj" name="teapot.obj" material="red">
+    <object type="obj" name="teapot" material="red">
       <scale value="0.5"/>
       <rotate angle="-50" z="1"/>
       <translate x="13" y="-21" z="0"/>
