@@ -215,6 +215,12 @@ class PointLight: public GenericLight{
       size = s;
     }
     
+    // set shadow ray samples (min & max)
+    void setShadowRays(int min, int max){
+      shadowMin = min;
+      shadowMax = max;
+    }
+    
   private:
     
     // intensity (or color) of light
@@ -227,8 +233,8 @@ class PointLight: public GenericLight{
     float size;
     
     // how many shadow rays to cast
-    int shadowMin = 8;
-    int shadowMax = 64;
+    int shadowMin;
+    int shadowMax;
     
     // random number generation for light disk rotation
     mt19937 rnd;

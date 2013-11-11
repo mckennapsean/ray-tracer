@@ -49,6 +49,10 @@ Render render;
 bool print;
 
 
+// shadow ray variables
+int minShadowRays, maxShadowRays;
+
+
 // functions for loading scene
 void loadScene(XMLElement *e);
 void loadNode(Node *n, XMLElement *e, int level = 0);
@@ -62,10 +66,14 @@ void readFloat(XMLElement *e, float &f, string name = "value");
 
 
 // begin loading scene from file
-int loadScene(string file, bool p = false){
+int loadScene(string file, bool p = false, int min = 8, int max = 32){
   
   // load debug mode
   print = p;
+  
+  // load min and max shadow rays
+  minShadowRays = min;
+  maxShadowRays = max;
   
   // make sure file exists
   XMLDocument doc(file.c_str());
@@ -684,6 +692,9 @@ void loadLight(XMLElement *e){
             cout << "  size " << f << endl;
         }
       }
+      
+      // set the light's min and max shadow rays
+      l->setShadowRays(minShadowRays, maxShadowRays);
     
     // unknown light type
     }else{

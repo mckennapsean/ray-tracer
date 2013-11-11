@@ -38,7 +38,7 @@ int bounceCount = 5;
 int sampleMin = 4;
 int sampleMax = 32;
 float sampleThreshold = 0.001;
-int shadowMin = 4;
+int shadowMin = 8;
 int shadowMax = 32;
 
 
@@ -85,8 +85,8 @@ uniform_real_distribution<float> dist(0.0, 1.0);
 // ray tracer
 int main(){
   
-  // load scene: root node, camera, image
-  loadScene(xml, printXML);
+  // load scene: root node, camera, image (and set shadow casting variables)
+  loadScene(xml, printXML, shadowMin, shadowMax);
   
   // set the scene as the root node
   setScene(rootNode);
