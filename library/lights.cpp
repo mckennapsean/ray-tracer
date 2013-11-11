@@ -150,7 +150,6 @@ class PointLight: public GenericLight{
         bool penumbra = false;
         
         // keep track of running shadow variables
-        int prev;
         int count;
         float mean = 0.0;
         
@@ -172,15 +171,6 @@ class PointLight: public GenericLight{
           // check if we are in penumbra
           if(mean != 0.0 && mean != 1.0)
             penumbra = true;
-          
-          // // store initial shadow value
-          // if(count == 0)
-          //   prev = val;
-          
-          // // otherwise check if we are in the penumbra
-          // else
-          //   if(val != prev)
-          //     penumbra = true;
         }
         
         // continue casting more shadow rays, if in penumbra
@@ -235,5 +225,57 @@ class PointLight: public GenericLight{
     
     // size of point light (sphere if not zero)
     float size;
+    
+    // how many shadow rays to cast
+    int shadowMin = 8;
+    int shadowMax = 64;
+    
+    // random number generation for light disk rotation
+    mt19937 rnd;
+    uniform_real_distribution<float> dist{0.0, 1.0};
+    
+    // calculate a randomized light position on a spherical light
+    Cone getShadowRay(Point p, int c, float r){
+      
+      // get original direction
+      Point dir = (position - p).GetNormalized();
+      
+      // get two vectors for spanning our light disk
+      Point v0 = Point(0.0, 1.0, 0.0);
+      if(v0 % dir < 0.1 && v0 % dir > -0.1)
+        v0 = Point(0.0, 0.0, 1.0);
+      Point v1 = (v0 ^ dir).GetNormalized();
+      
+      // grab Halton sequence to shift point along light disk
+      // first four points on the perimeter of the disk
+      float diskRad;
+      if(c < 4)
+        diskRad = 1.0 * size;
+      else
+        diskRad = sqrt(Halton(c - 4, 2)) * size;
+      
+      // grab Halton sequence to shift point around light disk
+      // first four points will be distributed about the perimeter
+      float diskRot;
+      if(c == 0)
+        diskRot = 0.0;
+      else if(c == 1)
+        diskRot = 1.0 * M_PI;
+      else if(c == 2)
+        diskRot = 0.5 * M_PI;
+      else if(c == 3)
+        diskRot = 1.5 * M_PI;
+      else
+        diskRot = Halton(c - 4, 3) * 2.0 * M_PI;
+      
+      // compute our semi-random position inside the disk
+      Point pos = position + (v0 * diskRad * cos(diskRot + r)) + (v1 * diskRad * sin(diskRot + r));
+      
+      // shadow ray to return
+      Cone ray = Cone();
+      ray.pos = p;
+      ray.dir = pos - p;
+      return ray;
+    }
 };
 }
