@@ -97,38 +97,52 @@ class BlinnMaterial: public Material{
         }
       }
       
+      // for smooth objects, set normal
+      Point normRefl, normRefr;
+      if(reflectionGlossiness == 0.0 && refractionGlossiness == 0.0){
+        normRefl = h.n;
+        normRefr = h.n;
+      
+      // otherwise, jitter the normal
+      }else{
+        
+        // get two vectors for spanning our normal
+        Point v0 = Point(0.0, 1.0, 0.0);
+        if(v0 % h.n < -0.9 || v0 % h.n > 0.9)
+          v0 = Point(0.0, 0.0, 1.0);
+        Point v1 = (v0 ^ h.n).GetNormalized();
+        
+        // compute randomization about the normal
+        float rad = sqrt(dist(rnd));
+        float radRefl = rad * reflectionGlossiness;
+        float radRefr = rad * refractionGlossiness;
+        float rot = dist(rnd) * 2.0 * M_PI;
+        
+        // compute new normal
+        Point norm1 = (h.n + (v0 * radRefl * cos(rot)) + (v1 * radRefl * sin(rot))).GetNormalized();
+        Point norm2 = (h.n + (v0 * radRefr * cos(rot)) + (v1 * radRefr * sin(rot))).GetNormalized();
+        
+        // determine which gets the new normal
+        if(reflectionGlossiness == 0.0)
+          normRefl = h.n;
+        else
+          normRefl = norm1;
+        if(refractionGlossiness == 0.0)
+          normRefr = h.n;
+        else
+          normRefr = norm2;
+      }
+      
       // calculate and add reflection color (till out of bounces)
       Color reflectionShade;
       reflectionShade.Set(0.0, 0.0, 0.0);
       
       if(bounceCount > 0 && (refl.Grey() != 0.0 || refr.Grey() != 0.0)){
         
-        // for smooth objects, set normal
-        Point norm;
-        if(reflectionGlossiness == 0.0)
-          norm = h.n;
-        
-        // otherwise, jitter the normal
-        else{
-          
-          // get two vectors for spanning our normal
-          Point v0 = Point(0.0, 1.0, 0.0);
-          if(v0 % h.n < -0.9 || v0 % h.n > 0.9)
-            v0 = Point(0.0, 0.0, 1.0);
-          Point v1 = (v0 ^ h.n).GetNormalized();
-          
-          // compute randomization about the normal
-          float rad = sqrt(dist(rnd)) * reflectionGlossiness;
-          float rot = dist(rnd) * 2.0 * M_PI;
-          
-          // compute new normal
-          norm = (h.n + (v0 * rad * cos(rot)) + (v1 * rad * sin(rot))).GetNormalized();
-        }
-        
         // create reflected vector
         Cone *reflect = new Cone();
         reflect->pos = h.p;
-        reflect->dir = 2 * (norm % -r.dir) * norm + r.dir;
+        reflect->dir = 2 * (normRefl % -r.dir) * normRefl + r.dir;
         
         // update cones for texture filtering
         reflect->radius = r.radiusAt(h.z);
@@ -167,28 +181,6 @@ class BlinnMaterial: public Material{
       // add refraction color (front and back face hits)
       if(bounceCount > 0 && refraction.getColor().Grey() != 0.0){
         
-        // for smooth objects, set normal
-        Point norm;
-        if(refractionGlossiness == 0.0)
-          norm = h.n;
-        
-        // otherwise, jitter the normal
-        else{
-          
-          // get two vectors for spanning our normal
-          Point v0 = Point(0.0, 1.0, 0.0);
-          if(v0 % h.n < -0.9 || v0 % h.n > 0.9)
-            v0 = Point(0.0, 0.0, 1.0);
-          Point v1 = (v0 ^ h.n).GetNormalized();
-          
-          // compute randomization about the normal
-          float rad = sqrt(dist(rnd)) * refractionGlossiness;
-          float rot = dist(rnd) * 2.0 * M_PI;
-          
-          // compute new normal
-          norm = (h.n + (v0 * rad * cos(rot)) + (v1 * rad * sin(rot))).GetNormalized();
-        }
-        
         // create refracted vector
         Cone *refract = new Cone();
         refract->pos = h.p;
@@ -207,11 +199,11 @@ class BlinnMaterial: public Material{
         if(h.front){
           n1 = 1.0;
           n2 = index;
-          n = norm;
+          n = normRefr;
         }else{
           n1 = index;
           n2 = 1.0;
-          n = -norm;
+          n = -normRefr;
         }
         
         // calculate refraction ray direction
@@ -461,37 +453,51 @@ class PhongMaterial: public Material{
         }
       }
       
+      // for smooth objects, set normal
+      Point normRefl, normRefr;
+      if(reflectionGlossiness == 0.0 && refractionGlossiness == 0.0){
+        normRefl = h.n;
+        normRefr = h.n;
+      
+      // otherwise, jitter the normal
+      }else{
+        
+        // get two vectors for spanning our normal
+        Point v0 = Point(0.0, 1.0, 0.0);
+        if(v0 % h.n < -0.9 || v0 % h.n > 0.9)
+          v0 = Point(0.0, 0.0, 1.0);
+        Point v1 = (v0 ^ h.n).GetNormalized();
+        
+        // compute randomization about the normal
+        float rad = sqrt(dist(rnd));
+        float radRefl = rad * reflectionGlossiness;
+        float radRefr = rad * refractionGlossiness;
+        float rot = dist(rnd) * 2.0 * M_PI;
+        
+        // compute new normal
+        Point norm1 = (h.n + (v0 * radRefl * cos(rot)) + (v1 * radRefl * sin(rot))).GetNormalized();
+        Point norm2 = (h.n + (v0 * radRefr * cos(rot)) + (v1 * radRefr * sin(rot))).GetNormalized();
+        
+        // determine which gets the new normal
+        if(reflectionGlossiness == 0.0)
+          normRefl = h.n;
+        else
+          normRefl = norm1;
+        if(refractionGlossiness == 0.0)
+          normRefr = h.n;
+        else
+          normRefr = norm2;
+      }
+      
       // calculate and add reflection color (till out of bounces)
       Color reflectionShade;
       reflectionShade.Set(0.0, 0.0, 0.0);
       if(bounceCount > 0 && (refl.Grey() != 0.0 || refr.Grey() != 0.0)){
         
-        // for smooth objects, set normal
-        Point norm;
-        if(reflectionGlossiness == 0.0)
-          norm = h.n;
-        
-        // otherwise, jitter the normal
-        else{
-          
-          // get two vectors for spanning our normal
-          Point v0 = Point(0.0, 1.0, 0.0);
-          if(v0 % h.n < -0.9 || v0 % h.n > 0.9)
-            v0 = Point(0.0, 0.0, 1.0);
-          Point v1 = (v0 ^ h.n).GetNormalized();
-          
-          // compute randomization about the normal
-          float rad = sqrt(dist(rnd)) * reflectionGlossiness;
-          float rot = dist(rnd) * 2.0 * M_PI;
-          
-          // compute new normal
-          norm = (h.n + (v0 * rad * cos(rot)) + (v1 * rad * sin(rot))).GetNormalized();
-        }
-        
         // create reflected vector
         Cone *reflect = new Cone();
         reflect->pos = h.p;
-        reflect->dir = 2 * (norm % -r.dir) * norm + r.dir;
+        reflect->dir = 2 * (normRefl % -r.dir) * normRefl + r.dir;
         
         // update cones for texture filtering
         reflect->radius = r.radiusAt(h.z);
@@ -530,28 +536,6 @@ class PhongMaterial: public Material{
       // add refraction color (front and back face hits)
       if(bounceCount > 0 && refr.Grey() != 0.0){
         
-        // for smooth objects, set normal
-        Point norm;
-        if(refractionGlossiness == 0.0)
-          norm = h.n;
-        
-        // otherwise, jitter the normal
-        else{
-          
-          // get two vectors for spanning our normal
-          Point v0 = Point(0.0, 1.0, 0.0);
-          if(v0 % h.n < -0.9 || v0 % h.n > 0.9)
-            v0 = Point(0.0, 0.0, 1.0);
-          Point v1 = (v0 ^ h.n).GetNormalized();
-          
-          // compute randomization about the normal
-          float rad = sqrt(dist(rnd)) * refractionGlossiness;
-          float rot = dist(rnd) * 2.0 * M_PI;
-          
-          // compute new normal
-          norm = (h.n + (v0 * rad * cos(rot)) + (v1 * rad * sin(rot))).GetNormalized();
-        }
-        
         // create refracted vector
         Cone *refract = new Cone();
         refract->pos = h.p;
@@ -570,11 +554,11 @@ class PhongMaterial: public Material{
         if(h.front){
           n1 = 1.0;
           n2 = index;
-          n = norm;
+          n = normRefr;
         }else{
           n1 = index;
           n2 = 1.0;
-          n = -norm;
+          n = -normRefr;
         }
         
         // calculate refraction ray direction
