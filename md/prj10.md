@@ -32,7 +32,13 @@ Softer Shadows
 Many Colors
 -----------
 
-to come...
+![](images/prj9/colors.png)
+
+![](images/prj10/colors-l.png)
+
+![](images/prj10/colors.png)
+
+![](images/prj10/colors-h.png)
 
 - - -
 
@@ -57,10 +63,10 @@ Glossy Spheres:
 
 Many Colors:
 
-to come...
-
-| *render time*   | minimum samples | maximum samples | color variance | minimum shadow samples | maximum shadow samples |
-| --------------: | --------------: | --------------: | -------------: | ---------------------: | ---------------------: |
-| 19 min 08.591 s |              16 |             128 |         0.0001 |                      8 |                     32 |
+| *render time*   | minimum samples | maximum samples | color variance | shadow samples |
+| --------------: | --------------: | --------------: | -------------: | -------------: |
+| 01 min 34.564 s |               4 |               8 |           0.01 |          4 / 8 |
+| 11 min 17.756 s |               8 |              32 |          0.001 |         8 / 32 |
+| 30 min 28.585 s |              16 |              64 |         0.0001 |         8 / 32 |
 
 - - -
