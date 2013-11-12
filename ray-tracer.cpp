@@ -77,11 +77,6 @@ Transformation* c;
 Point cameraRay(float pX, float pY, Point offset);
 
 
-// for camera offset to get depth of field
-mt19937 rnd;
-uniform_real_distribution<float> dist(0.0, 1.0);
-
-
 // ray tracer
 int main(){
   
@@ -129,6 +124,10 @@ void rayTracing(int i){
   
   // initial starting pixel
   int pixel = i;
+  
+  // setup random generator for anti-aliasing & depth-of-field
+  mt19937 rnd;
+  uniform_real_distribution<float> dist{0.0, 1.0};
    
   // thread continuation condition
   while(pixel < size){
