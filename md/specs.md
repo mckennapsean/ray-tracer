@@ -13,3 +13,5 @@ Unless otherwise stated, all images are rendered as follows:
     - **Minimum Samples**: 4 samples
     - **Maximum Samples**: 32 samples
     - **Color Variance**: 0.001
+    - **Minimum Shadow Samples**: 8 samples
+    - **Maximum Shadow Samples**: 32 samples
