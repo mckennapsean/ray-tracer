@@ -103,10 +103,32 @@ class BlinnMaterial: public Material{
       
       if(bounceCount > 0 && (refl.Grey() != 0.0 || refr.Grey() != 0.0)){
         
+        // for smooth objects, set normal
+        Point norm;
+        if(reflectionGlossiness == 0.0)
+          norm = h.n;
+        
+        // otherwise, jitter the normal
+        else{
+          
+          // get two vectors for spanning our normal
+          Point v0 = Point(0.0, 1.0, 0.0);
+          if(v0 % h.n < -0.9 || v0 % h.n > 0.9)
+            v0 = Point(0.0, 0.0, 1.0);
+          Point v1 = (v0 ^ h.n).GetNormalized();
+          
+          // compute randomization about the normal
+          float rad = sqrt(dist(rnd)) * reflectionGlossiness;
+          float rot = dist(rnd) * 2.0 * M_PI;
+          
+          // compute new normal
+          norm = (h.n + (v0 * rad * cos(rot)) + (v1 * rad * sin(rot))).GetNormalized();
+        }
+        
         // create reflected vector
         Cone *reflect = new Cone();
         reflect->pos = h.p;
-        reflect->dir = 2 * (h.n % -r.dir) * h.n + r.dir;
+        reflect->dir = 2 * (norm % -r.dir) * norm + r.dir;
         
         // update cones for texture filtering
         reflect->radius = r.radiusAt(h.z);
@@ -335,6 +357,10 @@ class BlinnMaterial: public Material{
     
     // glossiness for reflections & refractions
     float reflectionGlossiness, refractionGlossiness;
+    
+    // random number generation for jittering the normal
+    mt19937 rnd;
+    uniform_real_distribution<float> dist{0.0, 1.0};
 };
 
 
@@ -418,10 +444,32 @@ class PhongMaterial: public Material{
       reflectionShade.Set(0.0, 0.0, 0.0);
       if(bounceCount > 0 && (refl.Grey() != 0.0 || refr.Grey() != 0.0)){
         
+        // for smooth objects, set normal
+        Point norm;
+        if(reflectionGlossiness == 0.0)
+          norm = h.n;
+        
+        // otherwise, jitter the normal
+        else{
+          
+          // get two vectors for spanning our normal
+          Point v0 = Point(0.0, 1.0, 0.0);
+          if(v0 % h.n < -0.9 || v0 % h.n > 0.9)
+            v0 = Point(0.0, 0.0, 1.0);
+          Point v1 = (v0 ^ h.n).GetNormalized();
+          
+          // compute randomization about the normal
+          float rad = sqrt(dist(rnd)) * reflectionGlossiness;
+          float rot = dist(rnd) * 2.0 * M_PI;
+          
+          // compute new normal
+          norm = (h.n + (v0 * rad * cos(rot)) + (v1 * rad * sin(rot))).GetNormalized();
+        }
+        
         // create reflected vector
         Cone *reflect = new Cone();
         reflect->pos = h.p;
-        reflect->dir = 2 * (h.n % -r.dir) * h.n + r.dir;
+        reflect->dir = 2 * (norm % -r.dir) * norm + r.dir;
         
         // update cones for texture filtering
         reflect->radius = r.radiusAt(h.z);
@@ -650,4 +698,8 @@ class PhongMaterial: public Material{
     
     // glossiness for reflections & refractions
     float reflectionGlossiness, refractionGlossiness;
+    
+    // random number generation for light disk rotation
+    mt19937 rnd;
+    uniform_real_distribution<float> dist{0.0, 1.0};
 };
