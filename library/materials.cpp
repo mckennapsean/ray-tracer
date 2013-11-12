@@ -167,6 +167,28 @@ class BlinnMaterial: public Material{
       // add refraction color (front and back face hits)
       if(bounceCount > 0 && refraction.getColor().Grey() != 0.0){
         
+        // for smooth objects, set normal
+        Point norm;
+        if(refractionGlossiness == 0.0)
+          norm = h.n;
+        
+        // otherwise, jitter the normal
+        else{
+          
+          // get two vectors for spanning our normal
+          Point v0 = Point(0.0, 1.0, 0.0);
+          if(v0 % h.n < -0.9 || v0 % h.n > 0.9)
+            v0 = Point(0.0, 0.0, 1.0);
+          Point v1 = (v0 ^ h.n).GetNormalized();
+          
+          // compute randomization about the normal
+          float rad = sqrt(dist(rnd)) * refractionGlossiness;
+          float rot = dist(rnd) * 2.0 * M_PI;
+          
+          // compute new normal
+          norm = (h.n + (v0 * rad * cos(rot)) + (v1 * rad * sin(rot))).GetNormalized();
+        }
+        
         // create refracted vector
         Cone *refract = new Cone();
         refract->pos = h.p;
@@ -185,11 +207,11 @@ class BlinnMaterial: public Material{
         if(h.front){
           n1 = 1.0;
           n2 = index;
-          n = h.n;
+          n = norm;
         }else{
           n1 = index;
           n2 = 1.0;
-          n = -h.n;
+          n = -norm;
         }
         
         // calculate refraction ray direction
@@ -508,6 +530,28 @@ class PhongMaterial: public Material{
       // add refraction color (front and back face hits)
       if(bounceCount > 0 && refr.Grey() != 0.0){
         
+        // for smooth objects, set normal
+        Point norm;
+        if(refractionGlossiness == 0.0)
+          norm = h.n;
+        
+        // otherwise, jitter the normal
+        else{
+          
+          // get two vectors for spanning our normal
+          Point v0 = Point(0.0, 1.0, 0.0);
+          if(v0 % h.n < -0.9 || v0 % h.n > 0.9)
+            v0 = Point(0.0, 0.0, 1.0);
+          Point v1 = (v0 ^ h.n).GetNormalized();
+          
+          // compute randomization about the normal
+          float rad = sqrt(dist(rnd)) * refractionGlossiness;
+          float rot = dist(rnd) * 2.0 * M_PI;
+          
+          // compute new normal
+          norm = (h.n + (v0 * rad * cos(rot)) + (v1 * rad * sin(rot))).GetNormalized();
+        }
+        
         // create refracted vector
         Cone *refract = new Cone();
         refract->pos = h.p;
@@ -526,11 +570,11 @@ class PhongMaterial: public Material{
         if(h.front){
           n1 = 1.0;
           n2 = index;
-          n = h.n;
+          n = norm;
         }else{
           n1 = index;
           n2 = 1.0;
-          n = -h.n;
+          n = -norm;
         }
         
         // calculate refraction ray direction
