@@ -829,7 +829,7 @@ class TexturedColor{
     
     // return the appropriate color of the texture for environment mapping
     Color sampleEnvironment(Point &dir){
-      float z = asinf(-dir.z) / float(M_PI) + 0.5;
+      float z = asin(-dir.z) / float(M_PI) + 0.5;
       float x = dir.x / (abs(dir.x) + abs(dir.y));
       float y = dir.y / (abs(dir.x) + abs(dir.y));
       Point p = Point(0.5, 0.5, 0.0) + z * (x * Point(0.5, 0.5, 0.0) + y * Point(-0.5, 0.5, 0.0));
