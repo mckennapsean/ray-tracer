@@ -139,10 +139,10 @@ class BlinnMaterial: public Material{
       
       if(bounceCount > 0 && (refl.Grey() != 0.0 || refr.Grey() != 0.0)){
         
-        // create reflected vector
+        // create reflected vector (normalize!)
         Cone *reflect = new Cone();
         reflect->pos = h.p;
-        reflect->dir = 2 * (normRefl % -r.dir) * normRefl + r.dir;
+        reflect->dir = (2 * (normRefl % -r.dir) * normRefl + r.dir).GetNormalized();
         
         // update cones for texture filtering
         reflect->radius = r.radiusAt(h.z);
@@ -215,8 +215,8 @@ class BlinnMaterial: public Material{
         Point pt = s2 * -p;
         Point nt = c2 * -n;
         
-        // store ray direction
-        refract->dir = pt + nt;
+        // store ray direction (normalize!)
+        refract->dir = (pt + nt).GetNormalized();
         
         // only cast rays if not total internal reflection
         if(s2 * s2 <= 1.0){
@@ -494,10 +494,10 @@ class PhongMaterial: public Material{
       reflectionShade.Set(0.0, 0.0, 0.0);
       if(bounceCount > 0 && (refl.Grey() != 0.0 || refr.Grey() != 0.0)){
         
-        // create reflected vector
+        // create reflected vector (normalize!)
         Cone *reflect = new Cone();
         reflect->pos = h.p;
-        reflect->dir = 2 * (normRefl % -r.dir) * normRefl + r.dir;
+        reflect->dir = (2 * (normRefl % -r.dir) * normRefl + r.dir).GetNormalized();
         
         // update cones for texture filtering
         reflect->radius = r.radiusAt(h.z);
@@ -570,8 +570,8 @@ class PhongMaterial: public Material{
         Point pt = s2 * -p;
         Point nt = c2 * -n;
         
-        // store ray direction
-        refract->dir = pt + nt;
+        // store ray direction (normalize!)
+        refract->dir = (pt + nt).GetNormalized();
         
         // only cast rays if not total internal reflection
         if(s2 * s2 <= 1.0){
