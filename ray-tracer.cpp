@@ -231,6 +231,13 @@ void rayTracing(int i){
       
       // increment sample count
       s++;
+      
+      // watch for errors at any individual sample, terminate thread if so
+      if(colAvg[0] != colAvg[0] || colAvg[1] != colAvg[1] || colAvg[2] != colAvg[2]){
+        cout << "ERROR - pixel " << pixel << " & sample " << s << endl;
+        s = sampleMax;
+        pixel = size;
+      }
     }
     
     // color the pixel image
