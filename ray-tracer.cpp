@@ -30,7 +30,7 @@ using namespace std;
 
 
 // scene to load (project #) + all ray tracing options & settings
-string xml = "scenes/prj10-2.xml";
+string xml = "scenes/prj11-1.xml";
 bool printXML = false;
 bool zBuffer = false;
 bool sampleCount = false;
