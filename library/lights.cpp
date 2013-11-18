@@ -248,7 +248,7 @@ class PointLight: public GenericLight{
       
       // get two vectors for spanning our light disk
       Point v0 = Point(0.0, 1.0, 0.0);
-      if(v0 % dir < 0.1 && v0 % dir > -0.1)
+      if(v0 % dir < 0.5 && v0 % dir > -0.5)
         v0 = Point(0.0, 0.0, 1.0);
       Point v1 = (v0 ^ dir).GetNormalized();
       
