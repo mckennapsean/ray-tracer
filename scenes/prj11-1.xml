@@ -10,7 +10,7 @@
     <object type="plane" material="white">
       <scale value="500"/>
     </object>
-    <object type="obj" name="teapot.obj" material="white">
+    <object type="obj" name="teapot" material="white">
       <scale value="0.7"/>
       <rotate angle="-50" z="1"/>
       <translate x="0" y="0" z="0"/>
