@@ -55,7 +55,7 @@ class AmbientLight: public GenericLight{
     }
     
     // get color of ambient light
-    Color illuminate(Point p){
+    Color illuminate(Point p, Point n){
       return intensity;
     }
     
@@ -92,7 +92,7 @@ class DirectLight: public GenericLight{
     }
     
     // get color of direct light (check for shadows)
-    Color illuminate(Point p){
+    Color illuminate(Point p, Point n){
       Cone r = Cone();
       r.pos = p;
       r.dir = -dir;
@@ -136,7 +136,7 @@ class PointLight: public GenericLight{
     }
     
     // get color of point light (check for shadows)
-    Color illuminate(Point p){
+    Color illuminate(Point p, Point n){
       if(size == 0.0){
         Cone r = Cone();
         r.pos = p;

@@ -617,7 +617,7 @@ typedef ItemFileList<Object> ObjFileList;
 // Light definition (extended to a GenericLight, and then nested to specific lights)
 class Light: public ItemBase{
   public:
-    virtual Color illuminate(Point p) = 0;
+    virtual Color illuminate(Point p, Point n) = 0;
     virtual Point direction(Point p) = 0;
     virtual bool isAmbient(){
       return false;
@@ -1058,6 +1058,7 @@ class Render{
     uchar *zImage;
     float *sample;
     uchar *sampleImage;
+    uchar *irradImage;
     int width, height;
     int size;
     int rendered;
@@ -1099,6 +1100,9 @@ class Render{
       if(sampleImage)
         delete[] sampleImage;
       sampleImage = NULL;
+      if(irradImage)
+        delete[] irradImage;
+      irradImage = NULL;
       reset();
     }
     
@@ -1122,7 +1126,7 @@ class Render{
       return rendered;
     }
     
-    // getters: for zbuffer and sample count images
+    // getters: for zbuffer, sample count, and irradiance images
     uchar* getZImage(){
       return zImage;
     }
@@ -1131,6 +1135,9 @@ class Render{
     }
     uchar* getSampleImage(){
       return sampleImage;
+    }
+    uchar* getIrradianceImage(){
+      return irradImage;
     }
     
     // reset the total number of rendered pixels
@@ -1149,6 +1156,14 @@ class Render{
     // check if render is done
     bool finished(){
       return rendered >= size;
+    }
+    
+    // initialize the irradiance computation image
+    void initializeIrradianceImage(){
+      if(!irradImage)
+        irradImage = new uchar[width * height];
+      for(int i = 0; i < width * height; i++)
+        irradImage[i] = 0;
     }
     
     // calculate the z-buffer image
@@ -1249,6 +1264,11 @@ class Render{
     bool saveSampleImage(string file){
       return outputImage(file, 2);
     }
+    
+    // save the irradiance image to a file
+    bool saveIrradianceImage(string file){
+      return outputImage(file, 4);
+    }
   
   private:
     
@@ -1280,6 +1300,11 @@ class Render{
         // output the sample count image
         }else if(c == 2){
           uchar d[3] = {sampleImage[i], sampleImage[i], sampleImage[i]};
+          f.write(reinterpret_cast<char*>(d), sizeof(d));
+        
+        // output the irradiance image
+        }else if(c == 4){
+          uchar d[3] = {irradImage[i], irradImage[i], irradImage[i]};
           f.write(reinterpret_cast<char*>(d), sizeof(d));
         }
       }

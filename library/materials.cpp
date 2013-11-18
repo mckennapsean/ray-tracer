@@ -63,7 +63,7 @@ class BlinnMaterial: public Material{
           if(light->isAmbient()){
             
             // add ambient lighting term
-            c += diff * light->illuminate(h.p);
+            c += diff * light->illuminate(h.p, h.n);
           
           // otherwise, add diffuse and specular components from light
           }else{
@@ -92,7 +92,7 @@ class BlinnMaterial: public Material{
             
             // add specular and diffuse lighting terms (only if positive)
             if(geom > 0)
-              c += light->illuminate(h.p) * geom * (diff + s * spec);
+              c += light->illuminate(h.p, h.n) * geom * (diff + s * spec);
           }
         }
       }
@@ -420,7 +420,7 @@ class PhongMaterial: public Material{
         if(light->isAmbient()){
           
           // add ambient lighting term
-          c += diff * light->illuminate(h.p);
+          c += diff * light->illuminate(h.p, h.n);
         
         // otherwise, add diffuse and specular components from light
         }else{
@@ -449,7 +449,7 @@ class PhongMaterial: public Material{
           
           // add specular and diffuse lighting terms (only if positive)
           if(geom > 0)
-            c += light->illuminate(h.p) * geom * (diff + s * spec);
+            c += light->illuminate(h.p, h.n) * geom * (diff + s * spec);
         }
       }
       
