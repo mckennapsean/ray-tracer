@@ -68,7 +68,7 @@ class BlinnMaterial: public Material{
         }else if(light->isIndirect()){
           
           // add indirect lighting
-          c += light->illuminate(h.p, h.n);
+          c += diff * light->illuminate(h.p, h.n);
         
         // otherwise, add diffuse and specular components from light
         }else{
