@@ -99,7 +99,7 @@ class IndirectLight: public GenericLight{
         
         // randomize ray on a hemisphere
         float phi = dist(rnd) * 2.0 * M_PI;
-        float the = acos(1.0 - dist(rnd)) / 2.0;
+        float the = acos(1.0 - 2.0 * dist(rnd)) / 2.0;
         
         // calculate hemisphere vectors
         Point v0 = Point(0.0, 1.0, 0.0);
