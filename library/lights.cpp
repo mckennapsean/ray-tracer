@@ -347,9 +347,10 @@ class PointLight: public GenericLight{
       
       // get two vectors for spanning our light disk
       Point v0 = Point(0.0, 1.0, 0.0);
-      if(v0 % dir < 0.5 && v0 % dir > -0.5)
+      if(v0 % dir > 0.5 || v0 % dir < -0.5)
         v0 = Point(0.0, 0.0, 1.0);
       Point v1 = (v0 ^ dir).GetNormalized();
+      v0 = (v1 ^ dir).GetNormalized();
       
       // grab Halton sequence to shift point along light disk
       // first four points on the perimeter of the disk
