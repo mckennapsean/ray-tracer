@@ -127,13 +127,11 @@ class IndirectLight: public GenericLight{
         
         // shade our material
         if(hit && m)
-          // indirect.Set(1, 1, 1);
           indirect = (indirect * s + m->shade(*r, hi, lights)) / (float) (s + 1);
         
         // otherwise, nothing to shade
         else
           indirect = (indirect * s + environment.sampleEnvironment(r->dir)) / (float) (s + 1);
-          // indirect.Set(0, 0, 0);
       }
       
       // return the color
@@ -146,7 +144,7 @@ class IndirectLight: public GenericLight{
     }
     
     // return true, since light is indirect
-    bool isIndirect(){
+    bool isAmbient(){
       return true;
     }
     

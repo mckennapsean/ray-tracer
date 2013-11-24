@@ -58,16 +58,10 @@ class BlinnMaterial: public Material{
         // grab light
         Light *light = lights[i];
         
-        // ambient light check
+        // ambient / indirect light check
         if(light->isAmbient()){
           
-          // add ambient lighting term
-          c += diff * light->illuminate(h.p, h.n);
-        
-        // indirect illumination check for global illumination
-        }else if(light->isIndirect()){
-          
-          // add indirect lighting
+          // add ambient / indirect lighting term
           c += diff * light->illuminate(h.p, h.n);
         
         // otherwise, add diffuse and specular components from light
@@ -425,12 +419,6 @@ class PhongMaterial: public Material{
           
           // add ambient lighting term
           c += diff * light->illuminate(h.p, h.n);
-        
-        // indirect illumination check for global illumination
-        }else if(light->isIndirect()){
-          
-          // add indirect lighting
-          c += light->illuminate(h.p, h.n);
         
         // otherwise, add diffuse and specular components from light
         }else{
