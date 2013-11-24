@@ -151,8 +151,8 @@ class IndirectLight: public GenericLight{
     }
     
     // set the light list
-    void setLightList(LightList l){
-      lights = l;
+    void setLightList(LightList *l){
+      lights = *l;
     }
     
     // set the environment

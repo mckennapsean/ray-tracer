@@ -724,15 +724,18 @@ void setIndirectLight(){
   
   // create indirect light
   IndirectLight *l = new IndirectLight();
+  Light *light = NULL;
   
   // set light list for indirect light (for shading)
-  l->setLightList(lights);
+  l->setLightList(&lights);
   
   // add environment variable to indirect light
   l->setEnvironment(environment);
   
   // add indirect light to light list
-  lights.push_back(l);
+  light = l;
+  light->setName(name);
+  lights.push_back(light);
 }
 
 
