@@ -86,16 +86,44 @@ class IndirectLight: public GenericLight{
   public:
     
     // constructor
-    IndirectLight(){
-      intensity.Set(0, 0, 0);
-    }
+    IndirectLight(){}
     
-    // get color of indirect light (null, not used)
+    // get color of indirect light by tracing a new ray
     Color illuminate(Point p, Point n){
-      return intensity;
+      
+      // color for shading
+      Color indirect;
+      
+      // set up ray and hit info
+      Cone *r = new Cone();
+      r->pos = p;
+      r->dir = n.GetNormalized();
+      HitInfo hi = HitInfo();
+      
+      // trace a new ray
+      bool hit = traceRay(*r, hi);
+      
+      // grab the node material hit
+      Material *m;
+      if(hit){
+        Node *n = hi.node;
+        if(n)
+          m = n->getMaterial();
+      }
+      
+      // shade our material
+      if(hit && m)
+        indirect.Set(1, 1, 1);
+      
+      // otherwise, nothing to shade
+      else
+        indirect.Set(0, 0, 0);
+        
+      // return the color
+      return indirect;
     }
     
-    // get direction of ambient light (non-sensical)
+    // get direction of indirect light (non-sensical)
     Point direction(Point p){
       return Point(0, 0, 0);
     }
@@ -116,9 +144,6 @@ class IndirectLight: public GenericLight{
     }
     
   private:
-    
-    // intensity (or color) of light
-    Color intensity;
     
     // light list for all other lights
     LightList lights;
