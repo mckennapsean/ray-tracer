@@ -51,49 +51,47 @@ class BlinnMaterial: public Material{
       Color refl = reflection.sample(h.uvw, h.duvw);
       Color refr = refraction.sample(h.uvw, h.duvw);
       
-      // add shading from each light (front hit only)
-      if(h.front){
-        int numLights = lights.size();
-        for(int i = 0; i < numLights; i++){
+      // add shading from each light (back & front hits)
+      int numLights = lights.size();
+      for(int i = 0; i < numLights; i++){
+        
+        // grab light
+        Light *light = lights[i];
+        
+        // ambient light check
+        if(light->isAmbient()){
           
-          // grab light
-          Light *light = lights[i];
+          // add ambient lighting term
+          c += diff * light->illuminate(h.p, h.n);
+        
+        // otherwise, add diffuse and specular components from light
+        }else{
           
-          // ambient light check
-          if(light->isAmbient()){
-            
-            // add ambient lighting term
-            c += diff * light->illuminate(h.p, h.n);
+          // grab vector to light
+          Point l = -light->direction(h.p);
+          l.Normalize();
           
-          // otherwise, add diffuse and specular components from light
-          }else{
-            
-            // grab vector to light
-            Point l = -light->direction(h.p);
-            l.Normalize();
-            
-            // grab vector to camera
-            Point v = -r.dir;
-            v.Normalize();
-            
-            // grab normal
-            Point n = h.n;
-            n.Normalize();
-            
-            // calculate geometry term
-            float geom = n % l;
-            
-            // calculate half-way vector
-            Point half = v + l;
-            half.Normalize();
-            
-            // calculate total specular factor
-            float s = pow(half % n, shininess);
-            
-            // add specular and diffuse lighting terms (only if positive)
-            if(geom > 0)
-              c += light->illuminate(h.p, h.n) * geom * (diff + s * spec);
-          }
+          // grab vector to camera
+          Point v = -r.dir;
+          v.Normalize();
+          
+          // grab normal
+          Point n = h.n;
+          n.Normalize();
+          
+          // calculate geometry term
+          float geom = n % l;
+          
+          // calculate half-way vector
+          Point half = v + l;
+          half.Normalize();
+          
+          // calculate total specular factor
+          float s = pow(half % n, shininess);
+          
+          // add specular and diffuse lighting terms (only if positive)
+          if(geom > 0)
+            c += light->illuminate(h.p, h.n) * geom * (diff + s * spec);
         }
       }
       
@@ -409,7 +407,7 @@ class PhongMaterial: public Material{
       Color refl = reflection.sample(h.uvw, h.duvw);
       Color refr = refraction.sample(h.uvw, h.duvw);
       
-      // add shading from each light
+      // add shading from each light (back & front hits)
       int numLights = lights.size();
       for(int i = 0; i < numLights; i++){
         
