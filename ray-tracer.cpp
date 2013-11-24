@@ -40,6 +40,7 @@ int sampleMax = 32;
 float sampleThreshold = 0.001;
 int shadowMin = 8;
 int shadowMax = 32;
+bool gammaCorr = true;
 bool globalIllum = true;
 int samplesGI = 16;
 
@@ -243,9 +244,11 @@ void rayTracing(int i){
     }
     
     // gamma correction
-    colAvg.r = pow(colAvg.r, 1.0 / 2.2);
-    colAvg.g = pow(colAvg.g, 1.0 / 2.2);
-    colAvg.b = pow(colAvg.b, 1.0 / 2.2);
+    if(gammaCorr){
+      colAvg.r = pow(colAvg.r, 1.0 / 2.2);
+      colAvg.g = pow(colAvg.g, 1.0 / 2.2);
+      colAvg.b = pow(colAvg.b, 1.0 / 2.2);
+    }
     
     // color the pixel image
     img[pixel] = Color24(colAvg);
