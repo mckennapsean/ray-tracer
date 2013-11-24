@@ -59,6 +59,7 @@ void loadNode(Node *n, XMLElement *e, int level = 0);
 void loadTransform(Transformation *t, XMLElement *e, int level);
 void loadMaterial(XMLElement *e);
 void loadLight(XMLElement *e);
+void setIndirectLight();
 TextureMap* loadTexture(XMLElement *e);
 void readVector(XMLElement *e, Point &v);
 void readColor(XMLElement *e, Color &c);
@@ -201,6 +202,10 @@ void loadScene(XMLElement *e){
     else if(val == "light")
       loadLight(child);
   }
+  
+  
+  // add indirect light to the scene for global illumination
+  setIndirectLight();
 }
 
 
@@ -708,6 +713,23 @@ void loadLight(XMLElement *e){
     light->setName(name);
     lights.push_back(light);
   }
+}
+
+
+// add an indirect light to our scene
+void setIndirectLight(){
+  
+  // set light name
+  string name = "indirect";
+  
+  // create indirect light
+  IndirectLight *l = new IndirectLight();
+  
+  // set light list for indirect light (for shading)
+  l->setLightList(lights);
+  
+  // add indirect light to light list
+  lights.push_back(l);
 }
 
 
