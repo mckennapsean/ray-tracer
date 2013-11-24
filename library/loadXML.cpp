@@ -728,6 +728,9 @@ void setIndirectLight(){
   // set light list for indirect light (for shading)
   l->setLightList(lights);
   
+  // add environment variable to indirect light
+  l->setEnvironment(environment);
+  
   // add indirect light to light list
   lights.push_back(l);
 }

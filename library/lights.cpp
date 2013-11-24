@@ -94,31 +94,48 @@ class IndirectLight: public GenericLight{
       // color for shading
       Color indirect;
       
-      // set up ray and hit info
-      Cone *r = new Cone();
-      r->pos = p;
-      r->dir = n.GetNormalized();
-      HitInfo hi = HitInfo();
-      
-      // trace a new ray
-      bool hit = traceRay(*r, hi);
-      
-      // grab the node material hit
-      Material *m;
-      if(hit){
-        Node *n = hi.node;
-        if(n)
-          m = n->getMaterial();
+      // multi-sampling for indirect lighting
+      for(int s = 0; s < 16; s++){
+        
+        // randomize ray on a hemisphere
+        float phi = dist(rnd) * 2.0 * M_PI;
+        float the = acos(1.0 - dist(rnd)) / 2.0;
+        
+        // calculate hemisphere vectors
+        Point v0 = Point(0.0, 1.0, 0.0);
+        if(v0 % n > 0.5 || v0 % n < -0.5)
+          v0 = Point(0.0, 0.0, 1.0);
+        Point v1 = (v0 ^ n).GetNormalized();
+        v0 = (v1 ^ n).GetNormalized();
+        
+        // set up ray and hit info
+        Cone *r = new Cone();
+        r->pos = p;
+        r->dir = n.GetNormalized() * cos(the) + (v0 * cos(phi) + v1 * sin(  phi)) * sin(the);
+        HitInfo hi = HitInfo();
+        
+        // trace a new ray
+        bool hit = traceRay(*r, hi);
+        
+        // grab the node material hit
+        Material *m;
+        if(hit){
+          Node *n = hi.node;
+          if(n)
+            m = n->getMaterial();
+        }
+        
+        // shade our material
+        if(hit && m)
+          // indirect.Set(1, 1, 1);
+          indirect = (indirect * s + m->shade(*r, hi, lights)) / (float) (s + 1);
+        
+        // otherwise, nothing to shade
+        else
+          indirect = (indirect * s + environment.sampleEnvironment(r->dir)) / (float) (s + 1);
+          // indirect.Set(0, 0, 0);
       }
       
-      // shade our material
-      if(hit && m)
-        indirect.Set(1, 1, 1);
-      
-      // otherwise, nothing to shade
-      else
-        indirect.Set(0, 0, 0);
-        
       // return the color
       return indirect;
     }
@@ -133,20 +150,27 @@ class IndirectLight: public GenericLight{
       return true;
     }
     
-    // get the light list
-    LightList getLightList(){
-      return lights;
-    }
-    
     // set the light list
     void setLightList(LightList l){
       lights = l;
+    }
+    
+    // set the environment
+    void setEnvironment(TexturedColor c){
+      environment = c;
     }
     
   private:
     
     // light list for all other lights
     LightList lights;
+    
+    // environment variable
+    TexturedColor environment;
+    
+    // setup random generator for global illumination
+    mt19937 rnd;
+    uniform_real_distribution<float> dist{0.0, 1.0};
 };
 
 
