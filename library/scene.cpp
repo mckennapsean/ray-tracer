@@ -622,6 +622,9 @@ class Light: public ItemBase{
     virtual bool isAmbient(){
       return false;
     }
+    virtual bool isIndirect(){
+      return false;
+    }
 };
 
 

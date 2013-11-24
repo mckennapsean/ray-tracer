@@ -81,6 +81,50 @@ class AmbientLight: public GenericLight{
 };
 
 
+// indirect light definition
+class IndirectLight: public GenericLight{
+  public:
+    
+    // constructor
+    IndirectLight(){
+      intensity.Set(0, 0, 0);
+    }
+    
+    // get color of indirect light (null, not used)
+    Color illuminate(Point p, Point n){
+      return intensity;
+    }
+    
+    // get direction of ambient light (non-sensical)
+    Point direction(Point p){
+      return Point(0, 0, 0);
+    }
+    
+    // return true, since light is indirect
+    bool isIndirect(){
+      return true;
+    }
+    
+    // get the light list
+    LightList getLightList(){
+      return lights;
+    }
+    
+    // set the light list
+    void setLightList(LightList l){
+      lights = l;
+    }
+    
+  private:
+    
+    // intensity (or color) of light
+    Color intensity;
+    
+    // light list for all other lights
+    LightList lights;
+};
+
+
 // direct light definition
 class DirectLight: public GenericLight{
   public:
