@@ -243,8 +243,20 @@ class TriObj: public Object, private cyTriMesh{
       // calculate the determinant of the matrix equation
       float determ = e1 % P;
       
+      // store back-face hits
+      bool back = false;
+      
+      // detect back-face hits
+      if(determ < -getBias()){
+        back = true;
+        e1 = c - a;
+        e2 = b - a;
+        P = r.dir ^ e2;
+        determ = e1 % P;
+      }
+      
       // only continue for valid determinant ranges
-      if(abs(determ) > getBias()){
+      if(determ > getBias()){
         
         // calculate second vector, T
         Point T = r.pos - a;
@@ -292,9 +304,12 @@ class TriObj: public Object, private cyTriMesh{
               h.duvw[0] = minor / 2.0;
               h.duvw[1] = minor / 2.0;
               
-              // detect back face hits
-              if(determ < 0.0)
+              // update back-face hits
+              if(back){
                 h.front = false;
+                h.n = -h.n;
+              }else
+                h.front = true;
               
               // return hit info
               return true;
