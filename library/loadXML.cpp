@@ -53,13 +53,18 @@ bool print;
 int minShadowRays, maxShadowRays;
 
 
+// global illumination variables
+bool GI;
+int sGI;
+
+
 // functions for loading scene
 void loadScene(XMLElement *e);
 void loadNode(Node *n, XMLElement *e, int level = 0);
 void loadTransform(Transformation *t, XMLElement *e, int level);
 void loadMaterial(XMLElement *e);
 void loadLight(XMLElement *e);
-void setIndirectLight();
+void setIndirectLight(int s);
 TextureMap* loadTexture(XMLElement *e);
 void readVector(XMLElement *e, Point &v);
 void readColor(XMLElement *e, Color &c);
@@ -67,7 +72,7 @@ void readFloat(XMLElement *e, float &f, string name = "value");
 
 
 // begin loading scene from file
-int loadScene(string file, bool p = false, int min = 8, int max = 32){
+int loadScene(string file, bool p = false, int min = 8, int max = 32, bool gi = false, int s = 16){
   
   // load debug mode
   print = p;
@@ -75,6 +80,10 @@ int loadScene(string file, bool p = false, int min = 8, int max = 32){
   // load min and max shadow rays
   minShadowRays = min;
   maxShadowRays = max;
+  
+  // set global illumination settings
+  GI = gi;
+  sGI = s;
   
   // make sure file exists
   XMLDocument doc(file.c_str());
@@ -205,7 +214,8 @@ void loadScene(XMLElement *e){
   
   
   // add indirect light to the scene for global illumination
-  setIndirectLight();
+  if(GI)
+    setIndirectLight(sGI);
 }
 
 
@@ -717,7 +727,7 @@ void loadLight(XMLElement *e){
 
 
 // add an indirect light to our scene
-void setIndirectLight(){
+void setIndirectLight(int s){
   
   // set light name
   string name = "indirect";
@@ -731,6 +741,9 @@ void setIndirectLight(){
   
   // add environment variable to indirect light
   l->setEnvironment(environment);
+  
+  // add the number of samples to indirect light
+  l->setSamples(s);
   
   // add indirect light to light list
   light = l;

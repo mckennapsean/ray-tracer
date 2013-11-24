@@ -95,7 +95,7 @@ class IndirectLight: public GenericLight{
       Color indirect;
       
       // multi-sampling for indirect lighting
-      for(int s = 0; s < 16; s++){
+      for(int s = 0; s < samples; s++){
         
         // randomize ray on a hemisphere
         float phi = dist(rnd) * 2.0 * M_PI;
@@ -158,6 +158,11 @@ class IndirectLight: public GenericLight{
       environment = c;
     }
     
+    // set the number of samples
+    void setSamples(int s){
+      samples = s;
+    }
+    
   private:
     
     // light list for all other lights
@@ -165,6 +170,9 @@ class IndirectLight: public GenericLight{
     
     // environment variable
     TexturedColor environment;
+    
+    // number of samples for global illumination
+    int samples;
     
     // setup random generator for global illumination
     mt19937 rnd;

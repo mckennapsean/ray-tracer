@@ -40,6 +40,8 @@ int sampleMax = 32;
 float sampleThreshold = 0.001;
 int shadowMin = 8;
 int shadowMax = 32;
+bool globalIllum = true;
+int samplesGI = 16;
 
 
 // variables for ray tracing
@@ -81,7 +83,7 @@ Point cameraRay(float pX, float pY, Point offset);
 int main(){
   
   // load scene: root node, camera, image (and set shadow casting variables)
-  loadScene(xml, printXML, shadowMin, shadowMax);
+  loadScene(xml, printXML, shadowMin, shadowMax, globalIllum, samplesGI);
   
   // set the scene as the root node
   setScene(rootNode);
