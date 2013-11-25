@@ -21,8 +21,7 @@ Throughout the course, our ray tracer has evolved and tested with more advanced 
   - [Project 10](prj10.html)
   - [Project 11](prj11.html)
   - [Project 12](prj12.html)
-  - [Project 13](prj13.html)
-  - [Final Project](prj14.html)
+  - [Final Project](prj13.html)
 
 
 Compiling and Running
