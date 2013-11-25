@@ -37,13 +37,13 @@ public:
 	/// more computation points.
 	/// All computation points are marked as "invalid" and they are marked "valid"
 	/// when their values are set using the Set method.
-	void Initialize(unsigned int _width, unsigned int _height, int _subdiv=-5)
+	void Initialize(int _width, int _height, int _subdiv=-5)
 	{
 		if ( data ) delete [] data;
 		width  = _width;
 		height = _height;
 		subdiv = _subdiv;
-		unsigned int n = GetDataCount(subdiv);
+		int n = GetDataCount(subdiv);
 		data = new T[n];
 		valid.SetSize(n);
 	}
@@ -56,26 +56,26 @@ public:
 	void Subdivide(bool conservative=true)
 	{
 		int s = subdiv+1;
-		unsigned int ws1 = (width>>-subdiv);
-		unsigned int hs1 = (height>>-subdiv);
-		unsigned int w1, h1, w2, h2;
+		int ws1 = (width>>-subdiv);
+		int hs1 = (height>>-subdiv);
+		int w1, h1, w2, h2;
 		GetDataCount(subdiv, w1, h1);
-		unsigned int n = GetDataCount(s, w2, h2);
+		int n = GetDataCount(s, w2, h2);
 		T *d = new T[n];
 		valid.SetSize(n);
 
 		int endX=0, endY=0;
 		float fx=0, fy=0;
 		if ( subdiv < 0 ) {
-			unsigned int rx = width % unsigned int(1<<-subdiv);
+			int rx = width % int(1<<-subdiv);
 			if ( rx > 0 ) endX++;
-			if ( rx > unsigned int(1<<-s) ) {
+			if ( rx > int(1<<-s) ) {
 				endX++;
 				fx = float(1<<-s) / float(rx);
 			}
-			unsigned int ry = height % unsigned int(1<<-subdiv);
+			int ry = height % int(1<<-subdiv);
 			if ( ry > 0 ) endY++;
-			if ( ry > unsigned int(1<<-s) ) {
+			if ( ry > int(1<<-s) ) {
 				endY++;
 				fy = float(1<<-s) / float(ry);
 			}
@@ -83,9 +83,9 @@ public:
 
 		d[0] = data[0];
 		valid.Set(0);
-		unsigned int i=1, ii=0;
+		int i=1, ii=0;
 		{
-			unsigned int x=0;
+			int x=0;
 			for ( ; x<ws1; x++ ) {
 				bool v = Interpolate( d[i], data[x], data[x+1] );
 				valid.Set(i++,v);
@@ -102,11 +102,11 @@ public:
 			}
 		}
 
-		for ( unsigned int y=0; y<hs1; y++ ) {
-			unsigned int x = ii;
-			unsigned int xe = ii + ws1;
+		for ( int y=0; y<hs1; y++ ) {
+			int x = ii;
+			int xe = ii + ws1;
 
-			unsigned int x2 = ii+w1+1;
+			int x2 = ii+w1+1;
 			bool v1 = Interpolate( d[i], data[x], data[x2] );
 			valid.Set(i++,v1);
 			for ( ; x<xe; x++, x2++, i+=2 ) {
@@ -155,10 +155,10 @@ public:
 		}
 
 		if ( endY > 1 ) {
-			unsigned int x = ii;
-			unsigned int xe = ii + ws1;
+			int x = ii;
+			int xe = ii + ws1;
 
-			unsigned int x2 = ii+w1+1;
+			int x2 = ii+w1+1;
 			bool v1 = Interpolate( d[i], data[x], data[x2], fy );
 			valid.Set(i++,v1);
 			for ( ; x<xe; x++, x2++, i+=2 ) {
@@ -186,8 +186,8 @@ public:
 			}
 		}
 		if ( endY > 0 ) {
-			unsigned int x = ii + w1 + 1;
-			unsigned int xe = x + ws1;
+			int x = ii + w1 + 1;
+			int xe = x + ws1;
 			d[i] = data[x];
 			valid.Set(i++);
 			for ( ; x<xe; x++ ) {
@@ -211,12 +211,12 @@ public:
 		subdiv = s;
 
 		if ( conservative ) {
-			for ( unsigned int i=0, y=0; y<h2; y++ ) {
-				unsigned int x = i;
-				unsigned int xe = i+w2;
+			for ( int i=0, y=0; y<h2; y++ ) {
+				int x = i;
+				int xe = i+w2;
 				if ( (y&1)==0 ) {
 					x++;
-					for ( unsigned int ix=xe+2; x<xe; x+=2, ix+=2 ) {
+					for ( int ix=xe+2; x<xe; x+=2, ix+=2 ) {
 						if ( ! valid.Get(ix) ) valid.Clear(x);
 					}
 				} else {
@@ -226,12 +226,12 @@ public:
 				}
 				i = xe+1;
 			}
-			for ( unsigned int i=n-1, y=h2; y>0; y-- ) {
-				unsigned int x = i;
-				unsigned int xe = i-w2;
+			for ( int i=n-1, y=h2; y>0; y-- ) {
+				int x = i;
+				int xe = i-w2;
 				if ( (y&1)==0 || y==h2 ) {
 					x--;
-					for ( unsigned int ix=xe-2; x>xe; x-=2, ix-=2 ) {
+					for ( int ix=xe-2; x>xe; x-=2, ix-=2 ) {
 						if ( ! valid.Get(ix) ) valid.Clear(x);
 					}
 				} else {
@@ -245,28 +245,28 @@ public:
 	}
 
 	/// Returns the number of computation points.
-	unsigned int GetDataCount() const { return GetDataCount(subdiv); }
+	int GetDataCount() const { return GetDataCount(subdiv); }
 
 	/// Sets the value of a point and marks it as valid.
-	void Set(unsigned int i, const T& v) { data[i]=v; valid.Set(i); }
+	void Set(int i, const T& v) { data[i]=v; valid.Set(i); }
 
 	/// Returns the current subdivision level
 	int GetSubdivLevel() const { return subdiv; }
 
 	/// Returns if the point with the given index is valid.
 	/// If it is invalid, it must be computed and Set.
-	bool IsValid(unsigned int i) const { return valid.Get(i); }
+	bool IsValid(int i) const { return valid.Get(i); }
 
 	/// Returns the value of a point.
-	const T& Get(unsigned int i) const { return data[i]; }
+	const T& Get(int i) const { return data[i]; }
 
 	/// Returns the image position of the given computation point.
-	void GetPosition(unsigned int i, float &x, float &y) const
+	void GetPosition(int i, float &x, float &y) const
 	{
-		unsigned int w, h;
+		int w, h;
 		GetDataCount(subdiv, w, h);
-		unsigned ix = i % (w+1);
-		unsigned iy = i / (w+1);
+		int ix = i % (w+1);
+		int iy = i / (w+1);
 		float skip = (subdiv<=0) ? (1<<-subdiv) : (1.0f/(1<<subdiv));
 		x = skip * ix;
 		if ( x > width ) x = (float) width;
@@ -285,13 +285,13 @@ public:
 		float iskip = (subdiv<0) ? (1.0f/(1<<-subdiv)) : (1<<subdiv);
 		float xx = x*iskip;
 		float yy = y*iskip;
-		unsigned int ix = (unsigned int)xx;
-		unsigned int iy = (unsigned int)yy;
+		int ix = (int)xx;
+		int iy = (int)yy;
 		float fx = xx - (float)ix;
 		float fy = yy - (float)iy;
-		unsigned int ix2 = ix+1;
-		unsigned int iy2 = iy+1;
-		unsigned int w, h;
+		int ix2 = ix+1;
+		int iy2 = iy+1;
+		int w, h;
 		GetDataCount(subdiv, w, h);
 		if ( ix >= w+1 ) ix=ix2=w+1;
 		else if ( ix == w ) {
@@ -306,10 +306,10 @@ public:
 			if ( d < skip ) fy *= d*iskip;
 		}
 		T vx1=val, vx2=val;
-		unsigned int i0 = iy *(w+1)+ix;
-		unsigned int i1 = iy *(w+1)+ix2;
-		unsigned int i2 = iy2*(w+1)+ix;
-		unsigned int i3 = iy2*(w+1)+ix2;
+		int i0 = iy *(w+1)+ix;
+		int i1 = iy *(w+1)+ix2;
+		int i2 = iy2*(w+1)+ix;
+		int i3 = iy2*(w+1)+ix2;
 		Filter(vx1, data[i0], data[i1], fx );
 		Filter(vx2, data[i2], data[i3], fx );
 		Filter(val, vx1, vx2, fy );
@@ -339,28 +339,28 @@ private:
 	public:
 		Validity() : validity(NULL) {}
 		~Validity() { if ( validity ) delete [] validity; }
-		void SetSize( unsigned int n )
+		void SetSize( int n )
 		{
 			if ( validity ) delete [] validity;
-			unsigned int count = (n >> 3);
+			int count = (n >> 3);
 			if ( (n&7) > 0 ) count++;
-			validity = new unsigned char[count];
-			for ( unsigned int i=0; i<count; i++ ) validity[i] = 0;
+			validity = new char[count];
+			for ( int i=0; i<count; i++ ) validity[i] = 0;
 		}
-		bool Get  (unsigned int i) const { return ((validity[i>>3]>>(i&7))&1) > 0; }
-		void Clear(unsigned int i) { validity[i>>3] &= ~(unsigned char(1 << (i&7))); }
-		void Set  (unsigned int i) { validity[i>>3] |=   unsigned char(1 << (i&7));  }
-		void Set  (unsigned int i, bool set) { if (set) Set(i); else Clear(i); }
+		bool Get  (int i) const { return ((validity[i>>3]>>(i&7))&1) > 0; }
+		void Clear(int i) { validity[i>>3] &= ~(char(1 << (i&7))); }
+		void Set  (int i) { validity[i>>3] |=   char(1 << (i&7));  }
+		void Set  (int i, bool set) { if (set) Set(i); else Clear(i); }
 	private:
-		unsigned char *validity;
+		char *validity;
 	};
 
-	unsigned int width, height;
+	int width, height;
 	int subdiv;
 	Validity valid;
 	T *data;
 
-	unsigned int GetDataCount(int sub, unsigned int &w, unsigned int &h) const
+	int GetDataCount(int sub, int &w, int &h) const
 	{
 		w = (width >> -sub);
 		if ( sub<0 && width % (1<<-sub) > 0 ) w++;
@@ -368,9 +368,9 @@ private:
 		if ( sub<0 && height % (1<<-sub) > 0 ) h++;
 		return (w+1)*(h+1);
 	}
-	unsigned int GetDataCount(int sub) const
+	int GetDataCount(int sub) const
 	{
-		unsigned int w, h;
+		int w, h;
 		return GetDataCount(sub, w, h);
 	}
 };
