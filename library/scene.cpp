@@ -24,6 +24,7 @@
 #include "cyCodeBase/cyPoint.h"
 #include "cyCodeBase/cyMatrix3.h"
 #include "cyCodeBase/cyColor.h"
+#include "cyCodeBase/cyIrradianceMap.h"
 using namespace std;
 typedef cyPoint3f Point;
 typedef cyPoint2f Point2;
@@ -31,6 +32,7 @@ typedef cyMatrix3f Matrix;
 typedef cyColor Color;
 typedef cyColorA ColorA;
 typedef cyColor24 Color24;
+typedef cyIrradianceMapColor IrradianceMap;
 typedef unsigned char uchar;
 
 

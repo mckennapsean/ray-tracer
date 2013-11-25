@@ -42,6 +42,7 @@ int shadowMin = 8;
 int shadowMax = 32;
 bool gammaCorr = true;
 bool globalIllum = true;
+bool irradMap = true;
 int samplesGI = 16;
 
 
@@ -52,6 +53,7 @@ int size;
 Color24* img;
 float* zImg;
 float* sampleImg;
+IrradianceMap im;
 
 
 // variables for anti-aliasing brightness calculations (XYZ, Lab)
@@ -96,6 +98,7 @@ int main(){
   img = render.getRender();
   zImg = render.getZBuffer();
   sampleImg = render.getSample();
+  im.Initialize(w, h);
   
   // set variables for generating camera rays
   cameraRayVars();
