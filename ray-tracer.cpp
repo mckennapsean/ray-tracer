@@ -98,10 +98,33 @@ int main(){
   img = render.getRender();
   zImg = render.getZBuffer();
   sampleImg = render.getSample();
-  im.Initialize(w, h);
+  if(irradMap)
+    im.Initialize(w, h);
   
   // set variables for generating camera rays
   cameraRayVars();
+  
+  // start irradiance map computation
+  if(irradMap){
+    
+    // subdivide our image to compute indirect illumination
+    bool subdivide = true;
+    while(subdivide){
+      
+      // check if we are on final subdivide
+      if(im.GetSubdivLevel() == 0)
+        subdivide = false;
+      
+      // calculate indirect illumination
+      
+      // subdivide (if necessary)
+      if(subdivide)
+        im.Subdivide();
+    }
+  }
+  
+  // sample test output (know irrad map done)
+  cout << "onto ray tracing!" << endl;
   
   // start ray tracing loop (in parallel with threads)
   thread t[numThreads];
