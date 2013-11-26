@@ -180,6 +180,44 @@ class IndirectLight: public GenericLight{
 };
 
 
+// irradiance map light definition (another type of indirect light)
+class IrradianceMapLight: public GenericLight{
+  public:
+    
+    // constructor
+    IrradianceMapLight(){
+      indirect = Color(0.0);
+    }
+    
+    // get color of indirect light from irradiance map
+    Color illuminate(Point p, Point n){
+      
+      // return the color
+      return indirect;
+    }
+    
+    // get direction of indirect light (non-sensical)
+    Point direction(Point p){
+      return Point(0, 0, 0);
+    }
+    
+    // return true, since light is indirect
+    bool isAmbient(){
+      return true;
+    }
+    
+    // set the color of the indirect light (done for each pixel of the irradiance map)
+    void setColor(Color c){
+      indirect = c;
+    }
+    
+  private:
+    
+    // indirect color (from irradiance map)
+    Color indirect;
+};
+
+
 // direct light definition
 class DirectLight: public GenericLight{
   public:
