@@ -67,6 +67,7 @@ float Yprecalc = (1.0 / 3.0) * pow(29.0 / 6.0, 2.0);
 // setup threading
 static const int numThreads = 8;
 void rayTracing(int i);
+void rayTracingCache(int i);
 
 
 // for camera ray generation
@@ -107,6 +108,19 @@ int main(){
   // compute an irradiance cache for global illumination
   if(globalIllum && irradCache){
     
+    // caching light list
+    LightList lightCache;
+    lightCache.deleteAll();
+    string name = "indirect";
+    IndirectLight *l = new IndirectLight();
+    Light *light = NULL;
+    l->setLightList(&lights);
+    l->setEnvironment(environment);
+    l->setSamples(samplesGI);
+    light = l;
+    light->setName(name);
+    lightCache.push_back(light);
+    
     // subdivide our image to compute indirect illumination
     bool subdivide = true;
     while(subdivide){
@@ -116,6 +130,19 @@ int main(){
         subdivide = false;
       
       // calculate indirect illumination
+      int cnt = 0;
+      for(int i = 0; i < im.GetDataCount(); i++){
+        if(im.IsValid(i))
+          cnt++;
+      }
+      cout << "size: " << im.GetDataCount() << endl;
+      cout << "valid: " << cnt << endl;
+      float x;
+      float y;
+      im.GetPosition(32, x, y);
+      cout << "(x, y): " << x << ", " << y << endl;
+      int pix = x + y * w;
+      cout << "pixel #" << pix << endl << endl;
       
       // subdivide (if necessary)
       if(subdivide)
