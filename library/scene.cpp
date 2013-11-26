@@ -409,12 +409,7 @@ template <class T> class ItemList: public vector <T*>{
     }
     
     // clear (most) elements within the list
-    void deleteAll(){
-      int n = this->size() - 1;
-      for(int i = 0; i < n; i++)
-        if(this->at(i))
-          delete this->at(i);
-    }
+    void deleteAll(){}
 };
 
 
