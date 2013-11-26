@@ -55,6 +55,7 @@ int minShadowRays, maxShadowRays;
 
 // global illumination variables
 bool GI;
+bool IC;
 int sGI;
 
 
@@ -72,7 +73,7 @@ void readFloat(XMLElement *e, float &f, string name = "value");
 
 
 // begin loading scene from file
-int loadScene(string file, bool p = false, int min = 8, int max = 32, bool gi = false, int s = 16){
+int loadScene(string file, bool p = false, int min = 8, int max = 32, bool gi = false, bool ic = false, int s = 16){
   
   // load debug mode
   print = p;
@@ -83,6 +84,7 @@ int loadScene(string file, bool p = false, int min = 8, int max = 32, bool gi = 
   
   // set global illumination settings
   GI = gi;
+  IC = ic;
   sGI = s;
   
   // make sure file exists
@@ -214,7 +216,7 @@ void loadScene(XMLElement *e){
   
   
   // add indirect light to the scene for global illumination
-  if(GI)
+  if(GI && !IC)
     setIndirectLight(sGI);
 }
 

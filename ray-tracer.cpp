@@ -42,7 +42,7 @@ int shadowMin = 8;
 int shadowMax = 32;
 bool gammaCorr = true;
 bool globalIllum = true;
-bool irradMap = true;
+bool irradCache = true;
 int samplesGI = 16;
 
 
@@ -86,7 +86,7 @@ Point cameraRay(float pX, float pY, Point offset);
 int main(){
   
   // load scene: root node, camera, image (and set shadow casting variables)
-  loadScene(xml, printXML, shadowMin, shadowMax, globalIllum, samplesGI);
+  loadScene(xml, printXML, shadowMin, shadowMax, globalIllum, irradCache, samplesGI);
   
   // set the scene as the root node
   setScene(rootNode);
@@ -98,14 +98,14 @@ int main(){
   img = render.getRender();
   zImg = render.getZBuffer();
   sampleImg = render.getSample();
-  if(irradMap)
+  if(irradCache)
     im.Initialize(w, h);
   
   // set variables for generating camera rays
   cameraRayVars();
   
-  // start irradiance map computation
-  if(irradMap){
+  // compute an irradiance cache for global illumination
+  if(globalIllum && irradCache){
     
     // subdivide our image to compute indirect illumination
     bool subdivide = true;
