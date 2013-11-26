@@ -66,7 +66,6 @@ void loadTransform(Transformation *t, XMLElement *e, int level);
 void loadMaterial(XMLElement *e);
 void loadLight(XMLElement *e);
 void setIndirectLight(int s);
-void setIrradianceMapLight();
 TextureMap* loadTexture(XMLElement *e);
 void readVector(XMLElement *e, Point &v);
 void readColor(XMLElement *e, Color &c);
@@ -219,10 +218,6 @@ void loadScene(XMLElement *e){
   // add indirect light to the scene for global illumination
   if(GI && !IC)
     setIndirectLight(sGI);
-  
-  // add indirect light for irradiance caching
-  if(GI && IC)
-    setIrradianceMapLight();
 }
 
 
@@ -753,23 +748,6 @@ void setIndirectLight(int s){
   l->setSamples(s);
   
   // add indirect light to light list
-  light = l;
-  light->setName(name);
-  lights.push_back(light);
-}
-
-
-// add an irradiance map light to our scene
-void setIrradianceMapLight(){
-  
-  // set light name
-  string name = "irradiance";
-  
-  // create irradiance map light
-  IrradianceMapLight *l = new IrradianceMapLight();
-  Light *light = NULL;
-  
-  // add irradiance map light to light list
   light = l;
   light->setName(name);
   lights.push_back(light);
