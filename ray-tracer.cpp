@@ -209,7 +209,8 @@ void rayTracing(int i){
     
     // if necessary, set the color of our irradiance map light
     if(globalIllum && irradCache){
-      Color c = im.Get(pixel);
+      Color c;
+      im.Eval(c, pX, pY);
       int index = lights.size() - 1;
       Light *light = lights[index];
       light->setColor(c);
