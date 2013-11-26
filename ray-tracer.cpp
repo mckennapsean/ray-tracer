@@ -67,7 +67,7 @@ float Yprecalc = (1.0 / 3.0) * pow(29.0 / 6.0, 2.0);
 // setup threading
 static const int numThreads = 8;
 void rayTracing(int i);
-Color irradianceCache(int i, LightList lightCache);
+void irradianceCache(int i, int m, LightList lightCache);
 
 
 // for camera ray generation
@@ -143,7 +143,7 @@ int main(){
         
         // compute the ray tracing cache (if needs to be set)
         if(!im.IsValid(i))
-          im.Set(i, irradianceCache(pixel, lightCache));
+          irradianceCache(pixel, i, lightCache);
       }
       
       // subdivide (if necessary)
@@ -344,7 +344,7 @@ void rayTracing(int i){
 
 
 // irradiance cache (for global illumination & indirect lighting at a single pixel)
-Color irradianceCache(int i, LightList lightCache){
+void irradianceCache(int i, int m, LightList lightCache){
   
   // setup random generator for anti-aliasing & depth-of-field
   mt19937 rnd;
@@ -457,8 +457,8 @@ Color irradianceCache(int i, LightList lightCache){
     }
   }
   
-  // return our indirect illumination color
-  return colAvg;
+  // set our irradiance map variables
+  im.Set(m, colAvg);
 }
 
 
