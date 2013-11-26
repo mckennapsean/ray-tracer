@@ -624,6 +624,7 @@ class Light: public ItemBase{
     virtual bool isAmbient(){
       return false;
     }
+    virtual void setColor(Color c){}
 };
 
 
