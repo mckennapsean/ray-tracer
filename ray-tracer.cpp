@@ -183,6 +183,21 @@ void rayTracing(int i){
   // setup random generator for anti-aliasing & depth-of-field
   mt19937 rnd;
   uniform_real_distribution<float> dist{0.0, 1.0};
+  
+  // create new light list for thread
+  LightList threadLights;
+  threadLights.deleteAll();
+  threadLights = lights;
+  
+  // if necessary, add new irradiance map light
+  if(globalIllum && irradCache){
+    IrradianceMapLight *l = new IrradianceMapLight();
+    string name = "irradianceMap";
+    Light *light = NULL;
+    light = l;
+    light->setName(name);
+    threadLights.push_back(light);
+  }
    
   // thread continuation condition
   while(pixel < size){
@@ -207,12 +222,12 @@ void rayTracing(int i){
     // random rotation of Halton sequence on circle of confusion
     float dcR = dist(rnd) * 2.0 * M_PI;
     
-    // if necessary, set the color of our irradiance map light
+    // if necessary, update irradiance map light with indirect color
     if(globalIllum && irradCache){
       Color c;
       im.Eval(c, pX, pY);
-      int index = lights.size() - 1;
-      Light *light = lights[index];
+      int index = threadLights.size() - 1;
+      Light *light = threadLights[index];
       light->setColor(c);
     }
     
@@ -260,7 +275,7 @@ void rayTracing(int i){
         // if there is a material, shade the pixel
         // 5-passes for reflections and refractions
         if(m)
-          col = m->shade(*ray, hi, lights, bounceCount);
+          col = m->shade(*ray, hi, threadLights, bounceCount);
         
         // otherwise color it white (as a hit)
         else
