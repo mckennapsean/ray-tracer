@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <title>prj11</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <style>
 /* 
    This document has been created with Marked.app <http://markedapp.com>, Copyright 2011 Brett Terpstra
@@ -160,6 +161,15 @@ pre .chunk {
 pre .tex .formula {
   opacity: 0.5;
 }
+
+#images_thumbnails img {
+  margin:4px;
+}
+
+#images_thumbnails2 img {
+  margin:4px;
+}
+
 </style>
 
 </head>
@@ -173,69 +183,59 @@ pre .tex .formula {
 
 <h2 id="skylightteapot">Skylight Teapot</h2>
 
-<figure>
-<img src="images/prj11/skylightTeapot-none.png" alt="" /></figure>
+<div id="images_thumbnails">
+  <a href="images/prj11/skylightTeapot-none.png" rev="no global illumination">
+    <img src="images/prj11/thumb/skylightTeapot-none.png" />
+  </a>
+  <a href="images/prj11/skylightTeapot-s.png" rev="global illumination, 16 samples">
+    <img src="images/prj11/thumb/skylightTeapot-s.png" />
+    </a>
+  <a href="images/prj11/skylightTeapot.png" rev="global illumination, 128 samples">
+    <img src="images/prj11/thumb/skylightTeapot.png" />
+  </a>
+  <a href="images/prj11/skylightTeapotSample.png" rev="global illumination, 128 samples, sample count">
+    <img src="images/prj11/thumb/skylightTeapotSample.png" />
+  </a>
+</div>
 
+<div id="images_descr">
+  <h3> global illumination, 128 samples </h3>
+</div>
 
-
-<figure>
-<img src="images/prj11/skylightTeapot-s.png" alt="" /></figure>
-
-
-
-
-<figure>
-<img src="images/prj11/skylightTeapot.png" alt="" /></figure>
-
-
-
-
-
-<figure>
-<img src="images/prj11/skylightTeapotSample.png" alt="" /></figure>
-
-
-
-
+<div id="images_full">
+  <img src="images/prj11/skylightTeapot.png" />
+</div>
 
 
 <hr />
 
 <h2 id="cornellbox">Cornell Box</h2>
 
-<figure>
-<img src="images/prj11/cornellBox-none.png" alt="" /></figure>
+<div id="images_thumbnails2">
+  <a href="images/prj11/cornellBox-none.png" rev="no global illumination">
+    <img src="images/prj11/thumb/cornellBox-none.png" />
+  </a>
+  <a href="images/prj11/cornellBox-none-gamma.png" rev="no global illumination, with gamma correction">
+    <img src="images/prj11/thumb/cornellBox-none-gamma.png" />
+  </a>
+  <a href="images/prj11/cornellBox-s.png" rev="global illumination, 16 samples">
+    <img src="images/prj11/thumb/cornellBox-s.png" />
+    </a>
+  <a href="images/prj11/cornellBox.png" rev="global illumination, 128 samples">
+    <img src="images/prj11/thumb/cornellBox.png" />
+  </a>
+  <a href="images/prj11/cornellBoxSample.png" rev="global illumination, 128 samples, sample count">
+    <img src="images/prj11/thumb/cornellBoxSample.png" />
+  </a>
+</div>
 
+<div id="images_descr2">
+  <h3> global illumination, 128 samples </h3>
+</div>
 
-
-<figure>
-<img src="images/prj11/cornellBox-none-gamma.png" alt="" /></figure>
-
-
-
-
-<figure>
-<img src="images/prj11/cornellBox-s.png" alt="" /></figure>
-
-
-
-
-
-<figure>
-<img src="images/prj11/cornellBox.png" alt="" /></figure>
-
-
-
-
-
-
-<figure>
-<img src="images/prj11/cornellBoxSample.png" alt="" /></figure>
-
-
-
-
-
+<div id="images_full2">
+  <img src="images/prj11/cornellBox.png" />
+</div>
 
 
 <hr />
@@ -336,4 +336,42 @@ pre .tex .formula {
 <script>hljs.initHighlightingOnLoad();</script>
     </div>
 </body>
+
+<!-- http://www.nimpkish.com/blog/simple-javascript-image-gallery -->
+<script type="text/javascript">
+  $('#images_thumbnails a').mouseenter(function(){
+    var newImageSrc = $(this).attr('href');
+    var header = $(this).attr('rev');
+    $('#images_full img').attr({'src': newImageSrc });
+    $('#images_descr h3').text(header);
+    return false;
+  });
+  
+  $('#images_thumbnails2 a').mouseenter(function(){
+    var newImageSrc = $(this).attr('href');
+    var header = $(this).attr('rev');
+    $('#images_full2 img').attr({'src': newImageSrc });
+    $('#images_descr2 h3').text(header);
+    return false;
+  });
+  
+  img1 = new Image(800, 600);
+  img1.src = "images/prj11/skylightTeapot-none.png";
+  img2 = new Image(800, 600);
+  img2.src = "images/prj11/skylightTeapot-s.png";
+  img3 = new Image(800, 600);
+  img3.src = "images/prj11/skylightTeapot.png";
+  img4 = new Image(800, 600);
+  img4.src = "images/prj11/skylightTeapotSample.png";
+  img5 = new Image(800, 600);
+  img5.src = "images/prj11/cornellBox-none.png";
+  img6 = new Image(800, 600);
+  img6.src = "images/prj11/cornellBox-none-gamma.png";
+  img7 = new Image(800, 600);
+  img7.src = "images/prj9/cornellBox-s.png";
+  img8 = new Image(800, 600);
+  img8.src = "images/prj11/cornellBox.png";
+  img9 = new Image(800, 600);
+  img9.src = "images/prj11/cornellBoxSample.png";
+</script>
 </html>
