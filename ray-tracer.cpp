@@ -67,7 +67,7 @@ float Yprecalc = (1.0 / 3.0) * pow(29.0 / 6.0, 2.0);
 // setup threading
 static const int numThreads = 8;
 void rayTracing(int i);
-Color rayTracingCache(int i, LightList lightCache);
+Color irradianceCache(int i, LightList lightCache);
 
 
 // for camera ray generation
@@ -143,12 +143,7 @@ int main(){
         
         // compute the ray tracing cache (if needs to be set)
         if(!im.IsValid(i))
-          im.Set(i, rayTracingCache(pixel, lightCache));
-        
-        // save computation points as image for now
-        if(im.GetSubdivLevel() == 0)
-          if(im.IsValid(i))
-            img[pixel] = Color24(im.Get(i));
+          im.Set(i, irradianceCache(pixel, lightCache));
       }
       
       // subdivide (if necessary)
@@ -157,17 +152,14 @@ int main(){
     }
   }
   
-  // sample test output (know irrad map done)
-  // cout << "onto ray tracing!" << endl;
-  
   // start ray tracing loop (in parallel with threads)
-  // thread t[numThreads];
-  // for(int i = 0; i < numThreads; i++)
-  //   t[i] = thread(rayTracing, i);
+  thread t[numThreads];
+  for(int i = 0; i < numThreads; i++)
+    t[i] = thread(rayTracing, i);
   
   // when finished, join all threads back to main
-  // for(int i = 0; i < numThreads; i++)
-  //   t[i].join();
+  for(int i = 0; i < numThreads; i++)
+    t[i].join();
   
   // output ray-traced image & z-buffer & sample count image (if set)
   render.save("images/image.ppm");
@@ -327,8 +319,8 @@ void rayTracing(int i){
 }
 
 
-// ray tracing cache (for irradiance caching at a single pixel)
-Color rayTracingCache(int i, LightList lightCache){
+// irradiance cache (for global illumination & indirect lighting at a single pixel)
+Color irradianceCache(int i, LightList lightCache){
   
   // setup random generator for anti-aliasing & depth-of-field
   mt19937 rnd;
