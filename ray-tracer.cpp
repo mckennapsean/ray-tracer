@@ -207,6 +207,14 @@ void rayTracing(int i){
     // random rotation of Halton sequence on circle of confusion
     float dcR = dist(rnd) * 2.0 * M_PI;
     
+    // if necessary, set the color of our irradiance map light
+    if(globalIllum && irradCache){
+      Color c = im.Get(pixel);
+      int index = lights.size() - 1;
+      Light *light = lights[index];
+      light->setColor(c);
+    }
+    
     // compute multi-adaptive sampling for each pixel (anti-aliasing)
     while(s < sampleMin || (s != sampleMax && (rVar * perR > var + brightness * var || gVar * perG > var + brightness * var || bVar * perB > var + brightness * var))){
       
