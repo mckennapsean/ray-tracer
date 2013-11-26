@@ -98,7 +98,7 @@ int main(){
   img = render.getRender();
   zImg = render.getZBuffer();
   sampleImg = render.getSample();
-  if(irradCache)
+  if(globalIllum && irradCache)
     im.Initialize(w, h);
   
   // set variables for generating camera rays
