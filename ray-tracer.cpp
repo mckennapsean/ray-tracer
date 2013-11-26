@@ -112,7 +112,7 @@ int main(){
     LightList lightCache;
     lightCache.deleteAll();
     string name = "indirect";
-    IndirectLight *l = new IndirectLight();
+    IrradianceCacheLight *l = new IrradianceCacheLight();
     Light *light = NULL;
     l->setLightList(&lights);
     l->setEnvironment(environment);
