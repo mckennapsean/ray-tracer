@@ -225,10 +225,16 @@ void rayTracing(int i){
     // if necessary, update irradiance map light with indirect color
     if(globalIllum && irradCache){
       Color c;
-      im.Eval(c, pX, pY);
+      float z;
+      Point N;
+      ColorIM cim;
+      cim.c = c;
+      cim.z = z;
+      cim.N = N;
+      im.Eval(cim, pX, pY);
       int index = threadLights.size() - 1;
       Light *light = threadLights[index];
-      light->setColor(c);
+      light->setColor(cim.c);
     }
     
     // compute multi-adaptive sampling for each pixel (anti-aliasing)
@@ -361,6 +367,7 @@ void irradianceCache(int i, int m, LightList lightCache){
   Color col;
   Color colAvg;
   float zAvg = 0.0;
+  Point nAvg = Point(0.0, 0.0, 0.0);
   float rVar = 0.0;
   float gVar = 0.0;
   float bVar = 0.0;
@@ -401,8 +408,10 @@ void irradianceCache(int i, int m, LightList lightCache){
     bool hit = traceRay(*ray, hi);
     
     // update z-buffer, if necessary
-    if(zBuffer)
-      zAvg = (zAvg * s + hi.z) / (float) (s + 1);
+    zAvg = (zAvg * s + hi.z) / (float) (s + 1);
+    
+    // update our average normal
+    nAvg = (nAvg * s + hi.n) / (float) (s + 1);
     
     // if hit, get the node's material
     if(hit){
@@ -458,7 +467,11 @@ void irradianceCache(int i, int m, LightList lightCache){
   }
   
   // set our irradiance map variables
-  im.Set(m, colAvg);
+  ColorIM cim;
+  cim.c = colAvg;
+  cim.z = zAvg;
+  cim.N = nAvg;
+  im.Set(m, cim);
 }
 
 

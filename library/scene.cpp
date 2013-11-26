@@ -32,7 +32,8 @@ typedef cyMatrix3f Matrix;
 typedef cyColor Color;
 typedef cyColorA ColorA;
 typedef cyColor24 Color24;
-typedef cyIrradianceMapColor IrradianceMap;
+typedef cyIrradianceMapColorZNormal IrradianceMap;
+typedef cyColorZNormal ColorIM;
 typedef unsigned char uchar;
 
 
