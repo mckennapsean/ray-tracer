@@ -352,125 +352,47 @@ void rayTracing(int i){
 // irradiance cache (for global illumination & indirect lighting at a single pixel)
 void irradianceCache(int i, int m, LightList lightCache){
   
-  // setup random generator for anti-aliasing & depth-of-field
-  mt19937 rnd;
-  uniform_real_distribution<float> dist{0.0, 1.0};
-  
-  // number of samples
-  int s = 0;
-  
   // establish pixel location (center)
   float pX = i % w;
   float pY = i / w;
   
-  // color values to store across samples
+  // color value for cache
   Color col;
-  Color colAvg;
-  float zAvg = 0.0;
-  Point nAvg = Point(0.0, 0.0, 0.0);
-  float rVar = 0.0;
-  float gVar = 0.0;
-  float bVar = 0.0;
-  float var = sampleThreshold;
-  float brightness = 0.0;
   
-  // random rotation of Halton sequence on circle of confusion
-  float dcR = dist(rnd) * 2.0 * M_PI;
+  // set offset to zero
+  Point posOffset = Point(0,0,0);
   
-  // compute multi-adaptive sampling for each pixel (anti-aliasing)
-  while(s < sampleMin || (s != sampleMax && (rVar * perR > var + brightness * var || gVar * perG > var + brightness * var || bVar * perB > var + brightness * var))){
+  // transform ray into world space
+  Point rayDir = cameraRay(pX, pY, posOffset);
+  Cone *ray = new Cone();
+  ray->pos = camera.pos;
+  ray->dir = c->transformFrom(rayDir);
+  ray->radius = 0.0;
+  ray->tan = dXV->x / (2.0 * imageDistance);
+  
+  // traverse through scene DOM
+  // transform rays into model space
+  // detect ray intersections and get back HitInfo
+  HitInfo hi = HitInfo();
+  bool hit = traceRay(*ray, hi);
+  
+  // if hit, get the node's material
+  if(hit){
+    Node *n = hi.node;
+    Material *m;
+    if(n)
+      m = n->getMaterial();
     
-    // grab Halton sequence to shift point by on image plane
-    float dpX = centerHalton(Halton(s, 3));
-    float dpY = centerHalton(Halton(s, 2));
-    
-    // grab Halton sequence to shift point along circle of confusion
-    float dcS = sqrt(Halton(s, 2)) * camera.dof;
-    
-    // grab Halton sequence to shift point around circle of confusion
-    float dcT = Halton(s, 3) * 2.0 * M_PI;
-    
-    // compute the offset for depth of field sampling
-    Point posOffset = (*dVx * cos(dcR + dcT) + *dVy * sin(dcR + dcT)) * dcS;
-    
-    // transform ray into world space (offset by Halton seqeunce for sampling)
-    Point rayDir = cameraRay(pX + dpX, pY + dpY, posOffset);
-    Cone *ray = new Cone();
-    ray->pos = camera.pos + c->transformFrom(posOffset);
-    ray->dir = c->transformFrom(rayDir);
-    ray->radius = 0.0;
-    ray->tan = dXV->x / (2.0 * imageDistance);
-    
-    // traverse through scene DOM
-    // transform rays into model space
-    // detect ray intersections and get back HitInfo
-    HitInfo hi = HitInfo();
-    bool hit = traceRay(*ray, hi);
-    
-    // update z-buffer, if necessary
-    zAvg = (zAvg * s + hi.z) / (float) (s + 1);
-    
-    // update our average normal
-    nAvg = (nAvg * s + hi.n) / (float) (s + 1);
-    
-    // if hit, get the node's material
-    if(hit){
-      Node *n = hi.node;
-      Material *m;
-      if(n)
-        m = n->getMaterial();
-      
-      // if there is a material, shade the pixel
-      // 5-passes for reflections and refractions
-      if(m)
-        col = m->shade(*ray, hi, lightCache, bounceCount);
-      
-      // otherwise color it white (as a hit)
-      else
-        col.Set(0.929, 0.929, 0.929);
-    
-    // if we hit nothing, draw the background
-    }else{
-      Point p = Point((float) pX / w, (float) pY / h, 0.0);
-      Color b = background.sample(p);
-      col = b;
-    }
-    
-    // compute average color
-    float rAvg = (colAvg.r * s + col.r) / (float) (s + 1);
-    float gAvg = (colAvg.g * s + col.g) / (float) (s + 1);
-    float bAvg = (colAvg.b * s + col.b) / (float) (s + 1);
-    colAvg.Set(rAvg, gAvg, bAvg);
-    
-    // compute color variances
-    rVar = (rVar * s + (col.r - rAvg) * (col.r - rAvg)) / (float) (s + 1);
-    gVar = (gVar * s + (col.g - gAvg) * (col.g - gAvg)) / (float) (s + 1);
-    bVar = (bVar * s + (col.b - bAvg) * (col.b - bAvg)) / (float) (s + 1);
-    
-    // calculate and update brightness average using XYZ and Lab space
-    float Y = perR * rAvg + perG * gAvg + perB * bAvg;
-    float Y13 = Y;
-    if(Y13 > Ycutoff)
-      Y13 = pow(Y13, 1.0 / 3.0);
-    else
-      Y13 = Yprecalc * Y13 + (4.0 / 29.0);
-    brightness = (116.0 * Y13 - 16.0) / 100.0;
-    
-    // increment sample count
-    s++;
-    
-    // watch for errors at any individual sample, terminate thread if so
-    if(colAvg[0] != colAvg[0] || colAvg[1] != colAvg[1] || colAvg[2] != colAvg[2]){
-      cout << "ERROR - caching pixel " << i << " & sample " << s << endl;
-      s = sampleMax;
-    }
+    // if there is a material, get our indirect light color for cache
+    if(m)
+      col = m->shade(*ray, hi, lightCache);
   }
   
   // set our irradiance map variables
   ColorIM cim;
-  cim.c = colAvg;
-  cim.z = zAvg;
-  cim.N = nAvg;
+  cim.c = col;
+  cim.z = hi.z;
+  cim.N = hi.n;
   im.Set(m, cim);
 }
 
