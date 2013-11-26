@@ -170,6 +170,12 @@ pre .tex .formula {
   margin:4px;
 }
 
+img.highlight{
+  border-style:solid;
+  border-width:6px;
+  border-color:#BBBBBB;
+}
+
 </style>
 
 </head>
@@ -183,6 +189,10 @@ pre .tex .formula {
 
 <h2 id="skylightteapot">Skylight Teapot</h2>
 
+<div id="images_descr">
+  <h3> global illumination, 128 samples </h3>
+</div>
+
 <div id="images_thumbnails">
   <a href="images/prj11/skylightTeapot-none.png" rev="no global illumination">
     <img src="images/prj11/thumb/skylightTeapot-none.png" />
@@ -191,15 +201,11 @@ pre .tex .formula {
     <img src="images/prj11/thumb/skylightTeapot-s.png" />
     </a>
   <a href="images/prj11/skylightTeapot.png" rev="global illumination, 128 samples">
-    <img src="images/prj11/thumb/skylightTeapot.png" />
+    <img class="highlight" src="images/prj11/thumb/skylightTeapot.png" />
   </a>
   <a href="images/prj11/skylightTeapotSample.png" rev="global illumination, 128 samples, sample count">
     <img src="images/prj11/thumb/skylightTeapotSample.png" />
   </a>
-</div>
-
-<div id="images_descr">
-  <h3> global illumination, 128 samples </h3>
 </div>
 
 <div id="images_full">
@@ -210,6 +216,10 @@ pre .tex .formula {
 <hr />
 
 <h2 id="cornellbox">Cornell Box</h2>
+
+<div id="images_descr2">
+  <h3> global illumination, 128 samples </h3>
+</div>
 
 <div id="images_thumbnails2">
   <a href="images/prj11/cornellBox-none.png" rev="no global illumination">
@@ -222,15 +232,11 @@ pre .tex .formula {
     <img src="images/prj11/thumb/cornellBox-s.png" />
     </a>
   <a href="images/prj11/cornellBox.png" rev="global illumination, 128 samples">
-    <img src="images/prj11/thumb/cornellBox.png" />
+    <img class="highlight" src="images/prj11/thumb/cornellBox.png" />
   </a>
   <a href="images/prj11/cornellBoxSample.png" rev="global illumination, 128 samples, sample count">
     <img src="images/prj11/thumb/cornellBoxSample.png" />
   </a>
-</div>
-
-<div id="images_descr2">
-  <h3> global illumination, 128 samples </h3>
 </div>
 
 <div id="images_full2">
@@ -340,6 +346,10 @@ pre .tex .formula {
 <!-- http://www.nimpkish.com/blog/simple-javascript-image-gallery -->
 <script type="text/javascript">
   $('#images_thumbnails a').mouseenter(function(){
+    $('#images_thumbnails a img').each(function(){
+      $(this).removeClass();
+    });
+    $(this).find("img").addClass("highlight");
     var newImageSrc = $(this).attr('href');
     var header = $(this).attr('rev');
     $('#images_full img').attr({'src': newImageSrc });
@@ -348,6 +358,10 @@ pre .tex .formula {
   });
   
   $('#images_thumbnails2 a').mouseenter(function(){
+    $('#images_thumbnails2 a img').each(function(){
+      $(this).removeClass();
+    });
+    $(this).find("img").addClass("highlight");
     var newImageSrc = $(this).attr('href');
     var header = $(this).attr('rev');
     $('#images_full2 img').attr({'src': newImageSrc });
