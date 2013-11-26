@@ -46,8 +46,6 @@ Irradiance Caching #1
 
 ![](images/prj11/skylightTeapotIRnorm.png)
 
-![](images/prj11/skylightTeapotIRnormSample.png)
-
 - - -
 
 Irradiance Caching #2

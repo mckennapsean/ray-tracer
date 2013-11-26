@@ -170,6 +170,18 @@ pre .tex .formula {
   margin:4px;
 }
 
+#images_thumbnails3 img {
+  margin:4px;
+}
+
+#images_thumbnails4 img {
+  margin:4px;
+}
+
+#images_thumbnails5 img {
+  margin:4px;
+}
+
 img.highlight{
   border-style:solid;
   border-width:6px;
@@ -246,6 +258,91 @@ img.highlight{
 
 <hr />
 
+<h2 id="irradCache1">Irradiance Caching #1</h2>
+
+<div id="images_descr3">
+  <h3> irradiance caching, color + z + normal </h3>
+</div>
+
+<div id="images_thumbnails3">
+  <a href="images/prj11/skylightTeapot.png" rev="no irradiance caching">
+    <img src="images/prj11/thumb/skylightTeapot.png" />
+  </a>
+  <a href="images/prj11/skylightTeapotIRreg.png" rev="irradiance caching, color">
+    <img src="images/prj11/thumb/skylightTeapotIRreg.png" />
+    </a>
+  <a href="images/prj11/skylightTeapotIRz.png" rev="irradiance caching, color + z">
+    <img src="images/prj11/thumb/skylightTeapotIRz.png" />
+  </a>
+  <a href="images/prj11/skylightTeapotIRnorm.png" rev="irradiance caching, color + z + normal">
+    <img class="highlight" src="images/prj11/thumb/skylightTeapotIRnorm.png" />
+  </a>
+</div>
+
+<div id="images_full3">
+  <img src="images/prj11/skylightTeapotIRnorm.png" />
+</div>
+
+
+<hr />
+
+<h2 id="irradCache2">Irradiance Caching #2</h2>
+
+<div id="images_descr4">
+  <h3> irradiance caching, color + z + normal </h3>
+</div>
+
+<div id="images_thumbnails4">
+  <a href="images/prj11/cornellBox.png" rev="no irradiance caching">
+    <img src="images/prj11/thumb/cornellBox.png" />
+  </a>
+  <a href="images/prj11/cornellBoxIRreg.png" rev="irradiance caching, color">
+    <img src="images/prj11/thumb/cornellBoxIRreg.png" />
+  </a>
+  <a href="images/prj11/cornellBoxIRz.png" rev="irradiance caching, color + z">
+    <img src="images/prj11/thumb/cornellBoxIRz.png" />
+    </a>
+  <a href="images/prj11/cornellBoxIRnorm.png" rev="irradiance caching, color + z + normal">
+    <img class="highlight" src="images/prj11/thumb/cornellBoxIRnorm.png" />
+  </a>
+  <a href="images/prj11/cornellBoxIRnormSample.png" rev="irradiance caching, color + z + normal, sample count">
+    <img src="images/prj11/thumb/cornellBoxIRnormSample.png" />
+  </a>
+</div>
+
+<div id="images_full4">
+  <img src="images/prj11/cornellBoxIRnorm.png" />
+</div>
+
+
+<hr />
+
+<h2 id="irradCache3">Irradiance Caching #2 - Poor Choices</h2>
+
+<div id="images_descr5">
+  <h3> irradiance caching, random </h3>
+</div>
+
+<div id="images_thumbnails5">
+  <a href="images/prj11/cornellBoxIRnorm.png" rev="irradiance caching, quasi-random">
+    <img src="images/prj11/thumb/cornellBox.png" />
+  </a>
+  <a href="images/prj11/cornellBoxIRnorm-s.png" rev="irradiance caching, quasi-random, 16 samples">
+    <img src="images/prj11/thumb/cornellBoxIRnorm-s.png" />
+  </a>
+  <a href="images/prj11/cornellBoxIRrand.png" rev="irradiance caching, random">
+    <img class="highlight" src="images/prj11/thumb/cornellBoxIRrand.png" />
+  </a>
+</div>
+
+<div id="images_full5">
+  <img src="images/prj11/cornellBoxIRrand.png" />
+</div>
+
+
+<hr />
+
+
 <h2 id="buggyimages">Buggy Images</h2>
 
 <figure>
@@ -256,7 +353,8 @@ img.highlight{
 <figure>
 <img src="images/prj11/bug1.png" alt="" /></figure>
 
-
+<figure>
+<img src="images/prj11/bug2.png" alt="" /></figure>
 
 
 <hr />
@@ -285,18 +383,23 @@ img.highlight{
 <tbody>
 <tr>
 	<td style="text-align:right;">03.013 s</td>
-	<td style="text-align:right;">N</td>
+	<td style="text-align:right;">-</td>
 	<td style="text-align:right;">-</td>
 </tr>
 <tr>
 	<td style="text-align:right;">1 min 49.769 s</td>
-	<td style="text-align:right;">Y</td>
+	<td style="text-align:right;">GI</td>
 	<td style="text-align:right;">16</td>
 </tr>
 <tr>
 	<td style="text-align:right;">4 min 39.872 s</td>
-	<td style="text-align:right;">Y</td>
+	<td style="text-align:right;">GI</td>
 	<td style="text-align:right;">128</td>
+</tr>
+<tr>
+  <td style="text-align:right;">10.093 s</td>
+  <td style="text-align:right;">IC</td>
+  <td style="text-align:right;">128</td>
 </tr>
 </tbody>
 </table>
@@ -320,18 +423,23 @@ img.highlight{
 <tbody>
 <tr>
 	<td style="text-align:right;">07.028 s</td>
-	<td style="text-align:right;">N</td>
+	<td style="text-align:right;">-</td>
 	<td style="text-align:right;">-</td>
 </tr>
 <tr>
 	<td style="text-align:right;">02 min 03.465 s</td>
-	<td style="text-align:right;">Y</td>
+	<td style="text-align:right;">GI</td>
 	<td style="text-align:right;">16</td>
 </tr>
 <tr>
 	<td style="text-align:right;">15 min 25.159 s</td>
-	<td style="text-align:right;">Y</td>
+	<td style="text-align:right;">GI</td>
 	<td style="text-align:right;">128</td>
+</tr>
+<tr>
+  <td style="text-align:right;">36.288 s</td>
+  <td style="text-align:right;">IC</td>
+  <td style="text-align:right;">128</td>
 </tr>
 </tbody>
 </table>
@@ -369,6 +477,42 @@ img.highlight{
     return false;
   });
   
+  $('#images_thumbnails3 a').mouseenter(function(){
+    $('#images_thumbnails3 a img').each(function(){
+      $(this).removeClass();
+    });
+    $(this).find("img").addClass("highlight");
+    var newImageSrc = $(this).attr('href');
+    var header = $(this).attr('rev');
+    $('#images_full3 img').attr({'src': newImageSrc });
+    $('#images_descr3 h3').text(header);
+    return false;
+  });
+  
+  $('#images_thumbnails4 a').mouseenter(function(){
+    $('#images_thumbnails4 a img').each(function(){
+      $(this).removeClass();
+    });
+    $(this).find("img").addClass("highlight");
+    var newImageSrc = $(this).attr('href');
+    var header = $(this).attr('rev');
+    $('#images_full4 img').attr({'src': newImageSrc });
+    $('#images_descr4 h3').text(header);
+    return false;
+  });
+  
+  $('#images_thumbnails5 a').mouseenter(function(){
+    $('#images_thumbnails5 a img').each(function(){
+      $(this).removeClass();
+    });
+    $(this).find("img").addClass("highlight");
+    var newImageSrc = $(this).attr('href');
+    var header = $(this).attr('rev');
+    $('#images_full5 img').attr({'src': newImageSrc });
+    $('#images_descr5 h3').text(header);
+    return false;
+  });
+  
   img1 = new Image(800, 600);
   img1.src = "images/prj11/skylightTeapot-none.png";
   img2 = new Image(800, 600);
@@ -387,5 +531,23 @@ img.highlight{
   img8.src = "images/prj11/cornellBox.png";
   img9 = new Image(800, 600);
   img9.src = "images/prj11/cornellBoxSample.png";
+  img10 = new Image(800, 600);
+  img10.src = "images/prj11/skylightTeapotIRreg.png";
+  img11 = new Image(800, 600);
+  img11.src = "images/prj11/skylightTeapotIRz.png";
+  img12 = new Image(800, 600);
+  img12.src = "images/prj11/skylightTeapotIRnorm.png";
+  img13 = new Image(800, 600);
+  img13.src = "images/prj11/cornellBoxIRreg.png";
+  img14 = new Image(800, 600);
+  img14.src = "images/prj11/cornellBoxIRz.png";
+  img15 = new Image(800, 600);
+  img15.src = "images/prj11/cornellBoxIRnorm.png";
+  img16 = new Image(800, 600);
+  img16.src = "images/prj11/cornellBoxIRnormSample";
+  img17 = new Image(800, 600);
+  img17.src = "images/prj11/cornellBoxIRrand.png";
+  img18 = new Image(800, 600);
+  img18.src = "images/prj11/cornellBoxIRnorm-s.png";
 </script>
 </html>
