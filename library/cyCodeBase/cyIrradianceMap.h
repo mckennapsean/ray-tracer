@@ -473,7 +473,7 @@ struct cyColorZNormal
 class cyIrradianceMapColorZNormal : public cyIrradianceMap<cyColorZNormal>
 {
 public:
-	cyIrradianceMapColorZNormal() : thresholdColor(1.0e30f,1.0e30f,1.0e30f), thresholdZ(0.05f), thresholdN(0.7f) {}
+	cyIrradianceMapColorZNormal() : thresholdColor(0.03f,0.03f,0.03f), thresholdZ(0.05f), thresholdN(0.7f) {}
 	cyIrradianceMapColorZNormal(float _thresholdColor, float _thresholdZ=0.05f, float _thresholdN=0.7f) : thresholdZ(_thresholdZ), thresholdN(_thresholdN) { SetColorThreshold(_thresholdColor); }
 	cyIrradianceMapColorZNormal(cyColor _thresholdColor, float _thresholdZ=0.05f, float _thresholdN=0.7f) : thresholdColor(_thresholdColor), thresholdZ(_thresholdZ), thresholdN(_thresholdN) {}
 	void SetColorThreshold(float t) { thresholdColor.Set(t,t,t); }
