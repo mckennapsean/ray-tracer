@@ -1,0 +1,161 @@
+<xml>
+  <scene>
+    <background r="0" g="0" b="0">
+      <scale y="0.4"/>
+      <translate y="-0.1"/>
+    </background>
+    <environment value="0.7" texture="clouds.ppm"/>
+ 
+    <!-- Objects -->
+    <object type="plane" material="ground">
+      <scale value="500"/>
+      <rotate angle="-30" z="1"/>
+    </object>
+    <object type="obj" name="teapot" material="flowers">
+      <scale value="0.8"/>
+      <rotate angle="-160" z="1"/>
+      <translate x="2" y="2" z="0"/>
+    </object>
+    <object type="obj" name="teapot" material="refl">
+      <scale value="0.4"/>
+      <rotate angle="-50" z="1"/>
+      <translate x="-7" y="-7" z="0"/>
+    </object>
+    <object type="sphere" material="refl">
+      <scale value="10"/>
+      <translate x="25" y="35" z="10"/>
+    </object>
+    <object type="sphere" material="refl">
+      <scale value="5"/>
+      <translate x="20" y="20" z="5"/>
+    </object>
+    <object type="sphere" material="refl0">
+      <scale value="5"/>
+      <translate x="-20" y="55" z="5"/>
+    </object>
+    <object type="sphere" material="refl1">
+      <scale value="5"/>
+      <translate x="-15" y="40" z="5"/>
+    </object>
+    <object type="sphere" material="refl2">
+      <scale value="5"/>
+      <translate x="-10" y="25" z="5"/>
+    </object>
+    <object type="sphere" material="refl3">
+      <scale value="5"/>
+      <translate x="-5" y="10" z="5"/>
+    </object>
+    <object type="sphere" material="refr0">
+      <scale value="4"/>
+      <translate x="5" y="-13" z="4"/>
+    </object>
+    <object type="sphere" material="refr1">
+      <scale value="3"/>
+      <translate x="7" y="-18" z="3"/>
+    </object>
+    <object type="sphere" material="refr2">
+      <scale value="2"/>
+      <translate x="8" y="-22" z="2"/>
+    </object>
+ 
+    <!-- Materials -->
+    <material type="blinn" name="ground">
+      <diffuse r="1" g="1" b="1" texture="checkerboard">
+        <color1 r="0.17" g="0.13" b="0.2"/>
+        <color2 r="0.87" g="0.83" b="0.9"/>
+        <scale value="0.01"/>
+      </diffuse>
+      <specular value="0.1"/>
+      <glossiness value="50"/>
+      <reflection value="0.5"/>
+    </material>
+    <material type="blinn" name="refl0">
+      <diffuse r="0.3" g="0.1" b="0.3"/>
+      <specular value="0.8"/>
+      <glossiness value="100"/>
+      <reflection value="0.9" glossiness="0.01"/>
+    </material>
+    <material type="blinn" name="refl1">
+      <diffuse r="0.1" g="0.1" b="0.3"/>
+      <specular value="0.8"/>
+      <glossiness value="50"/>
+      <reflection value="0.9" glossiness="0.05"/>
+    </material>
+    <material type="blinn" name="refl2">
+      <diffuse r="0.1" g="0.3" b="0.1"/>
+      <specular value="0.8"/>
+      <glossiness value="20"/>
+      <reflection value="0.9" glossiness="0.1"/>
+    </material>
+    <material type="blinn" name="refl3">
+      <diffuse r="0.3" g="0.3" b="0.1"/>
+      <specular value="0.8"/>
+      <glossiness value="10"/>
+      <reflection value="0.9" glossiness="0.2"/>
+    </material>
+    <material type="blinn" name="flowers">
+      <diffuse texture="flowers.ppm">
+      </diffuse>
+      <specular value="0.3"/>
+      <glossiness value="10"/>
+    </material>
+    <material type="blinn" name="refr0">
+      <diffuse  r="0.4" g="0.1" b="0.1"/>
+      <specular r="1.0" g="1.0" b="1.0" value="0.7"/>
+      <glossiness value="100"/>
+      <refraction index="1.52" value="1"/>
+    </material>
+    <material type="blinn" name="refr1">
+      <diffuse  r="0.2" g="0.05" b="0.05"/>
+      <specular r="1.0" g="1.0" b="1.0" value="0.7"/>
+      <glossiness value="100"/>
+      <refraction index="1.52" value="1"/>
+    </material>
+    <material type="blinn" name="refr2">
+      <diffuse value="0"/>
+      <specular value="0.7"/>
+      <glossiness value="100"/>
+      <refraction index="1.52" value="1"/>
+    </material>
+    <material type="blinn" name="refl">
+      <diffuse value="0"/>
+      <specular value="0.8"/>
+      <glossiness value="100"/>
+      <reflection value="0.5"/>
+      <absorption r="0.01" g="0.001" b="0.0001"/>
+    </material>
+    <material type="blinn" name="glossy">
+      <diffuse value="0"/>
+      <specular value="0.8"/>
+      <glossiness value="100"/>
+      <reflection value="0.5" glossiness="0.05"/>
+      <absorption r="0.1" g="0.1" b="0.1"/>
+    </material>
+ 
+    <!-- Lights -->
+    <light type="point" name="pointLight">
+      <intensity value="0.8"/>
+      <position x="50" y="40" z="75"/>
+      <size value="20"/>
+    </light>
+    <light type="direct" name="directLight">
+      <intensity value="0.2"/>
+      <direction x="-1" y="0.2" z="-1"/>
+    </light>
+    <light type="direct" name="directLight">
+      <intensity value="0.2"/>
+      <direction x="1" y="0.3" z="-1"/>
+    </light>
+  </scene>
+ 
+  <camera>
+    <position x="-10" y="-70" z="25"/>
+    <target x="-2" y="0" z="3"/>
+    <up x="0" y="0" z="1"/>
+    <fov value="20"/>
+    <width value="800"/>
+    <height value="600"/>
+    <focaldist value="72"/>
+    <dof value="1.0"/>
+  </camera>
+</xml>
