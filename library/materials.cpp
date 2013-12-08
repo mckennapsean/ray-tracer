@@ -36,6 +36,7 @@ class BlinnMaterial: public Material{
       index = 1.0;
       reflectionGlossiness = 0.0;
       refractionGlossiness = 0.0;
+      emission.setColor(0.0, 0.0, 0.0);
     }
     
     // shading function (blinn-phong)
@@ -312,6 +313,11 @@ class BlinnMaterial: public Material{
       index = f;
     }
     
+    // set the emission color of the material
+    void setEmission(Color e){
+      emission.setColor(e);
+    }
+    
     // set the diffuse texture for the material
     void setDiffuseTexture(TextureMap *map){
       diffuse.setTexture(map);
@@ -332,6 +338,11 @@ class BlinnMaterial: public Material{
       refraction.setTexture(map);
     }
     
+    // set the emission texture for the material
+    void setEmissionTexture(TextureMap *map){
+      emission.setTexture(map);
+    }
+    
     // set the environment texture
     void setEnvironmentTexture(TexturedColor c){
       environment = c;
@@ -345,6 +356,18 @@ class BlinnMaterial: public Material{
     // set the refraction glossiness
     void setRefractionGlossiness(float gloss){
       refractionGlossiness = gloss;
+    }
+    
+    // extension for photon mapping
+    
+    // store the hit for the surface if true
+    bool isPhotonSurface(){
+      return diffuse.getColor().Grey() > 0.0;
+    }
+    
+    // trace our next random photon through the scene if true
+    bool randomPhotonBounce(Cone &r, Color &c, HitInfo &h){
+      return false;
     }
     
   private:
@@ -373,6 +396,9 @@ class BlinnMaterial: public Material{
     // random number generation for jittering the normal
     mt19937 rnd;
     uniform_real_distribution<float> dist{0.0, 1.0};
+    
+    // calculate emission color
+    TexturedColor emission;
 };
 
 
@@ -392,6 +418,7 @@ class PhongMaterial: public Material{
       index = 1.0;
       reflectionGlossiness = 0.0;
       refractionGlossiness = 0.0;
+      emission.setColor(0.0, 0.0, 0.0);
     }
     
     // shading function (phong)
@@ -667,6 +694,11 @@ class PhongMaterial: public Material{
       index = f;
     }
     
+    // set the emission color of the material
+    void setEmission(Color c){
+      emission.setColor(c);
+    }
+    
     // set the diffuse texture for the material
     void setDiffuseTexture(TextureMap *map){
       diffuse.setTexture(map);
@@ -687,6 +719,11 @@ class PhongMaterial: public Material{
       refraction.setTexture(map);
     }
     
+    // set the emission texture for the material
+    void setEmissionTexture(TextureMap *map){
+      emission.setTexture(map);
+    }
+    
     // set the environment texture
     void setEnvironmentTexture(TexturedColor c){
       environment = c;
@@ -700,6 +737,18 @@ class PhongMaterial: public Material{
     // set the refraction glossiness
     void setRefractionGlossiness(float gloss){
       refractionGlossiness = gloss;
+    }
+    
+    // extensions for photon mapping
+    
+    // store the hit for the surface if true
+    bool isPhotonSurface(){
+      return diffuse.getColor().Grey() > 0.0;
+    }
+    
+    // trace our next random photon through the scene if true
+    bool randomPhotonBounce(Cone &r, Color &c, HitInfo &h){
+      return false;
     }
     
   private:
@@ -728,4 +777,7 @@ class PhongMaterial: public Material{
     // random number generation for light disk rotation
     mt19937 rnd;
     uniform_real_distribution<float> dist{0.0, 1.0};
+    
+    // colors for emission
+    TexturedColor emission;
 };

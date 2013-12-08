@@ -453,6 +453,25 @@ class PointLight: public GenericLight{
       shadowMax = max;
     }
     
+    // extensions for photon mapping
+    
+    // check if the light source emits photons (point light only!)
+    bool isPhotonSource(){
+      return true;
+    }
+    
+    // get the intensity of the color of the photon
+    Color getPhotonIntensity(){
+      return intensity;
+    }
+    
+    // calculate a random photon from our point light source
+    Cone randomPhoton(){
+      Point p = Point(0.0, 0.0, 0.0);
+      Point d = Point(0.0, 0.0, 1.0);
+      return Cone(p, d);
+    }
+    
   private:
     
     // intensity (or color) of light

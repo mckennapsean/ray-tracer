@@ -621,6 +621,19 @@ class Light: public ItemBase{
       return false;
     }
     virtual void setColor(Color c){}
+    
+    // extensions for photon mapping
+    virtual bool isPhotonSource(){
+      return false;
+    }
+    virtual Color getPhotonIntensity(){
+      return Color(0.0, 0.0, 0.0);
+    }
+    virtual Cone randomPhoton(){
+      Point p = Point(0.0, 0.0, 0.0);
+      Point d = Point(0.0, 0.0, 1.0);
+      return Cone(p, d);
+    }
 };
 
 
@@ -636,6 +649,18 @@ class Material: public ItemBase{
     // uses the incoming ray or cone, hit info of rendering pixel, and all lights
     // also keeps an integer count of how many reflection bounces remaining
     virtual Color shade(Cone &r, HitInfo &h, LightList &lights, int bounceCount = 1) = 0;
+    
+    // extensions for photon mapping
+    
+    // if true, store the hit for the photon
+    virtual bool isPhotonSurface(){
+      return true;
+    }
+    
+    // if true, get the next photon's direction and color
+    virtual bool randomPhotonBounce(Cone &r, Color &c, HitInfo &h){
+      return false;
+    }
 };
 
 
