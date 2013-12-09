@@ -30,7 +30,7 @@ using namespace std;
 
 
 // scene to load (project #) + all ray tracing options & settings
-string xml = "scenes/prj11-1.xml";
+string xml = "scenes/prj12.xml";
 bool printXML = false;
 bool zBuffer = false;
 bool sampleCount = false;
@@ -41,9 +41,12 @@ float sampleThreshold = 0.001;
 int shadowMin = 8;
 int shadowMax = 32;
 bool gammaCorr = true;
-bool globalIllum = true;
-bool irradCache = true;
+bool globalIllum = false;
+bool irradCache = false;
 int samplesGI = 128;
+bool invSqFO = true;
+bool photonMap = true;
+int samplesPM = 1000000;
 
 
 // variables for ray tracing
@@ -87,7 +90,7 @@ Point cameraRay(float pX, float pY, Point offset);
 int main(){
   
   // load scene: root node, camera, image (and set shadow casting variables)
-  loadScene(xml, printXML, shadowMin, shadowMax, globalIllum, irradCache, samplesGI);
+  loadScene(xml, printXML, shadowMin, shadowMax, globalIllum, irradCache, samplesGI, invSqFO);
   
   // set the scene as the root node
   setScene(rootNode);

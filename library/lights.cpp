@@ -369,11 +369,18 @@ class PointLight: public GenericLight{
     
     // get color of point light (check for shadows)
     Color illuminate(Point p, Point n){
+      
+      // calculate the inverse square fall-off
+      float scale = 1.0;
+      if(invSqFO)
+        scale /= (position - p).Length() * (position - p).Length();
+      
+      // for a point light
       if(size == 0.0){
         Cone r = Cone();
         r.pos = p;
         r.dir = position - p;
-        return shadow(r, 1.0) * intensity;
+        return shadow(r, 1.0) * scale * intensity;
       
       // otherwise, we have a spherical light, cast multiple shadow rays
       }else{
@@ -423,7 +430,7 @@ class PointLight: public GenericLight{
         }
         
         // return our final shaded intensity
-        return mean * intensity;
+        return mean * scale * intensity;
       }
     }
     
@@ -451,6 +458,11 @@ class PointLight: public GenericLight{
     void setShadowRays(int min, int max){
       shadowMin = min;
       shadowMax = max;
+    }
+    
+    // inverse square fall off boolean
+    void inverseSquareFalloff(){
+      invSqFO = true;
     }
     
     // extensions for photon mapping
@@ -490,6 +502,8 @@ class PointLight: public GenericLight{
     // random number generation for light disk rotation
     mt19937 rnd;
     uniform_real_distribution<float> dist{0.0, 1.0};
+    
+    bool invSqFO = false;
     
     // calculate a randomized light position on a spherical light
     Cone getShadowRay(Point p, int c, float r){

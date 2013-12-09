@@ -57,6 +57,7 @@ int minShadowRays, maxShadowRays;
 bool GI;
 bool IC;
 int sGI;
+bool iSFO;
 
 
 // functions for loading scene
@@ -73,7 +74,7 @@ void readFloat(XMLElement *e, float &f, string name = "value");
 
 
 // begin loading scene from file
-int loadScene(string file, bool p = false, int min = 8, int max = 32, bool gi = false, bool ic = false, int s = 16){
+int loadScene(string file, bool p = false, int min = 8, int max = 32, bool gi = false, bool ic = false, int s = 16, bool fo = false){
   
   // load debug mode
   print = p;
@@ -86,6 +87,7 @@ int loadScene(string file, bool p = false, int min = 8, int max = 32, bool gi = 
   GI = gi;
   IC = ic;
   sGI = s;
+  iSFO = fo;
   
   // make sure file exists
   XMLDocument doc(file.c_str());
@@ -712,6 +714,10 @@ void loadLight(XMLElement *e){
       
       // set the light's min and max shadow rays
       l->setShadowRays(minShadowRays, maxShadowRays);
+      
+      // if appropriate, set the inverse square fall-off
+      if(iSFO)
+        l->inverseSquareFalloff();
     
     // unknown light type
     }else{
