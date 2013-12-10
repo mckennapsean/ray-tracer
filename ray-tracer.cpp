@@ -227,8 +227,8 @@ int main(){
           if(n)
             m = n->getMaterial();
           
-          // if there is a material, calculate probabilities
-          if(m){
+          // if there is a material that is a photon surface, calculate probabilities
+          if(m && m->isPhotonSurface()){
             
             // 
           }
