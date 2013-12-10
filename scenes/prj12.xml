@@ -28,7 +28,7 @@
                 <translate x="15"/>
             </object>
         </object>
-        <object type="obj" name="teapot.obj" material="mtl1">
+        <object type="obj" name="teapot" material="mtl1">
             <scale value="0.8"/>
             <rotate angle="-30" z="1"/>
             <translate x="2" y="5" z="0"/>
