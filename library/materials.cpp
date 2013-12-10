@@ -358,7 +358,7 @@ class BlinnMaterial: public Material{
       refractionGlossiness = gloss;
     }
     
-    // extension for photon mapping
+    // extensions for photon mapping
     
     // store the hit for the surface if true
     bool isPhotonSurface(){
@@ -367,7 +367,74 @@ class BlinnMaterial: public Material{
     
     // trace our next random photon through the scene if true
     bool randomPhotonBounce(Cone &r, Color &c, HitInfo &h){
-      return false;
+      
+      // store probabilities of each color
+      float pReflDiff, pReflSpec, pRefr;
+      
+      // grab color brightness
+      pReflDiff = diffuse.getColor().Grey();
+      pReflSpec = reflection.getColor().Grey();
+      pRefr = refraction.getColor().Grey();
+      
+      // rescale our brightness probabilities
+      float pTot = pReflDiff + pReflSpec + pRefr;
+      if(pTot > 1.0){
+        pReflDiff /= pTot;
+        pReflSpec /= pTot;
+        pRefr /= pTot;
+      }
+      
+      // get random component for material interaction
+      float rand = dist(rnd);
+      
+      // diffuse reflection
+      if(rand < pReflDiff){
+        
+        // modulate color
+        
+        
+        // update photon position
+        
+        
+        // calculate random direction along hemisphere
+        
+        
+        // continue tracing photon
+        return true;
+      
+      // specular reflection
+      }else if(rand < pReflDiff + pReflSpec){
+        
+        // modulate color
+        
+        
+        // update photon position
+        
+        
+        // calculate reflected direction
+        
+        
+        // continue tracing photon
+        return true;
+      
+      // refraction
+      }else if(rand < pReflDiff + pReflSpec + pRefr){
+        
+        // modulate color
+        
+        
+        // update photon position
+        
+        
+        // calculate refracted direction
+        
+        
+        // continue tracing photon
+        return true;
+      
+      // otherwise, absorbed
+      }else
+        return false;
     }
     
   private:
