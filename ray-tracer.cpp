@@ -230,7 +230,8 @@ int main(){
           // if there is a material that is a photon surface, calculate probabilities
           if(m && m->isPhotonSurface()){
             
-            // 
+            // pass our photon hit to the surface to get next photon (if not absorbed)
+            cont = m->randomPhotonBounce(randPhoton, pow, hi);
           }
           
           // otherwise, terminate photon
