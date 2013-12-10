@@ -167,8 +167,12 @@ int main(){
     int numLights = lights.size();
     float *lightPow = new float[numLights];
     for(int i = 0; i < numLights; i++){
-      powTot += lights[i]->getPhotonIntensity().Grey();
-      lightPow[i] = powTot;
+      if(lights[i]->isPhotonSource()){
+        powTot += lights[i]->getPhotonIntensity().Grey();
+        lightPow[i] = powTot;
+      }else{
+        lightPow[i] = -1.0;
+      }
     }
     
     // keep track of generated photons
