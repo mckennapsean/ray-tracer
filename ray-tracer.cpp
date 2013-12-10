@@ -57,6 +57,7 @@ Color24* img;
 float* zImg;
 float* sampleImg;
 IrradianceMap im;
+PhotonMap *pm;
 
 
 // variables for anti-aliasing brightness calculations (XYZ, Lab)
@@ -152,6 +153,20 @@ int main(){
       // subdivide (if necessary)
       if(subdivide)
         im.Subdivide();
+    }
+  }
+  
+  // compute a photon map for global illumination
+  if(photonMap){
+    
+    // initialize photon map
+    pm = createPhotonMap(samplesPM);
+    
+    // fill our photon map
+    while(pm->stored_photons < samplesPM){
+      
+      // 
+      
     }
   }
   
