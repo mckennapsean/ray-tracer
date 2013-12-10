@@ -47,7 +47,7 @@ int samplesGI = 128;
 bool invSqFO = true;
 bool photonMap = true;
 int samplesPM = 1000000;
-int bounceCountPM = 10;
+int bounceCountPM = 5;
 
 
 // variables for ray tracing
@@ -408,6 +408,17 @@ void rayTracing(int i){
         if(n)
           m = n->getMaterial();
         
+        // if necessary, update photon map light with color
+        if(photonMap){
+          float *irrad = new float[3];
+          float *position = new float[3];
+          hi.p.GetValue(position);
+          float *normal = new float[3];
+          hi.n.GetValue(normal);
+          irradianceEstimate(pm, irrad, position, normal, 2.0, 100);
+          threadLights[0]->setColor(Color(irrad));
+        }
+        
         // if there is a material, shade the pixel
         // 5-passes for reflections and refractions
         if(m)
@@ -416,7 +427,7 @@ void rayTracing(int i){
         // otherwise color it white (as a hit)
         else
           col.Set(0.929, 0.929, 0.929);
-      
+        
       // if we hit nothing, draw the background
       }else{
         Point p = Point((float) pX / w, (float) pY / h, 0.0);
