@@ -304,12 +304,25 @@ void rayTracing(int i){
   // create new light list for thread
   LightList threadLights;
   threadLights.deleteAll();
-  threadLights = lights;
+  
+  // update our thread light list
+  if(!photonMap)
+    threadLights = lights;
   
   // if necessary, add new irradiance map light
   if(globalIllum && irradCache){
     IrradianceMapLight *l = new IrradianceMapLight();
     string name = "irradianceMap";
+    Light *light = NULL;
+    light = l;
+    light->setName(name);
+    threadLights.push_back(light);
+  }
+  
+  // if necessary, add a photon map light
+  if(photonMap){
+    PhotonMapLight *l = new PhotonMapLight();
+    string name = "photonMap";
     Light *light = NULL;
     light = l;
     light->setName(name);
