@@ -230,6 +230,16 @@ int main(){
           // if there is a material that is a photon surface, calculate probabilities
           if(m && m->isPhotonSurface()){
             
+            // first, save our photon hit
+            float *power, *position, *direction;
+            power = new float[3];
+            pow.GetValue(power);
+            position = new float[3];
+            hi.p.GetValue(position);
+            direction = new float[3];
+            randPhoton.dir.GetValue(direction);
+            storePhoton(pm, power, position, direction);
+            
             // pass our photon hit to the surface to get next photon (if not absorbed)
             cont = m->randomPhotonBounce(randPhoton, pow, hi);
           }
