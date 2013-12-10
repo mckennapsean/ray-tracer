@@ -856,7 +856,115 @@ class PhongMaterial: public Material{
     
     // trace our next random photon through the scene if true
     bool randomPhotonBounce(Cone &r, Color &c, HitInfo &h){
-      return false;
+      
+      // store probabilities of each color
+      float pReflDiff, pReflSpec, pRefr;
+      
+      // grab color brightness
+      pReflDiff = diffuse.getColor().Grey();
+      pReflSpec = reflection.getColor().Grey();
+      pRefr = refraction.getColor().Grey();
+      
+      // rescale our brightness probabilities
+      float pTot = pReflDiff + pReflSpec + pRefr;
+      if(pTot > 1.0){
+        pReflDiff /= pTot;
+        pReflSpec /= pTot;
+        pRefr /= pTot;
+      }
+      
+      // get random component for material interaction
+      float rand = dist(rnd);
+      
+      // diffuse reflection
+      if(rand < pReflDiff){
+        
+        // modulate color
+        Color col = diffuse.getColor();
+        col /= col.Grey();
+        c *= col;
+        
+        // update photon position
+        r.pos = h.p;
+        
+        // calculate hemisphere vectors
+        Point v0 = Point(0.0, 1.0, 0.0);
+        if(v0 % h.n > 0.5 || v0 % h.n < -0.5)
+          v0 = Point(0.0, 0.0, 1.0);
+        Point v1 = (v0 ^ h.n).GetNormalized();
+        v0 = (v1 ^ h.n).GetNormalized();
+        
+        // calculate random direction along hemisphere
+        float phi = dist(rnd) * 2.0 * M_PI;
+        float the = acos(1.0 - dist(rnd));
+        r.dir = h.n.GetNormalized() * cos(the) + (v0 * cos(phi) + v1 * sin(  phi)) * sin(the);
+        
+        // continue tracing photon
+        return true;
+      
+      // specular reflection
+      }else if(rand < pReflDiff + pReflSpec){
+        
+        // modulate color
+        Color col = reflection.getColor();
+        col /= col.Grey();
+        c *= col;
+        
+        // update photon position
+        r.pos = h.p;
+        
+        // calculate reflected direction
+        r.dir = (2 * (h.n % -r.dir) * h.n + r.dir).GetNormalized();
+        
+        // continue tracing photon
+        return true;
+      
+      // refraction
+      }else if(rand < pReflDiff + pReflSpec + pRefr){
+        
+        // modulate color
+        Color col = refraction.getColor();
+        col /= col.Grey();
+        c *= col;
+        
+        // update photon position
+        r.pos = h.p;
+        
+        // store variables for refraction calculation
+        Point v = -r.dir;
+        Point n;
+        float n1;
+        float n2;
+        
+        // handle front-face and back-face hits accordingly
+        if(h.front){
+          n1 = 1.0;
+          n2 = index;
+          n = h.n;
+        }else{
+          n1 = index;
+          n2 = 1.0;
+          n = -h.n;
+        }
+        
+        // calculate refraction ray direction
+        float c1 = n % v;
+        float s1 = sqrt(1.0 - c1 * c1);
+        float s2 = n1 / n2 * s1;
+        float c2 = sqrt(1.0 - s2 * s2);
+        Point p = (v - c1 * n).GetNormalized();
+        Point pt = s2 * -p;
+        Point nt = c2 * -n;
+        
+        // calculate refracted direction
+        r.dir = (pt + nt).GetNormalized();
+        
+        // continue tracing photon
+        return true;
+      
+      // otherwise, absorbed
+      }else
+        return false;
     }
     
   private:
