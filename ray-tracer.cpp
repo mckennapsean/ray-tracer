@@ -228,7 +228,7 @@ int main(){
             m = n->getMaterial();
           
           // if there is a material that is a photon surface, calculate probabilities
-          if(m && m->isPhotonSurface()){
+          if(m){
             
             // first, save our photon hit
             float *power, *position, *direction;
