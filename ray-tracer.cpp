@@ -162,11 +162,58 @@ int main(){
     // initialize photon map
     pm = createPhotonMap(samplesPM);
     
+    // calculate total light power for random selection
+    float powTot = 0.0;
+    int numLights = lights.size();
+    float *lightPow = new float[numLights];
+    for(int i = 0; i < numLights; i++){
+      powTot += lights[i]->getPhotonIntensity().Grey();
+      lightPow[i] = powTot;
+    }
+    
+    // keep track of generated photons
+    int genPhotons = 0;
+    
+    // setup random generator for photon mapping
+    mt19937 rnd;
+    uniform_real_distribution<float> dist{0.0, 1.0};
+    
     // fill our photon map
     while(pm->stored_photons < samplesPM){
       
-      // 
+      // photon variables
+      Color pow;
+      Point pos;
+      Point dir;
+      bool cont = true;
       
+      // select random light
+      Light *light;
+      int l = 0;
+      bool foundLight = false;
+      float randomPow = dist(rnd) * powTot;
+      while(!foundLight){
+        if(randomPow <= lightPow[l]){
+          light = lights[l];
+          foundLight = true;
+        }
+        l++;
+      }
+      
+      // initialize our photon
+      pow = light->getPhotonIntensity();
+      Cone randPhoton = light->randomPhoton();
+      pos = randPhoton.pos;
+      dir = randPhoton.dir;
+      
+      // loop for tracing a photon
+      while(cont){
+        
+        // 
+      }
+      
+      // add to our generated photons
+      genPhotons++;
     }
   }
   
