@@ -167,6 +167,7 @@ int main(){
     float powTot = 0.0;
     int numLights = lights.size();
     float *lightPow = new float[numLights];
+    float *lightProb = new float[numLights];
     for(int i = 0; i < numLights; i++){
       if(lights[i]->isPhotonSource()){
         powTot += lights[i]->getPhotonIntensity().Grey();
@@ -175,6 +176,8 @@ int main(){
         lightPow[i] = -1.0;
       }
     }
+    for(int i = 0; i < numLights; i++)
+      lightProb[i] = lights[i]->getPhotonIntensity().Grey() / powTot;
     
     // keep track of generated photons
     int genPhotons = 0;
@@ -193,19 +196,21 @@ int main(){
       
       // select random light
       Light *light;
+      float probLight;
       int l = 0;
       bool foundLight = false;
       float randomPow = dist(rnd) * powTot;
       while(!foundLight){
         if(randomPow <= lightPow[l]){
           light = lights[l];
+          probLight = lightProb[l];
           foundLight = true;
         }
         l++;
       }
       
       // initialize our photon
-      pow = light->getPhotonIntensity();
+      pow = light->getPhotonIntensity() * 4.0 * M_PI / probLight;
       Cone randPhoton = light->randomPhoton();
       
       // loop for tracing a photon
