@@ -263,7 +263,8 @@ int main(){
     }
     
     // scale photon map by number of generated photons
-    scalePhotonPower(map, genPhotons);
+    float scale = 1.0 / ((float) genPhotons);
+    scalePhotonPower(map, scale);
     
     // balance our photon map
     pm = balancePhotonMap(map);
