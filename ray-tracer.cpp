@@ -250,6 +250,9 @@ int main(){
       // add to our generated photons
       genPhotons++;
     }
+    
+    // scale photon map by number of generated photons
+    scalePhotonPower(pm, genPhotons);
   }
   
   // start ray tracing loop (in parallel with threads)
