@@ -391,10 +391,12 @@ class BlinnMaterial: public Material{
       if(rand < pReflDiff){
         
         // modulate color
-        
+        Color col = diffuse.getColor();
+        col /= col.Grey();
+        c *= col;
         
         // update photon position
-        
+        r.pos = h.p;
         
         // calculate random direction along hemisphere
         
@@ -406,10 +408,12 @@ class BlinnMaterial: public Material{
       }else if(rand < pReflDiff + pReflSpec){
         
         // modulate color
-        
+        Color col = reflection.getColor();
+        col /= col.Grey();
+        c *= col;
         
         // update photon position
-        
+        r.pos = h.p;
         
         // calculate reflected direction
         
@@ -421,10 +425,12 @@ class BlinnMaterial: public Material{
       }else if(rand < pReflDiff + pReflSpec + pRefr){
         
         // modulate color
-        
+        Color col = refraction.getColor();
+        col /= col.Grey();
+        c *= col;
         
         // update photon position
-        
+        r.pos = h.p;
         
         // calculate refracted direction
         
