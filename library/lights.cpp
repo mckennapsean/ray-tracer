@@ -275,42 +275,6 @@ class IrradianceCacheLight: public GenericLight{
 };
 
 
-// photon map light definition
-class PhotonMapLight: public GenericLight{
-  public:
-    
-    // constructor
-    PhotonMapLight(){}
-    
-    // get color of indirect light by tracing a new ray
-    Color illuminate(Point p, Point n){
-      
-      // return the color
-      return color;
-    }
-    
-    // get direction of photon map light (non-sensical)
-    Point direction(Point p){
-      return Point(0, 0, 0);
-    }
-    
-    // return true, since light is indirect
-    bool isAmbient(){
-      return true;
-    }
-    
-    // update light color
-    void setColor(Color c){
-      color = c;
-    }
-    
-  private:
-    
-    // light color
-    Color color;
-};
-
-
 // irradiance map light definition (another type of indirect light)
 class IrradianceMapLight: public GenericLight{
   public:
@@ -346,6 +310,42 @@ class IrradianceMapLight: public GenericLight{
     
     // indirect color (from irradiance map)
     Color indirect;
+};
+
+
+// photon map light definition
+class PhotonMapLight: public GenericLight{
+  public:
+    
+    // constructor
+    PhotonMapLight(){}
+    
+    // get color of indirect light by tracing a new ray
+    Color illuminate(Point p, Point n){
+      
+      // return the color
+      return color;
+    }
+    
+    // get direction of photon map light (non-sensical)
+    Point direction(Point p){
+      return Point(0, 0, 0);
+    }
+    
+    // return true, since light is indirect
+    bool isAmbient(){
+      return true;
+    }
+    
+    // update light color
+    void setColor(Color c){
+      color = c;
+    }
+    
+  private:
+    
+    // light color
+    Color color;
 };
 
 
