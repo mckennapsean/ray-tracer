@@ -47,6 +47,7 @@ int samplesGI = 128;
 bool invSqFO = true;
 bool photonMap = true;
 int samplesPM = 1000000;
+int bounceCountPM = 10;
 
 
 // variables for ray tracing
@@ -187,8 +188,7 @@ int main(){
       
       // photon variables
       Color pow;
-      Point pos;
-      Point dir;
+      int bounce = 1;
       bool cont = true;
       
       // select random light
@@ -207,13 +207,39 @@ int main(){
       // initialize our photon
       pow = light->getPhotonIntensity();
       Cone randPhoton = light->randomPhoton();
-      pos = randPhoton.pos;
-      dir = randPhoton.dir;
       
       // loop for tracing a photon
       while(cont){
         
-        // 
+        // trace photon in scene
+        HitInfo hi = HitInfo();
+        bool hit = traceRay(randPhoton, hi);
+        
+        // if hit, get the node's material
+        if(hit){
+          Node *n = hi.node;
+          Material *m;
+          if(n)
+            m = n->getMaterial();
+          
+          // if there is a material, calculate probabilities
+          if(m){
+            
+            // 
+          }
+          
+          // otherwise, terminate photon
+          else
+            cont = false;
+        
+        // if we hit nothing, terminate photon
+        }else
+          cont = false;
+          
+        // check our photon bounce count
+        bounce++;
+        if(bounce > bounceCountPM)
+          cont = false;
       }
       
       // add to our generated photons
