@@ -48,6 +48,8 @@ bool invSqFO = true;
 bool photonMap = true;
 int samplesPM = 1000000;
 int bounceCountPM = 5;
+float photonRad = 2.0;
+int maxPhotons = 100;
 
 
 // variables for ray tracing
@@ -416,7 +418,7 @@ void rayTracing(int i){
           hi.p.GetValue(position);
           float *normal = new float[3];
           hi.n.GetValue(normal);
-          irradianceEstimate(pm, irrad, position, normal, 2.0, 100);
+          irradianceEstimate(pm, irrad, position, normal, photonRad, maxPhotons);
           threadLights[0]->setColor(Color(irrad));
         }
         
