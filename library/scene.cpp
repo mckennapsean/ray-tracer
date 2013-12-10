@@ -25,6 +25,7 @@
 #include "cyCodeBase/cyMatrix3.h"
 #include "cyCodeBase/cyColor.h"
 #include "cyCodeBase/cyIrradianceMap.h"
+#include "photon-map/photonmap.cpp"
 using namespace std;
 typedef cyPoint3f Point;
 typedef cyPoint2f Point2;
