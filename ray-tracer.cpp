@@ -233,14 +233,16 @@ int main(){
           if(m){
             
             // first, save our photon hit
-            float *power, *position, *direction;
-            power = new float[3];
-            pow.GetValue(power);
-            position = new float[3];
-            hi.p.GetValue(position);
-            direction = new float[3];
-            randPhoton.dir.GetValue(direction);
-            storePhoton(map, power, position, direction);
+            if(m->isPhotonSurface()){
+              float *power, *position, *direction;
+              power = new float[3];
+              pow.GetValue(power);
+              position = new float[3];
+              hi.p.GetValue(position);
+              direction = new float[3];
+              randPhoton.dir.GetValue(direction);
+              storePhoton(map, power, position, direction);
+            }
             
             // pass our photon hit to the surface to get next photon (if not absorbed)
             cont = m->randomPhotonBounce(randPhoton, pow, hi);
