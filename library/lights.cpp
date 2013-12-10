@@ -479,8 +479,15 @@ class PointLight: public GenericLight{
     
     // calculate a random photon from our point light source
     Cone randomPhoton(){
-      Point p = Point(0.0, 0.0, 0.0);
-      Point d = Point(0.0, 0.0, 1.0);
+      
+      // random point within light
+      Point p = position + (Point(-1.0, -1.0, -1.0) + 2.0 * Point(dist(rnd), dist(rnd), dist(rnd))) * size;
+      
+      // random direction
+      Point d = Point(-1.0, -1.0, -1.0) + 2.0 * Point(dist(rnd), dist(rnd), dist(rnd));
+      d.GetNormalized();
+      
+      // return our random photon
       return Cone(p, d);
     }
     
