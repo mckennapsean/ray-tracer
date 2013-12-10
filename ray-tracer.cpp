@@ -58,7 +58,7 @@ Color24* img;
 float* zImg;
 float* sampleImg;
 IrradianceMap im;
-PhotonMap *pm;
+BalancedPhotonMap *pm;
 
 
 // variables for anti-aliasing brightness calculations (XYZ, Lab)
@@ -161,7 +161,7 @@ int main(){
   if(photonMap){
     
     // initialize photon map
-    pm = createPhotonMap(samplesPM);
+    PhotonMap *map = createPhotonMap(samplesPM);
     
     // calculate total light power for random selection
     float powTot = 0.0;
@@ -187,7 +187,7 @@ int main(){
     uniform_real_distribution<float> dist{0.0, 1.0};
     
     // fill our photon map
-    while(pm->stored_photons < samplesPM){
+    while(map->stored_photons < samplesPM){
       
       // photon variables
       Color pow;
@@ -238,7 +238,7 @@ int main(){
             hi.p.GetValue(position);
             direction = new float[3];
             randPhoton.dir.GetValue(direction);
-            storePhoton(pm, power, position, direction);
+            storePhoton(map, power, position, direction);
             
             // pass our photon hit to the surface to get next photon (if not absorbed)
             cont = m->randomPhotonBounce(randPhoton, pow, hi);
@@ -263,7 +263,10 @@ int main(){
     }
     
     // scale photon map by number of generated photons
-    scalePhotonPower(pm, genPhotons);
+    scalePhotonPower(map, genPhotons);
+    
+    // balance our photon map
+    pm = balancePhotonMap(map);
   }
   
   // start ray tracing loop (in parallel with threads)
