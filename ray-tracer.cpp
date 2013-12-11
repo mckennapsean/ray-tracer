@@ -232,8 +232,8 @@ int main(){
           // if there is a material that is a photon surface, calculate probabilities
           if(m){
             
-            // first, save our photon hit
-            if(m->isPhotonSurface()){
+            // first, save our photon hit (only if a photon surface & a front hit!)
+            if(m->isPhotonSurface() && hi.front){
               float *power, *position, *direction;
               power = new float[3];
               pow.GetValue(power);
