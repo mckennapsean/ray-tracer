@@ -320,11 +320,19 @@ class PhotonMapLight: public GenericLight{
     // constructor
     PhotonMapLight(){}
     
-    // get color of indirect light by tracing a new ray
+    // get color from photon map
     Color illuminate(Point p, Point n){
       
-      // return the color
-      return color;
+      // grab color from photon map
+      float *irrad = new float[3];
+      float *position = new float[3];
+      p.GetValue(position);
+      float *normal = new float[3];
+      n.GetValue(normal);
+      irradianceEstimate(pm, irrad, position, normal, photonRad, maxPhotons);
+      
+      // return color
+      return Color(irrad);
     }
     
     // get direction of photon map light (non-sensical)
@@ -337,15 +345,19 @@ class PhotonMapLight: public GenericLight{
       return true;
     }
     
-    // update light color
-    void setColor(Color c){
-      color = c;
+    // set photon map
+    void setPhotonMap(BalancedPhotonMap *map, float f, int i){
+      pm = map;
+      photonRad = f;
+      maxPhotons = i;
     }
     
   private:
     
-    // light color
-    Color color;
+    // photon map
+    BalancedPhotonMap *pm;
+    float photonRad = 1.0;
+    int maxPhotons = 10.0;
 };
 
 
