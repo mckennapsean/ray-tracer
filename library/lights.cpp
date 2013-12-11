@@ -532,17 +532,33 @@ class PointLight: public GenericLight{
       Point v0 = Point(1.0, 0.0, 0.0);
       Point v1 = Point(0.0, 1.0, 0.0);
       Point v2 = Point(0.0, 0.0, 1.0);
-      float phi = dist(rnd) * 2.0 * M_PI;
-      float the = dist(rnd) * M_PI;
       
-      // random point within light
-      float mag = dist(rnd) * size;
-      Point p = position + (v0 * sin(the) * cos(phi) + v1 * sin(the) * sin(phi) + v2 * cos(the)) * mag;
+      // location of point light
+      Point p = position;
       
-      // random direction
-      phi = dist(rnd) * 2.0 * M_PI;
-      the = dist(rnd) * M_PI;
-      Point d = v0 * sin(the) * cos(phi) + v1 * sin(the) * sin(phi) + v2 * cos(the);
+      // randomize our point within light (spherical light)
+      if(size > 0){
+        
+        // rejection sampling
+        Point o = Point(size, size, size);
+        while(o.LengthSquared() > size * size){
+          o.x = dist2(rnd) * size;
+          o.y = dist2(rnd) * size;
+          o.z = dist2(rnd) * size;
+        }
+        
+        // set position
+        p += o;
+      }
+      
+      // rejection sampling for random light direction
+      Point d = Point(1.0, 1.0, 1.0);
+      while(d.LengthSquared() > 1.0){
+        d.x = dist2(rnd);
+        d.y = dist2(rnd);
+        d.z = dist2(rnd);
+      }
+      d.GetNormalized();
       
       // return our random photon
       return Cone(p, d);
@@ -566,6 +582,7 @@ class PointLight: public GenericLight{
     // random number generation for light disk rotation
     mt19937 rnd;
     uniform_real_distribution<float> dist{0.0, 1.0};
+    uniform_real_distribution<float> dist2{-1.0, 1.0};
     
     bool invSqFO = false;
     
