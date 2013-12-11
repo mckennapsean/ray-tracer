@@ -327,6 +327,7 @@ void rayTracing(int i){
   // if necessary, add a photon map light
   if(photonMap){
     PhotonMapLight *l = new PhotonMapLight();
+    l->setPhotonMap(pm, photonRad, maxPhotons);
     string name = "photonMap";
     Light *light = NULL;
     light = l;
@@ -412,17 +413,6 @@ void rayTracing(int i){
         Material *m;
         if(n)
           m = n->getMaterial();
-        
-        // if necessary, update photon map light with color
-        if(photonMap){
-          float *irrad = new float[3];
-          float *position = new float[3];
-          hi.p.GetValue(position);
-          float *normal = new float[3];
-          hi.n.GetValue(normal);
-          irradianceEstimate(pm, irrad, position, normal, photonRad, maxPhotons);
-          threadLights[0]->setColor(Color(irrad));
-        }
         
         // if there is a material, shade the pixel
         // 5-passes for reflections and refractions
