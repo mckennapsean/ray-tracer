@@ -528,11 +528,6 @@ class PointLight: public GenericLight{
     // calculate a random photon from our point light source
     Cone randomPhoton(){
       
-      // variables for random sphere generation
-      Point v0 = Point(1.0, 0.0, 0.0);
-      Point v1 = Point(0.0, 1.0, 0.0);
-      Point v2 = Point(0.0, 0.0, 1.0);
-      
       // location of point light
       Point p = position;
       
