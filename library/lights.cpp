@@ -361,6 +361,119 @@ class PhotonMapLight: public GenericLight{
 };
 
 
+// Monte Carlo photon map light definition
+class MonteCarloPhotonMapLight: public GenericLight{
+  public:
+    
+    // constructor
+    MonteCarloPhotonMapLight(){}
+    
+    // get color of indirect light by tracing a new ray
+    Color illuminate(Point p, Point n){
+      
+      // color for shading
+      Color indirect;
+      
+      // multi-sampling for indirect lighting
+      for(int s = 0; s < samples; s++){
+        
+        // randomize ray on a hemisphere
+        float phi = dist(rnd) * 2.0 * M_PI;
+        float the = acos(1.0 - 2.0 * dist(rnd)) / 2.0;
+        
+        // calculate hemisphere vectors
+        Point v0 = Point(0.0, 1.0, 0.0);
+        if(v0 % n > 0.5 || v0 % n < -0.5)
+          v0 = Point(0.0, 0.0, 1.0);
+        Point v1 = (v0 ^ n).GetNormalized();
+        v0 = (v1 ^ n).GetNormalized();
+        
+        // set up ray and hit info
+        Cone *r = new Cone();
+        r->pos = p;
+        r->dir = n.GetNormalized() * cos(the) + (v0 * cos(phi) + v1 * sin(  phi)) * sin(the);
+        HitInfo hi = HitInfo();
+        
+        // trace a new ray
+        bool hit = traceRay(*r, hi);
+        
+        // grab the node material hit
+        Material *m;
+        if(hit){
+          Node *n = hi.node;
+          if(n)
+            m = n->getMaterial();
+        }
+        
+        // shade our material
+        if(hit && m){
+          
+          // grab color from photon map
+          float *irrad = new float[3];
+          float *position = new float[3];
+          hi.p.GetValue(position);
+          float *normal = new float[3];
+          hi.n.GetValue(normal);
+          irradianceEstimate(pm, irrad, position, normal, photonRad, maxPhotons);
+          
+          // update current color
+          indirect = (indirect * s + Color(irrad)) / (float) (s + 1);
+        
+        // otherwise, nothing to shade
+        }else
+          indirect = (indirect * s + environment.sampleEnvironment(r->dir)) / (float) (s + 1);
+      }
+      
+      // return the color
+      return indirect;
+    }
+    
+    // get direction of indirect light (non-sensical)
+    Point direction(Point p){
+      return Point(0, 0, 0);
+    }
+    
+    // return true, since light is indirect
+    bool isAmbient(){
+      return true;
+    }
+    
+    // set photon map
+    void setPhotonMap(BalancedPhotonMap *map, float f, int i){
+      pm = map;
+      photonRad = f;
+      maxPhotons = i;
+    }
+    
+    // set the environment
+    void setEnvironment(TexturedColor c){
+      environment = c;
+    }
+    
+    // set the number of samples
+    void setSamples(int s){
+      samples = s;
+    }
+    
+  private:
+    
+    // photon map
+    BalancedPhotonMap *pm;
+    float photonRad = 1.0;
+    int maxPhotons = 10.0;
+    
+    // environment variable
+    TexturedColor environment;
+    
+    // number of samples for global illumination
+    int samples;
+    
+    // setup random generator for global illumination
+    mt19937 rnd;
+    uniform_real_distribution<float> dist{0.0, 1.0};
+};
+
+
 // direct light definition
 class DirectLight: public GenericLight{
   public:

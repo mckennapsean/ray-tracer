@@ -94,7 +94,7 @@ Point cameraRay(float pX, float pY, Point offset);
 int main(){
   
   // load scene: root node, camera, image (and set shadow casting variables)
-  loadScene(xml, printXML, shadowMin, shadowMax, globalIllum, irradCache, samplesGI, invSqFO);
+  loadScene(xml, printXML, shadowMin, shadowMax, globalIllum, irradCache, samplesGI, invSqFO, photonMap);
   
   // set the scene as the root node
   setScene(rootNode);
@@ -333,10 +333,23 @@ void rayTracing(int i){
   }
   
   // if necessary, add a photon map light
-  if(photonMap){
+  if(photonMap && !globalIllum){
     PhotonMapLight *l = new PhotonMapLight();
     l->setPhotonMap(pm, photonRad, maxPhotons);
     string name = "photonMap";
+    Light *light = NULL;
+    light = l;
+    light->setName(name);
+    threadLights.push_back(light);
+  }
+  
+  // if necessary, add a Monte Carlo photon map light
+  if(photonMap && globalIllum){
+    MonteCarloPhotonMapLight *l = new MonteCarloPhotonMapLight();
+    l->setPhotonMap(pm, photonRad, maxPhotons);
+    l->setEnvironment(environment);
+    l->setSamples(samplesGI);
+    string name = "monteCarloPhotonMap";
     Light *light = NULL;
     light = l;
     light->setName(name);

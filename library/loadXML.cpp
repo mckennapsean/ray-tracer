@@ -58,6 +58,7 @@ bool GI;
 bool IC;
 int sGI;
 bool iSFO;
+bool PM;
 
 
 // functions for loading scene
@@ -74,7 +75,7 @@ void readFloat(XMLElement *e, float &f, string name = "value");
 
 
 // begin loading scene from file
-int loadScene(string file, bool p = false, int min = 8, int max = 32, bool gi = false, bool ic = false, int s = 16, bool fo = false){
+int loadScene(string file, bool p = false, int min = 8, int max = 32, bool gi = false, bool ic = false, int s = 16, bool fo = false, bool pm = false){
   
   // load debug mode
   print = p;
@@ -88,6 +89,7 @@ int loadScene(string file, bool p = false, int min = 8, int max = 32, bool gi = 
   IC = ic;
   sGI = s;
   iSFO = fo;
+  PM = pm;
   
   // make sure file exists
   XMLDocument doc(file.c_str());
@@ -218,7 +220,7 @@ void loadScene(XMLElement *e){
   
   
   // add indirect light to the scene for global illumination
-  if(GI && !IC)
+  if(GI && !IC && !PM)
     setIndirectLight(sGI);
 }
 
