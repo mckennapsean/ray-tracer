@@ -215,6 +215,11 @@ int main(){
       pow = light->getPhotonIntensity() * 4.0 * M_PI / probLight;
       Cone randPhoton = light->randomPhoton();
       
+      // ignore first hit (direct lighting) unless using Monte Carlo GI
+      bool store = false;
+      if(globalIllum)
+        store = true;
+      
       // loop for tracing a photon
       while(cont){
         
@@ -233,7 +238,7 @@ int main(){
           if(m){
             
             // first, save our photon hit (only if a photon surface & a front hit!)
-            if(m->isPhotonSurface() && hi.front){
+            if(m->isPhotonSurface() && hi.front && store){
               float *power, *position, *direction;
               power = new float[3];
               pow.GetValue(power);
@@ -246,6 +251,10 @@ int main(){
             
             // pass our photon hit to the surface to get next photon (if not absorbed)
             cont = m->randomPhotonBounce(randPhoton, pow, hi);
+            
+            // be sure to store following protons
+            if(!store)
+              store = true;
           }
           
           // otherwise, terminate photon
@@ -311,8 +320,7 @@ void rayTracing(int i){
   threadLights.deleteAll();
   
   // update our thread light list
-  if(!photonMap)
-    threadLights = lights;
+  threadLights = lights;
   
   // if necessary, add new irradiance map light
   if(globalIllum && irradCache){
