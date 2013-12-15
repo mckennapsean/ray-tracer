@@ -4,8 +4,8 @@
 ///
 /// \file		cyIrradianceMap.h 
 /// \author		Cem Yuksel
-/// \version	0.1
-/// \date		November 11, 2013
+/// \version	0.3
+/// \date		December 13, 2013
 ///
 /// \brief irradiance map class.
 ///
@@ -19,6 +19,12 @@
 
 #ifndef _CY_IRRADIANCE_MAP_H_INCLUDED_
 #define _CY_IRRADIANCE_MAP_H_INCLUDED_
+
+//-------------------------------------------------------------------------------
+
+#define CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_COLOR	0.04f
+#define CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_Z		0.05f
+#define CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_NORMAL	0.7f
 
 //-------------------------------------------------------------------------------
 
@@ -46,6 +52,7 @@ public:
 		int n = GetDataCount(subdiv);
 		data = new T[n];
 		valid.SetSize(n);
+		computed.SetSize(n);
 	}
 
 	/// Increments the subdivision, thereby generating more computation points.
@@ -63,6 +70,8 @@ public:
 		int n = GetDataCount(s, w2, h2);
 		T *d = new T[n];
 		valid.SetSize(n);
+		Validity computed2;
+		computed2.SetSize(n);
 
 		int endX=0, endY=0;
 		float fx=0, fy=0;
@@ -83,6 +92,7 @@ public:
 
 		d[0] = data[0];
 		valid.Set(0);
+		computed2.Set(0,computed.Get(0));
 		int i=1, ii=0;
 		{
 			int x=0;
@@ -90,7 +100,8 @@ public:
 				bool v = Interpolate( d[i], data[x], data[x+1] );
 				valid.Set(i++,v);
 				d[i] = data[x+1];
-				valid.Set(i++);
+				valid.Set(i);
+				computed2.Set(i++,computed.Get(x+1));
 			}
 			if ( endX > 1 ) {
 				bool v = Interpolate( d[i], data[x], data[x+1], fx);
@@ -98,7 +109,8 @@ public:
 			}
 			if ( endX > 0 ) {
 				d[i] = data[x+1];
-				valid.Set(i++);
+				valid.Set(i);
+				computed2.Set(i++,computed.Get(x+1));
 			}
 		}
 
@@ -137,12 +149,14 @@ public:
 			ii = x;
 			xe = x + ws1;
 			d[i] = data[x];
-			valid.Set(i++);
+			valid.Set(i);
+			computed2.Set(i++,computed.Get(x));
 			for ( ; x<xe; x++ ) {
 				bool v = Interpolate( d[i], data[x], data[x+1] );
 				valid.Set(i++,v);
 				d[i] = data[x+1];
-				valid.Set(i++);
+				valid.Set(i);
+				computed2.Set(i++,computed.Get(x+1));
 			}
 			if ( endX > 1 ) {
 				bool v = Interpolate( d[i], data[x], data[x+1], fx);
@@ -150,7 +164,8 @@ public:
 			}
 			if ( endX > 0 ) {
 				d[i] = data[x+1];
-				valid.Set(i++);
+				valid.Set(i);
+				computed2.Set(i++,computed.Get(x+1));
 			}
 		}
 
@@ -194,7 +209,8 @@ public:
 				bool v = Interpolate( d[i], data[x], data[x+1] );
 				valid.Set(i++,v);
 				d[i] = data[x+1];
-				valid.Set(i++);
+				valid.Set(i);
+				computed2.Set(i++,computed.Get(x+1));
 			}
 			if ( endX > 1 ) {
 				bool v = Interpolate( d[i], data[x], data[x+1], fx);
@@ -202,13 +218,17 @@ public:
 			}
 			if ( endX > 0 ) {
 				d[i] = data[x+1];
-				valid.Set(i++);
+				valid.Set(i);
+				computed2.Set(i++,computed.Get(x+1));
 			}
 		}
 		
 		delete [] data;
 		data = d;
 		subdiv = s;
+
+		computed.SwapData(computed2);
+		computed2.SetSize(0);
 
 		if ( conservative ) {
 			for ( int i=0, y=0; y<h2; y++ ) {
@@ -242,13 +262,34 @@ public:
 				i = xe-1;
 			}
 		}
+
+		Validity valid1;
+		valid1.CopyDataFrom(valid,n);
+		for ( int i=0, y=0; y<h2; y++ ) {
+			for ( int x=0; x<w2; x++, i++ ) {
+				if ( valid1.Get(i) && !computed.Get(i) ) {
+					if ((y>0    && !valid1.Get(i-w2)) ||
+						(x>0    && !valid1.Get(i-1) ) ||
+						(y<h2-1 && !valid1.Get(i+w2)) ||
+						(x<w2-1 && !valid1.Get(i+1) ) ||
+						(y>0    && x>0    && !valid1.Get(i-w2-1)) ||
+						(y>0    && x<w2-1 && !valid1.Get(i-w2+1)) ||
+						(y<h2-1 && x>0    && !valid1.Get(i+w2-1)) ||
+						(y<h2-1 && x<w2-1 && !valid1.Get(i+w2+1)) )
+					{
+						valid.Clear(i);
+					}
+				}
+			}
+		}
+		valid1.SetSize(0);
 	}
 
 	/// Returns the number of computation points.
 	int GetDataCount() const { return GetDataCount(subdiv); }
 
 	/// Sets the value of a point and marks it as valid.
-	void Set(int i, const T& v) { data[i]=v; valid.Set(i); }
+	void Set(int i, const T& v) { data[i]=v; valid.Set(i); computed.Set(i); }
 
 	/// Returns the current subdivision level
 	int GetSubdivLevel() const { return subdiv; }
@@ -342,10 +383,22 @@ private:
 		void SetSize( int n )
 		{
 			if ( validity ) delete [] validity;
-			int count = (n >> 3);
-			if ( (n&7) > 0 ) count++;
-			validity = new char[count];
-			for ( int i=0; i<count; i++ ) validity[i] = 0;
+			validity = NULL;
+			if ( n > 0 ) {
+				int count = DataSize(n);
+				validity = new char[count];
+				for ( int i=0; i<count; i++ ) validity[i] = 0;
+			}
+		}
+		void SwapData(Validity &v) { char *vd=validity; validity=v.validity; v.validity=vd; }
+		void CopyDataFrom(const Validity &v, int n) {
+			if ( validity ) delete [] validity;
+			validity = NULL;
+			if ( n > 0 ) {
+				int count = DataSize(n);
+				validity = new char[count];
+				for ( int i=0; i<count; i++ ) validity[i] = v.validity[i];
+			}
 		}
 		bool Get  (int i) const { return ((validity[i>>3]>>(i&7))&1) > 0; }
 		void Clear(int i) { validity[i>>3] &= ~(char(1 << (i&7))); }
@@ -353,19 +406,30 @@ private:
 		void Set  (int i, bool set) { if (set) Set(i); else Clear(i); }
 	private:
 		char *validity;
+		int DataSize(int n) {
+			int count = (n >> 3);
+			if ( (n&7) > 0 ) count++;
+			return count;
+		}
 	};
 
 	int width, height;
 	int subdiv;
 	Validity valid;
+	Validity computed;
 	T *data;
 
 	int GetDataCount(int sub, int &w, int &h) const
 	{
-		w = (width >> -sub);
-		if ( sub<0 && width % (1<<-sub) > 0 ) w++;
-		h = (height >> -sub);
-		if ( sub<0 && height % (1<<-sub) > 0 ) h++;
+		if ( sub < 0 ) {
+			w = (width >> -sub);
+			if ( width % (1<<-sub) > 0 ) w++;
+			h = (height >> -sub);
+			if ( height % (1<<-sub) > 0 ) h++;
+		} else {
+			w = (width << sub);
+			h = (height << sub);
+		}
 		return (w+1)*(h+1);
 	}
 	int GetDataCount(int sub) const
@@ -382,7 +446,7 @@ private:
 class cyIrradianceMapFloat : public cyIrradianceMap<float>
 {
 public:
-	cyIrradianceMapFloat() : threshold(1.0e30f) {}
+	cyIrradianceMapFloat() : threshold(CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_COLOR) {}
 	void SetThreshold(float t) { threshold=t; }
 protected:
 	virtual bool Interpolate( float& outVal, const float& input1, const float& input2, float weight2 )
@@ -402,7 +466,7 @@ private:
 class cyIrradianceMapColor : public cyIrradianceMap<cyColor>
 {
 public:
-	cyIrradianceMapColor() : threshold(1.0e30f,1.0e30f,1.0e30f) {}
+	cyIrradianceMapColor() : threshold(CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_COLOR) {}
 	cyIrradianceMapColor(float _threshold) { SetThreshold(_threshold); }
 	cyIrradianceMapColor(cyColor _threshold) : threshold(_threshold) {}
 	void SetThreshold(float t) { threshold.Set(t,t,t); }
@@ -425,9 +489,12 @@ private:
 class cyIrradianceMapColorZ : public cyIrradianceMap<cyColorA>
 {
 public:
-	cyIrradianceMapColorZ() : thresholdColor(1.0e30f,1.0e30f,1.0e30f), thresholdZ(0.05f) {}
-	cyIrradianceMapColorZ(float _thresholdColor, float _thresholdZ=0.05f) : thresholdZ(_thresholdZ) { SetColorThreshold(_thresholdColor); }
-	cyIrradianceMapColorZ(cyColor _thresholdColor, float _thresholdZ=0.05f) : thresholdColor(_thresholdColor), thresholdZ(_thresholdZ) {}
+	cyIrradianceMapColorZ(	float _thresholdColor=CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_COLOR, 
+							float _thresholdZ=CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_Z ) 
+							: thresholdZ(_thresholdZ) { SetColorThreshold(_thresholdColor); }
+	cyIrradianceMapColorZ(	cyColor _thresholdColor, 
+							float _thresholdZ=CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_Z )
+							: thresholdColor(_thresholdColor), thresholdZ(_thresholdZ) {}
 	void SetColorThreshold(float t) { thresholdColor.Set(t,t,t); }
 	void SetColorThreshold(const cyColor &t) { thresholdColor=t; }
 	void SetZThreshold(float t) { thresholdZ=t; }
@@ -473,9 +540,14 @@ struct cyColorZNormal
 class cyIrradianceMapColorZNormal : public cyIrradianceMap<cyColorZNormal>
 {
 public:
-	cyIrradianceMapColorZNormal() : thresholdColor(0.03f,0.03f,0.03f), thresholdZ(0.05f), thresholdN(0.7f) {}
-	cyIrradianceMapColorZNormal(float _thresholdColor, float _thresholdZ=0.05f, float _thresholdN=0.7f) : thresholdZ(_thresholdZ), thresholdN(_thresholdN) { SetColorThreshold(_thresholdColor); }
-	cyIrradianceMapColorZNormal(cyColor _thresholdColor, float _thresholdZ=0.05f, float _thresholdN=0.7f) : thresholdColor(_thresholdColor), thresholdZ(_thresholdZ), thresholdN(_thresholdN) {}
+	cyIrradianceMapColorZNormal(float _thresholdColor=CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_COLOR, 
+								float _thresholdZ=CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_Z,
+								float _thresholdN=CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_NORMAL)
+								: thresholdZ(_thresholdZ), thresholdN(_thresholdN) { SetColorThreshold(_thresholdColor); }
+	cyIrradianceMapColorZNormal(cyColor _thresholdColor,
+								float _thresholdZ=CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_Z,
+								float _thresholdN=CY_IRRADIANCE_MAP_DEFAULT_THRESHOLD_NORMAL)
+								: thresholdColor(_thresholdColor), thresholdZ(_thresholdZ), thresholdN(_thresholdN) {}
 	void SetColorThreshold(float t) { thresholdColor.Set(t,t,t); }
 	void SetColorThreshold(const cyColor &t) { thresholdColor=t; }
 	void SetZThreshold(float t) { thresholdZ=t; }
@@ -505,6 +577,8 @@ protected:
 		} else {
 			cyColor dc = input2.c - input1.c;
 			outVal.c = input1.c + dc*weight2;
+			outVal.z = input1.z + dz*weight2;
+			outVal.N = (input1.N + (input2.N-input1.N)*weight2).GetNormalized();
 		}
 	}
 private:
