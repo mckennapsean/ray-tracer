@@ -139,9 +139,14 @@ class Cone: public Ray{
     
     // returns the major & minor axes of an ellipse for for some given value
     void ellipseAt(float t, Point &n, Point &major, Point &minor){
+      mt19937 rnd;
+      uniform_real_distribution<float> dist{0.0, 1.0};
       float r = radiusAt(t);
       Point d = dir.GetNormalized();
-      Point T = (d ^ n).GetNormalized();
+      Point T = d ^ n;
+      while(T.LengthSquared() < 0.001)
+        T = Point(dist(rnd), dist(rnd), dist(rnd)) ^ n;
+      T.Normalize();
       minor = r * T;
       float c = abs(d % n);
       if(c < 0.01)
@@ -855,8 +860,8 @@ class TexturedColor{
     // return the appropriate color of the texture for environment mapping
     Color sampleEnvironment(Point &dir){
       float z = asin(-dir.z) / float(M_PI) + 0.5;
-      float x = dir.x / (abs(dir.x) + abs(dir.y));
-      float y = dir.y / (abs(dir.x) + abs(dir.y));
+      float x = dir.x / (abs(dir.x) + abs(dir.y) + 0.00001);
+      float y = dir.y / (abs(dir.x) + abs(dir.y) + 0.00001);
       Point p = Point(0.5, 0.5, 0.0) + z * (x * Point(0.5, 0.5, 0.0) + y * Point(-0.5, 0.5, 0.0));
       return sample(p);
     }
