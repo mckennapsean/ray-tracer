@@ -30,6 +30,14 @@
           <rotate angle="90" x="1"/>
           <translate z="41"/>
         </object>
+        <object type="plane" name="mainWallWindow" material="walls">
+          <scale x="1.0" y="0.01" z="0.01" value="32"/>
+          <rotate angle="90" x="1"/>
+        </object>
+        <object type="plane" name="mainWallWindow" material="walls">
+          <scale x="0.01" y="0.01" z="1.0" value="32"/>
+          <rotate angle="90" x="1"/>
+        </object>
         <object type="plane" name="mainWallBott" material="walls">
           <scale value="32"/>
           <rotate angle="90" x="1"/>
