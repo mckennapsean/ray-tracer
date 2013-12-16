@@ -3,7 +3,7 @@
     
     
     <!-- Background -->
-    <background texture="clouds.ppm"/>
+    <background texture="moonlit.ppm"/>
     
     
     <!-- Room -->
@@ -118,10 +118,14 @@
     
     <!-- Lights -->
     <light type="ambient" name="ambientLight">
-      <intensity value="0.1"/>
+      <intensity value="0.05"/>
     </light>
     <light type="point" name="pointLight">
-      <intensity value="0.5"/>
+      <intensity value="0.3"/>
+      <position x="-10" y="40" z="20"/>
+    </light>
+    <light type="point" name="pointLight">
+      <intensity value="0.4"/>
       <position x="-10" y="-10" z="20"/>
     </light>
   </scene>
