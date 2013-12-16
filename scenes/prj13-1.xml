@@ -71,6 +71,25 @@
       <translate x="8" y="3" z="17"/>
     </object>
     
+    <object type="obj" name="cube" material="temp">
+      <scale x="0.4" y="1.0" z="0.6" value="5.0"/>
+      <rotate angle="90" x="1"/>
+      <rotate angle="20" y="1"/>
+      <translate x="10" y="20"/>
+    </object>
+    
+    <object type="obj" name="cone" material="temp">
+      <scale value="4"/>
+      <rotate angle="120" z="1"/>
+      <translate x="2" y="2" z="0"/>
+    </object>
+    
+    <object type="obj" name="teapot" material="temp">
+      <scale value="0.2"/>
+      <translate x="2" y="2" z="4.4"/>
+      <rotate angle="8" y="1"/>
+    </object>
+    
     <object name="light">
       <rotate angle="90" x="1"/>
       <object type="obj" name="icosphere" material="temp">
@@ -113,7 +132,7 @@
     <position x="0" y="-60" z="12"/>
     <target x="0" y="0" z="12"/>
     <up x="0" y="0" z="1"/>
-    <fov value="40"/>
+    <fov value="30"/>
     <width value="800"/>
     <height value="600"/>
   </camera>
