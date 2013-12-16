@@ -52,13 +52,13 @@ if [ $1 -eq 0 ]
 then
   rm -f images/image.png
   #rm -f images/imageZ.png
-  rm -f images/imageSample.png
+  #rm -f images/imageSample.png
 else
   if [ $1 -eq 6 ]
   then
     rm -f images/image.png
     #rm -f images/imageZ.png
-    rm -f images/imageSample.png
+    #rm -f images/imageSample.png
   fi
 fi
 
@@ -68,7 +68,7 @@ if [ $1 -gt 3 ]
 then
   convert images/image.ppm images/image.png
   #convert images/imageZ.ppm images/imageZ.png
-  convert images/imageSample.ppm images/imageSample.png
+  #convert images/imageSample.ppm images/imageSample.png
 fi
 
 # open images
@@ -77,7 +77,7 @@ if [ $1 -gt 4 ]
 then
   open -a /Applications/Preview.app/ images/image.png
   #open -a /Applications/Preview.app/ images/imageZ.png
-  open -a /Applications/Preview.app/ images/imageSample.png
+  #open -a /Applications/Preview.app/ images/imageSample.png
 fi
 
 # cleanup
@@ -86,7 +86,7 @@ if [ $1 -eq 0 ]
 then
   rm -f images/image.ppm
   #rm -f images/imageZ.ppm
-  rm -f images/imageSample.ppm
+  #rm -f images/imageSample.ppm
   rm -f a.out
   rm -f ray-tracer
 else
@@ -94,7 +94,7 @@ else
   then
     rm -f images/image.ppm
     #rm -f images/imageZ.ppm
-    rm -f images/imageSample.ppm
+    #rm -f images/imageSample.ppm
     rm -f a.out
     rm -f ray-tracer
   fi
