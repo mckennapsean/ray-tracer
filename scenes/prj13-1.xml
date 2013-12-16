@@ -9,40 +9,48 @@
     <!-- Room -->
     <object name="room">
       <translate x="0" y="0" z="12"/>
+      
       <object type="plane" name="floor" material="floor">
         <scale value="32"/>
         <translate z="-12"/>
         <rotate angle="110" z="1"/>
       </object>
+      
       <object type="plane" name="ceiling" material="ceiling">
         <scale value="32"/>
         <rotate angle="180" x="1"/>
         <translate z="12"/>
       </object>
+      
       <object name="mainWall">
         <object type="plane" name="mainWallLeft" material="walls">
           <scale value="32"/>
           <rotate angle="90" x="1"/>
           <translate x="-40"/>
         </object>
+        
         <object type="plane" name="mainWallTop" material="walls">
           <scale value="32"/>
           <rotate angle="90" x="1"/>
           <translate z="41"/>
         </object>
+        
         <object type="plane" name="mainWallWindow" material="walls">
           <scale x="1.0" y="0.01" z="0.01" value="32"/>
           <rotate angle="90" x="1"/>
         </object>
+        
         <object type="plane" name="mainWallWindow" material="walls">
           <scale x="0.01" y="0.01" z="1.0" value="32"/>
           <rotate angle="90" x="1"/>
         </object>
+        
         <object type="plane" name="mainWallBott" material="walls">
           <scale value="32"/>
           <rotate angle="90" x="1"/>
           <translate z="-41"/>
         </object>
+        
         <object type="plane" name="mainWallRight" material="walls">
           <scale value="32"/>
           <rotate angle="90" x="1"/>
@@ -51,6 +59,7 @@
         <translate y="20"/>
         <rotate angle="20" z="1"/>
       </object>
+      
       <object type="plane" name="secWall" material="walls">
         <scale value="32"/>
         <rotate angle="-90" y="1"/>
@@ -69,6 +78,7 @@
         <rotate angle="90" z="1"/>
         <translate z="7"/>
       </object>
+      
       <object type="obj" name="teapot" material="mainTeapot">
         <scale value="0.6"/>
         <rotate angle="180" z="1"/>
@@ -111,39 +121,47 @@
     <material type="blinn" name="floor">
       <diffuse r="0.7" g="0.7" b="0.7" texture="wood.ppm"/>
     </material>
+    
     <material type="blinn" name="ceiling">
       <diffuse texture="ceiling.ppm"/>
     </material>
+    
     <material type="blinn" name="walls">
       <diffuse r="0.4" g="0.4" b="0.4" texture="wall.ppm"/>
       <specular r="0.9" g="0.7" b="1.0" value="0.2"/>
       <glossiness value="20"/>
     </material>
+    
     <material type="blinn" name="hook">
       <diffuse r="0.7" g="0.55" b="0.65" value="0.2"/>
       <specular r="0.9" g="0.75" b="0.85" value="0.2"/>
       <glossiness value="100"/>
     </material>
+    
     <material type="blinn" name="mainTeapot">
       <diffuse r="0.6" g="0.6" b="0.6" texture="flowersInvert.ppm"/>
       <specular r="1.0" g="0.7" b="0.9" value="0.5"/>
       <glossiness value="10"/>
     </material>
+    
     <material type="blinn" name="box">
       <diffuse r="0.65" g="0.6" b="0.7" value="0.2"/>
       <specular r="1.0" g="0.85" b="0.95" value="0.5"/>
       <glossiness value="20"/>
     </material>
+    
     <material type="blinn" name="ramp">
       <diffuse r="1.0" g="0.6" b="0.6" value="0.8"/>
       <specular r="1.0" g="0.6" b="0.6" value="0.1"/>
       <glossiness value="20"/>
     </material>
+    
     <material type="blinn" name="littleTeapot">
       <diffuse r="1.0" g="0.5" b="0.5" texture="flowersPink.ppm"/>
       <specular r="1.0" g="0.6" b="0.6" value="0.5"/>
       <glossiness value="10"/>
     </material>
+    
     <material type="blinn" name="temp">
       <diffuse  r="0.8" g="0.2" b="0.2"/>
       <specular r="1.0" g="1.0" b="1.0" value="0.9"/>
@@ -155,10 +173,12 @@
     <light type="ambient" name="ambientLight">
       <intensity value="0.05"/>
     </light>
+    
     <light type="point" name="pointLight">
       <intensity value="0.3"/>
       <position x="-10" y="40" z="20"/>
     </light>
+    
     <light type="point" name="pointLight">
       <intensity value="0.4"/>
       <position x="-10" y="-10" z="20"/>
