@@ -55,13 +55,13 @@
     
     <!-- Objects -->
     <object name="hanging">
-      <object type="obj" name="torus" material="mtl1">
+      <object type="obj" name="torus" material="temp">
         <scale value="2.0"/>
         <rotate angle="90" x="1"/>
         <rotate angle="90" z="1"/>
         <translate z="7"/>
       </object>
-      <object type="obj" name="teapot" material="mtl1">
+      <object type="obj" name="teapot" material="temp">
         <scale value="0.6"/>
         <rotate angle="180" z="1"/>
         <rotate angle="90" y="1"/>
@@ -72,11 +72,11 @@
     </object>
     
     <object name="light">
-      <object type="obj" name="icosphere" material="mtl2">
+      <rotate angle="90" x="1"/>
+      <object type="obj" name="icosphere" material="temp">
         <scale value="4.0"/>
-        <rotate angle="90" x="1"/>
-        <translate x="-15" y="-20" z="20"/>
       </object>
+      <translate x="-15" y="-20" z="20"/>
     </object>
     
     
@@ -90,14 +90,10 @@
     <material type="blinn" name="walls">
       <diffuse texture="wall.ppm"/>
     </material>
-    <material type="blinn" name="mtl1">
+    <material type="blinn" name="temp">
       <diffuse  r="0.8" g="0.2" b="0.2"/>
       <specular r="1.0" g="1.0" b="1.0" value="0.7"/>
       <glossiness value="20"/>
-      <reflection value="0.0"/>
-    </material>
-    <material type="blinn" name="mtl2">
-      <reflection value="1.0"/>
     </material>
     
     
