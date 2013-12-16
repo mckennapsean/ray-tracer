@@ -63,7 +63,7 @@
     
     <!-- Objects -->
     <object name="hanging">
-      <object type="obj" name="torus" material="ceiling">
+      <object type="obj" name="torus" material="hook">
         <scale value="2.0"/>
         <rotate angle="90" x="1"/>
         <rotate angle="90" z="1"/>
@@ -79,7 +79,7 @@
       <translate x="4.5" y="0" z="17"/> 
     </object>
     
-    <object type="obj" name="cube" material="temp">
+    <object type="obj" name="cube" material="box">
       <scale x="0.6" y="0.4" z="0.8" value="5.0"/>
       <rotate angle="90" x="1"/>
       <rotate angle="20" y="1"/>
@@ -115,10 +115,24 @@
       <diffuse texture="ceiling.ppm"/>
     </material>
     <material type="blinn" name="walls">
-      <diffuse texture="wall.ppm"/>
+      <diffuse r="0.4" g="0.4" b="0.4" texture="wall.ppm"/>
+      <specular r="0.9" g="0.7" b="1.0" value="0.2"/>
+      <glossiness value="20"/>
+    </material>
+    <material type="blinn" name="hook">
+      <diffuse r="0.7" g="0.55" b="0.65" value="0.2"/>
+      <specular r="0.9" g="0.75" b="0.85" value="0.2"/>
+      <glossiness value="100"/>
     </material>
     <material type="blinn" name="mainTeapot">
-      <diffuse texture="flowersInvert.ppm"/>
+      <diffuse r="0.6" g="0.6" b="0.6" texture="flowersInvert.ppm"/>
+      <specular r="1.0" g="0.7" b="0.9" value="0.5"/>
+      <glossiness value="10"/>
+    </material>
+    <material type="blinn" name="box">
+      <diffuse r="0.65" g="0.6" b="0.7" value="0.2"/>
+      <specular r="1.0" g="0.85" b="0.95" value="0.5"/>
+      <glossiness value="20"/>
     </material>
     <material type="blinn" name="temp">
       <diffuse  r="0.8" g="0.2" b="0.2"/>
