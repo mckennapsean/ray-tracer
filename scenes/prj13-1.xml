@@ -54,18 +54,23 @@
     
     
     <!-- Objects -->
-    <object type="obj" name="torus" material="mtl1">
-      <scale value="2.0"/>
-      <rotate angle="90" x="1"/>
-      <rotate angle="90" z="1"/>
-      <translate x="12" y="5" z="24"/>
+    <object name="hanging">
+      <object type="obj" name="torus" material="mtl1">
+        <scale value="2.0"/>
+        <rotate angle="90" x="1"/>
+        <rotate angle="90" z="1"/>
+        <translate z="7"/>
+      </object>
+      <object type="obj" name="teapot" material="mtl1">
+        <scale value="0.6"/>
+        <rotate angle="180" z="1"/>
+        <rotate angle="90" y="1"/>
+        <translate x="5" z="-2.5"/>
+      </object>
+      <rotate angle="40" z="1"/>
+      <translate x="8" y="3" z="17"/>
     </object>
-    <object type="obj" name="teapot" material="mtl1">
-      <scale value="0.4"/>
-      <rotate angle="180" z="1"/>
-      <rotate angle="90" y="1"/>
-      <translate x="14" y="5" z="17"/>
-    </object>
+    
     <object type="obj" name="icosphere" material="mtl2">
       <scale value="4.0"/>
       <rotate angle="90" x="1"/>
@@ -110,7 +115,7 @@
     <position x="0" y="-60" z="12"/>
     <target x="0" y="0" z="12"/>
     <up x="0" y="0" z="1"/>
-    <fov value="30"/>
+    <fov value="40"/>
     <width value="800"/>
     <height value="600"/>
   </camera>
