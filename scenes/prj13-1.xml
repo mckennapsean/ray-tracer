@@ -72,10 +72,10 @@
     </object>
     
     <object type="obj" name="cube" material="temp">
-      <scale x="0.4" y="1.0" z="0.6" value="5.0"/>
+      <scale x="0.6" y="0.4" z="0.8" value="5.0"/>
       <rotate angle="90" x="1"/>
       <rotate angle="20" y="1"/>
-      <translate x="8" y="16"/>
+      <translate x="8" y="18"/>
     </object>
     
     <object type="obj" name="cone" material="temp">
