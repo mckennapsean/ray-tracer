@@ -45,9 +45,10 @@
       </object>
       <object type="plane" name="secWall" material="walls">
         <scale value="32"/>
-        <rotate angle="90" y="1"/>
-        <translate x="20"/>
-        <rotate angle="20" z="1"/>
+        <rotate angle="-90" y="1"/>
+        <translate x="25"/>
+        <rotate angle="20" x="1"/>
+        <rotate angle="20" y="1"/>
       </object>
     </object>
     
@@ -68,7 +69,7 @@
     <object type="obj" name="icosphere" material="mtl2">
       <scale value="4.0"/>
       <rotate angle="90" x="1"/>
-      <translate x="0" y="0" z="20"/>
+      <translate x="-10" y="-10" z="20"/>
     </object>
     
     
@@ -94,7 +95,7 @@
       <reflection value="0.0"/>
     </material>
     <material type="blinn" name="mtl2">
-      <refraction value="1.0" index="1.8"/>
+      <reflection value="1.0"/>
     </material>
     
     
