@@ -86,13 +86,13 @@
       <translate x="8" y="18"/>
     </object>
     
-    <object type="obj" name="cone" material="temp">
+    <object type="obj" name="cone" material="ramp">
       <scale value="4"/>
       <rotate angle="60" z="1"/>
       <translate x="-2" y="-2" z="0"/>
     </object>
     
-    <object type="obj" name="teapot" material="temp">
+    <object type="obj" name="teapot" material="littleTeapot">
       <scale value="0.2"/>
       <translate x="-2" y="-2" z="4"/>
       <rotate angle="7" y="1"/>
@@ -109,7 +109,7 @@
     
     <!-- Materials -->
     <material type="blinn" name="floor">
-      <diffuse texture="wood.ppm"/>
+      <diffuse r="0.7" g="0.7" b="0.7" texture="wood.ppm"/>
     </material>
     <material type="blinn" name="ceiling">
       <diffuse texture="ceiling.ppm"/>
@@ -134,9 +134,19 @@
       <specular r="1.0" g="0.85" b="0.95" value="0.5"/>
       <glossiness value="20"/>
     </material>
+    <material type="blinn" name="ramp">
+      <diffuse r="1.0" g="0.6" b="0.6" value="0.8"/>
+      <specular r="1.0" g="0.6" b="0.6" value="0.1"/>
+      <glossiness value="20"/>
+    </material>
+    <material type="blinn" name="littleTeapot">
+      <diffuse r="1.0" g="0.5" b="0.5" texture="flowersPink.ppm"/>
+      <specular r="1.0" g="0.6" b="0.6" value="0.5"/>
+      <glossiness value="10"/>
+    </material>
     <material type="blinn" name="temp">
       <diffuse  r="0.8" g="0.2" b="0.2"/>
-      <specular r="1.0" g="1.0" b="1.0" value="0.7"/>
+      <specular r="1.0" g="1.0" b="1.0" value="0.9"/>
       <glossiness value="20"/>
     </material>
     
