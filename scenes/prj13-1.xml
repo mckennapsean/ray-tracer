@@ -63,13 +63,13 @@
     
     <!-- Objects -->
     <object name="hanging">
-      <object type="obj" name="torus" material="temp">
+      <object type="obj" name="torus" material="ceiling">
         <scale value="2.0"/>
         <rotate angle="90" x="1"/>
         <rotate angle="90" z="1"/>
         <translate z="7"/>
       </object>
-      <object type="obj" name="teapot" material="temp">
+      <object type="obj" name="teapot" material="mainTeapot">
         <scale value="0.6"/>
         <rotate angle="180" z="1"/>
         <rotate angle="90" y="1"/>
@@ -116,6 +116,9 @@
     </material>
     <material type="blinn" name="walls">
       <diffuse texture="wall.ppm"/>
+    </material>
+    <material type="blinn" name="mainTeapot">
+      <diffuse texture="flowersInvert.ppm"/>
     </material>
     <material type="blinn" name="temp">
       <diffuse  r="0.8" g="0.2" b="0.2"/>
