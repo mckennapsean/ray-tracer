@@ -1,8 +1,12 @@
 <xml>
   <scene>
-    <background r="1" g="1" b="1" texture="clouds.ppm"/>
     
-    <!-- Objects -->
+    
+    <!-- Background -->
+    <background texture="clouds.ppm"/>
+    
+    
+    <!-- Room -->
     <object name="room">
       <translate x="0" y="0" z="12"/>
       <object type="plane" name="floor" material="floor">
@@ -46,6 +50,9 @@
         <rotate angle="20" z="1"/>
       </object>
     </object>
+    
+    
+    <!-- Objects -->
     <object type="obj" name="torus" material="mtl1">
       <scale value="2.0"/>
       <rotate angle="90" x="1"/>
@@ -89,7 +96,8 @@
     <material type="blinn" name="mtl2">
       <refraction value="1.0" index="1.8"/>
     </material>
-
+    
+    
     <!-- Lights -->
     <light type="ambient" name="ambientLight">
       <intensity value="0.1"/>
@@ -99,7 +107,9 @@
       <position x="0" y="0" z="20"/>
     </light>
   </scene>
-
+  
+  
+  <!-- Camera -->
   <camera>
     <position x="0" y="-60" z="12"/>
     <target x="0" y="0" z="12"/>
