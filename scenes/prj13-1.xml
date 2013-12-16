@@ -71,10 +71,12 @@
       <translate x="8" y="3" z="17"/>
     </object>
     
-    <object type="obj" name="icosphere" material="mtl2">
-      <scale value="4.0"/>
-      <rotate angle="90" x="1"/>
-      <translate x="-10" y="-10" z="20"/>
+    <object name="light">
+      <object type="obj" name="icosphere" material="mtl2">
+        <scale value="4.0"/>
+        <rotate angle="90" x="1"/>
+        <translate x="-15" y="-20" z="20"/>
+      </object>
     </object>
     
     
@@ -105,7 +107,7 @@
     </light>
     <light type="point" name="pointLight">
       <intensity value="0.5"/>
-      <position x="0" y="0" z="20"/>
+      <position x="-15" y="-15" z="20"/>
     </light>
   </scene>
   
