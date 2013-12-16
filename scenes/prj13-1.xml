@@ -8,6 +8,7 @@
       <object type="plane" name="floor" material="floor">
         <scale value="32"/>
         <translate z="-12"/>
+        <rotate angle="110" z="1"/>
       </object>
       <object type="plane" name="ceiling" material="ceiling">
         <scale value="32"/>
@@ -36,6 +37,13 @@
           <translate x="40"/>
         </object>
         <translate y="20"/>
+        <rotate angle="20" z="1"/>
+      </object>
+      <object type="plane" name="secWall" material="walls">
+        <scale value="32"/>
+        <rotate angle="90" y="1"/>
+        <translate x="20"/>
+        <rotate angle="20" z="1"/>
       </object>
     </object>
     <object type="obj" name="torus" material="mtl1">
@@ -59,15 +67,15 @@
     
     <!-- Materials -->
     <material type="blinn" name="floor">
-      <diffuse  r="1" g="1" b="1"/>
+      <diffuse texture="wood.ppm"/>
       <specular value="0"/>
     </material>
     <material type="blinn" name="ceiling">
-      <diffuse  r="1" g="1" b="1"/>
+      <diffuse texture="ceiling.ppm"/>
       <specular value="0"/>
     </material>
     <material type="blinn" name="walls">
-      <diffuse texture="bricks.ppm">
+      <diffuse texture="wall.ppm">
       </diffuse>
       <specular value="0.3"/>
       <glossiness value="10"/>
