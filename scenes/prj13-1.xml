@@ -3,36 +3,39 @@
     <background r="1" g="1" b="1" texture="clouds.ppm"/>
     
     <!-- Objects -->
-    <object name="box">
+    <object name="room">
       <translate x="0" y="0" z="12"/>
-      <object type="plane" name="WallBottom" material="wall">
+      <object type="plane" name="floor" material="floor">
         <scale value="32"/>
         <translate z="-12"/>
       </object>
-      <object type="plane" name="WallTop" material="wall">
+      <object type="plane" name="ceiling" material="ceiling">
         <scale value="32"/>
         <rotate angle="180" x="1"/>
         <translate z="12"/>
       </object>
-      <object type="plane" name="WallBack" material="walls">
-        <scale value="32"/>
-        <rotate angle="90" x="1"/>
-        <translate x="40" y="20"/>
-      </object>
-      <object type="plane" name="WallBack" material="walls">
-        <scale value="32"/>
-        <rotate angle="90" x="1"/>
-        <translate z="-41" y="20"/>
-      </object>
-      <object type="plane" name="WallBack" material="walls">
-        <scale value="32"/>
-        <rotate angle="90" x="1"/>
-        <translate z="41" y="20"/>
-      </object>
-      <object type="plane" name="WallBack" material="walls">
-        <scale value="32"/>
-        <rotate angle="90" x="1"/>
-        <translate x="-40" y="20"/>
+      <object name="mainWall">
+        <object type="plane" name="mainWallLeft" material="walls">
+          <scale value="32"/>
+          <rotate angle="90" x="1"/>
+          <translate x="-40"/>
+        </object>
+        <object type="plane" name="mainWallTop" material="walls">
+          <scale value="32"/>
+          <rotate angle="90" x="1"/>
+          <translate z="41"/>
+        </object>
+        <object type="plane" name="mainWallBott" material="walls">
+          <scale value="32"/>
+          <rotate angle="90" x="1"/>
+          <translate z="-41"/>
+        </object>
+        <object type="plane" name="mainWallRight" material="walls">
+          <scale value="32"/>
+          <rotate angle="90" x="1"/>
+          <translate x="40"/>
+        </object>
+        <translate y="20"/>
       </object>
     </object>
     <object type="obj" name="torus" material="mtl1">
@@ -55,7 +58,11 @@
     
     
     <!-- Materials -->
-    <material type="blinn" name="wall">
+    <material type="blinn" name="floor">
+      <diffuse  r="1" g="1" b="1"/>
+      <specular value="0"/>
+    </material>
+    <material type="blinn" name="ceiling">
       <diffuse  r="1" g="1" b="1"/>
       <specular value="0"/>
     </material>
