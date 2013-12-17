@@ -99,13 +99,13 @@
     <object type="obj" name="cone" material="ramp">
       <scale value="4"/>
       <rotate angle="60" z="1"/>
-      <translate x="-2" y="-2" z="0"/>
+      <translate x="-3" y="-2" z="0"/>
     </object>
     
     <object type="obj" name="teapot" material="littleTeapot">
       <scale value="0.2"/>
-      <translate x="-2" y="-2" z="4"/>
-      <rotate angle="8" y="1"/>
+      <translate x="-3" y="-2" z="3.5"/>
+      <rotate angle="13" y="1"/>
     </object>
     
     <object name="light">
