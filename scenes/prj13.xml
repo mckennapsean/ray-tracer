@@ -3,7 +3,7 @@
     
     
     <!-- Background -->
-    <background texture="moonlit.ppm"/>
+    <background texture="moonlitBlur.ppm"/>
     
     
     <!-- Room -->
@@ -108,14 +108,6 @@
       <rotate angle="13" y="1"/>
     </object>
     
-    <object name="light">
-      <rotate angle="90" x="1"/>
-      <object type="obj" name="icosphere" material="light">
-        <scale value="4.0"/>
-      </object>
-      <translate x="-13" y="-12" z="21"/>
-    </object>
-    
     
     <!-- Materials -->
     <material type="blinn" name="floor">
@@ -168,14 +160,6 @@
       <glossiness value="10"/>
     </material>
     
-    <material type="blinn" name="light">
-      <diffuse  r="0.2" g="0.2" b="0.3"/>
-      <specular r="0.8" g="0.8" b="1.0" value="0.2"/>
-      <glossiness value="20"/>
-      <refraction value="1.0" index="1.8"/>
-      <absorption r="0.01" g="0.001" b="0.0001"/>
-    </material>
-    
     
     <!-- Lights -->
     <light type="point" name="pointLight">
@@ -184,7 +168,7 @@
     </light>
     
     <light type="point" name="pointLight">
-      <intensity value="200"/>
+      <intensity value="150"/>
       <position x="-13" y="-12" z="20"/>
     </light>
   </scene>
