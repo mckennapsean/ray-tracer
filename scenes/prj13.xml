@@ -98,13 +98,13 @@
     
     <object type="obj" name="cone" material="ramp">
       <scale value="4"/>
-      <rotate angle="60" z="1"/>
-      <translate x="-4" y="-3" z="0"/>
+      <rotate angle="130" z="1"/>
+      <translate x="-4" y="-3" z="-0.1"/>
     </object>
     
     <object type="obj" name="teapot" material="littleTeapot">
       <scale value="0.2"/>
-      <translate x="-4" y="-3" z="3.25"/>
+      <translate x="-4" y="-3" z="3"/>
       <rotate angle="13" y="1"/>
     </object>
     
@@ -176,14 +176,8 @@
       <absorption r="0.01" g="0.001" b="0.0001"/>
     </material>
     
-    <material type="blinn" name="temp">
-      <diffuse  r="0.8" g="0.2" b="0.2"/>
-      <specular r="1.0" g="1.0" b="1.0" value="0.9"/>
-      <glossiness value="20"/>
-    </material>
     
-    
-    <!-- Lights -->    
+    <!-- Lights -->
     <light type="point" name="pointLight">
       <intensity value="1000"/>
       <position x="-10" y="40" z="20"/>
