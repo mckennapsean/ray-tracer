@@ -183,18 +183,14 @@
     </material>
     
     
-    <!-- Lights -->
-    <light type="ambient" name="ambientLight">
-      <intensity value="0.05"/>
-    </light>
-    
+    <!-- Lights -->    
     <light type="point" name="pointLight">
-      <intensity value="0.3"/>
+      <intensity value="1000"/>
       <position x="-10" y="40" z="20"/>
     </light>
     
     <light type="point" name="pointLight">
-      <intensity value="0.4"/>
+      <intensity value="200"/>
       <position x="-13" y="-12" z="20"/>
     </light>
   </scene>
