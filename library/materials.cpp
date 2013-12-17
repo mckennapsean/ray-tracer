@@ -60,7 +60,7 @@ class BlinnMaterial: public Material{
         Light *light = lights[i];
         
         // ambient / indirect light check
-        if(light->isAmbient()){
+        if(light->isAmbient() && h.front){
           
           // add ambient / indirect lighting term
           c += diff * light->illuminate(h.p, h.n);
@@ -550,7 +550,7 @@ class PhongMaterial: public Material{
         Light *light = lights[i];
         
         // ambient light check
-        if(light->isAmbient()){
+        if(light->isAmbient() && h.front){
           
           // add ambient lighting term
           c += diff * light->illuminate(h.p, h.n);
