@@ -30,25 +30,25 @@ using namespace std;
 
 
 // scene to load (project #) + all ray tracing options & settings
-string xml = "scenes/prj13-1.xml";
+string xml = "scenes/prj13.xml";
 bool printXML = false;
 bool zBuffer = false;
 bool sampleCount = false;
 int bounceCount = 5;
-int sampleMin = 4;
-int sampleMax = 32;
+int sampleMin = 64;
+int sampleMax = 256;
 float sampleThreshold = 0.001;
-int shadowMin = 8;
-int shadowMax = 32;
+int shadowMin = 32;
+int shadowMax = 128;
 bool gammaCorr = true;
 bool globalIllum = false;
 bool irradCache = false;
 int samplesGI = 128;
-bool invSqFO = false;
-bool photonMap = false;
-int samplesPM = 1000000;
+bool invSqFO = true;
+bool photonMap = true;
+int samplesPM = 10000000;
 int bounceCountPM = 5;
-float photonRad = 2.0;
+float photonRad = 5.0;
 int maxPhotons = 100;
 
 
