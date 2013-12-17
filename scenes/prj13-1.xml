@@ -82,8 +82,8 @@
       <object type="obj" name="teapot" material="mainTeapot">
         <scale value="0.6"/>
         <rotate angle="180" z="1"/>
-        <rotate angle="90" y="1"/>
-        <translate x="5" z="-2.5"/>
+        <rotate angle="85" y="1"/>
+        <translate x="4" z="-3.5"/>
       </object>
       <rotate angle="40" z="1"/>
       <translate x="4.5" y="0" z="17"/> 
@@ -99,12 +99,12 @@
     <object type="obj" name="cone" material="ramp">
       <scale value="4"/>
       <rotate angle="60" z="1"/>
-      <translate x="-3" y="-2" z="0"/>
+      <translate x="-4" y="-3" z="0"/>
     </object>
     
     <object type="obj" name="teapot" material="littleTeapot">
       <scale value="0.2"/>
-      <translate x="-3" y="-2" z="3.5"/>
+      <translate x="-4" y="-3" z="3.5"/>
       <rotate angle="13" y="1"/>
     </object>
     
