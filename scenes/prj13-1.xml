@@ -104,7 +104,7 @@
     
     <object type="obj" name="teapot" material="littleTeapot">
       <scale value="0.2"/>
-      <translate x="-4" y="-3" z="3.5"/>
+      <translate x="-4" y="-3" z="3.25"/>
       <rotate angle="13" y="1"/>
     </object>
     
