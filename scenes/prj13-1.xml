@@ -93,7 +93,7 @@
       <scale x="0.6" y="0.4" z="0.8" value="5.0"/>
       <rotate angle="90" x="1"/>
       <rotate angle="20" y="1"/>
-      <translate x="10" y="16"/>
+      <translate x="7" y="14"/>
     </object>
     
     <object type="obj" name="cone" material="ramp">
@@ -105,7 +105,7 @@
     <object type="obj" name="teapot" material="littleTeapot">
       <scale value="0.2"/>
       <translate x="-2" y="-2" z="4"/>
-      <rotate angle="7" y="1"/>
+      <rotate angle="8" y="1"/>
     </object>
     
     <object name="light">
@@ -123,11 +123,11 @@
     </material>
     
     <material type="blinn" name="ceiling">
-      <diffuse texture="ceiling.ppm"/>
+      <diffuse r="0.5" g="0.5" b="0.5" texture="ceiling.ppm"/>
     </material>
     
     <material type="blinn" name="walls">
-      <diffuse r="0.4" g="0.4" b="0.4" texture="wall.ppm"/>
+      <diffuse r="0.3" g="0.3" b="0.3" texture="wall.ppm"/>
       <specular r="0.9" g="0.7" b="1.0" value="0.2"/>
       <glossiness value="20"/>
     </material>
@@ -136,6 +136,7 @@
       <diffuse r="0.7" g="0.6" b="0.65" value="0.2"/>
       <specular r="0.9" g="0.78" b="0.85" value="0.2"/>
       <glossiness value="100"/>
+      <reflection value="0.6" glossiness="0.3"/>
     </material>
     
     <material type="blinn" name="mainTeapot">
@@ -154,6 +155,7 @@
       <diffuse r="1.0" g="0.6" b="0.6" value="0.8"/>
       <specular r="1.0" g="0.6" b="0.6" value="0.1"/>
       <glossiness value="20"/>
+      <reflection value="0.6" glossiness="0.5"/>
     </material>
     
     <material type="blinn" name="littleTeapot">
