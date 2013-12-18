@@ -1,7 +1,9 @@
 Ray Tracing in C++
 ==================
 
-Implementation of a ray tracer in C++ for [CS 6620](http://www.cemyuksel.com/courses/utah/cs6620/) at the [University of Utah](http://www.utah.edu/), Fall 2013
+Implementation of a ray tracer in C++ for [CS 6620](http://www.cemyuksel.com/courses/utah/cs6620/) at the [University of Utah](http://www.utah.edu/), Fall 2013. You can also explore the [directory of projects here](http://mckennapsean.github.io/ray-tracer/).
+
+![](images/prj13/final.png)
 
 
 Compiling and Running
@@ -25,7 +27,7 @@ The provided script takes an integer parameter to compile, run, and convert imag
 Disclaimer
 ----------
 
-This project is being provided as-is, and I know there are bugs in the ray-tracer. Monte Carlo global illumination broke when I added in photon mapping. Occasionally, some scenes provide errors at particular pixels. And, this code is being provided for educational purposes only. It is not meant for any production rendering. I just hope the ideas buried in these files may be of use to others.
+This project is being provided as-is, and I know there are bugs in the ray-tracer. For example, Monte Carlo global illumination broke when I added in photon mapping. Occasionally, some scenes provide errors at particular pixels, which causes an entire thread to fail. I just hope the ideas buried in these files may be of use to others.
 
 
 Credit
