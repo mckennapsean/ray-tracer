@@ -1,7 +1,9 @@
 Ray Tracing in C++
 ==================
 
-Implementation of a ray tracer in C++ for [CS 6620](http://www.cemyuksel.com/courses/utah/cs6620/) at the [University of Utah](http://www.utah.edu/), Fall 2013. You can also explore the [directory of projects here](http://mckennapsean.github.io/ray-tracer/).
+Implementation of a ray tracer in C++ for [CS 6620](http://www.cemyuksel.com/courses/utah/cs6620/) at the [University of Utah](http://www.utah.edu/), Fall 2013.
+
+Explore the [directory of projects here](http://mckennapsean.github.io/ray-tracer/).
 
 ![](images/prj13/final.png)
 
